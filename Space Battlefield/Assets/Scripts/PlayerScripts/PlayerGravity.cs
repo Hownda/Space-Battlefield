@@ -12,7 +12,7 @@ public class PlayerGravity : NetworkBehaviour
 
     private bool jump;
     private float jumpStrength = 10f;
-    private float groundOffset = 1.1f;
+    public float groundOffset = 1.1f;
     public bool isGrounded;
     [SerializeField] LayerMask groundMask;
 
@@ -23,7 +23,7 @@ public class PlayerGravity : NetworkBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && IsOwner)
+        if (Input.GetKey(KeyCode.Space) && IsOwner)
         {
             jump = true;
         }
@@ -33,7 +33,7 @@ public class PlayerGravity : NetworkBehaviour
     {
         if (Gravity && IsOwner)
         {
-            isGrounded = Physics.CheckSphere(transform.position, groundOffset, groundMask);
+            isGrounded = Physics.Raycast(transform.position, -transform.up, groundOffset, groundMask);
             Vector3 gravityUp = (transform.position - Gravity.transform.position).normalized;
             Vector3 localUp = transform.up;
 

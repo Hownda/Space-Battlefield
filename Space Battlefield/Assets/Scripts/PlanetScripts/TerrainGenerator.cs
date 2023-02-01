@@ -7,7 +7,7 @@ public class TerrainGenerator : MonoBehaviour
     public int numObjects = 20;
     public GameObject prefab;
     public GameObject sphere;
-    private int radius = 95;
+    private int radius = 94;
 
     void Start()
     {

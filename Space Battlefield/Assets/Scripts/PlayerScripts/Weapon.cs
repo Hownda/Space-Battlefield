@@ -11,6 +11,8 @@ public class Weapon : MonoBehaviour
 
     public Transform attackPoint;
     public GameObject bulletPrefab;
+    public GameObject impactEffect;
+    public GameObject projectileSpawn;
 
     public float bulletForce = 100f;
     private float impulseForce = 10f;
@@ -35,7 +37,10 @@ public class Weapon : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 targetPoint = hit.point;
-                Debug.Log(hit.transform.gameObject.name);
+                GameObject particle = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+                particle.GetComponent<ParticleSystem>().Play();
+                Destroy(particle, 2f);
+
                 if (hit.transform.gameObject.GetComponent<Healthbar>() != null)
                 {
                     hit.transform.gameObject.GetComponent<Healthbar>().TakeDamage(13);
@@ -47,18 +52,13 @@ public class Weapon : MonoBehaviour
             }
             else
             {
-                targetPoint = ray.GetPoint(75);
+                GameObject particle = Instantiate(impactEffect, -transform.forward * 10, Quaternion.LookRotation(-transform.forward));
+                particle.GetComponent<ParticleSystem>().Play();
+                Destroy(particle, 2f);
             }
 
             audioManager.Play("blaster-sound");
             muzzleFlash.Play();
-
-            GameObject bullet = Instantiate(bulletPrefab);
-            bullet.transform.position = attackPoint.transform.position;
-            bullet.transform.LookAt(targetPoint);
-            bullet.GetComponent<BulletScript>().SetDestination(targetPoint);
-            bullet.GetComponent<Rigidbody>().AddForce(-transform.forward * bulletForce, ForceMode.Impulse);
-           
         }
     }
 }
