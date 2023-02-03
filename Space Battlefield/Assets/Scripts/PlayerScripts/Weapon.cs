@@ -52,9 +52,10 @@ public class Weapon : MonoBehaviour
             }
             else
             {
-                GameObject particle = Instantiate(impactEffect, -transform.forward * 10, Quaternion.LookRotation(-transform.forward));
-                particle.GetComponent<ParticleSystem>().Play();
-                Destroy(particle, 2f);
+                GameObject bullet = Instantiate(bulletPrefab, attackPoint.transform.position, Quaternion.Euler(new Vector3(0, 0, 0)));                
+                bullet.transform.LookAt(ray.GetPoint(30));
+                bullet.GetComponent<Rigidbody>().AddForce(bullet.transform.forward * bulletForce, ForceMode.Impulse);
+                Destroy(bullet, 1.5f);
             }
 
             audioManager.Play("blaster-sound");

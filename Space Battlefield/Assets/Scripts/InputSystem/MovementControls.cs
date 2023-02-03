@@ -154,15 +154,6 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""PitchYaw"",
-                    ""type"": ""PassThrough"",
-                    ""id"": ""923278a1-dce9-48ca-a9e8-83542356a7e9"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -279,7 +270,7 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                 {
                     ""name"": ""negative"",
                     ""id"": ""92b7aa4b-9c15-4538-9e98-b8a2bafbdc62"",
-                    ""path"": ""<Mouse>/forwardButton"",
+                    ""path"": ""<Mouse>/backButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -290,24 +281,13 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                 {
                     ""name"": ""positive"",
                     ""id"": ""b16a5670-1669-4667-8da2-c44216c6b5b1"",
-                    ""path"": ""<Mouse>/backButton"",
+                    ""path"": ""<Mouse>/forwardButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Roll"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""70947e30-f791-47b1-8a38-7946ec1cacbd"",
-                    ""path"": ""<Mouse>/delta"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""PitchYaw"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -324,7 +304,6 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
         m_Spaceship_Strafe = m_Spaceship.FindAction("Strafe", throwIfNotFound: true);
         m_Spaceship_UpDown = m_Spaceship.FindAction("UpDown", throwIfNotFound: true);
         m_Spaceship_Roll = m_Spaceship.FindAction("Roll", throwIfNotFound: true);
-        m_Spaceship_PitchYaw = m_Spaceship.FindAction("PitchYaw", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -429,7 +408,6 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Spaceship_Strafe;
     private readonly InputAction m_Spaceship_UpDown;
     private readonly InputAction m_Spaceship_Roll;
-    private readonly InputAction m_Spaceship_PitchYaw;
     public struct SpaceshipActions
     {
         private @MovementControls m_Wrapper;
@@ -438,7 +416,6 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
         public InputAction @Strafe => m_Wrapper.m_Spaceship_Strafe;
         public InputAction @UpDown => m_Wrapper.m_Spaceship_UpDown;
         public InputAction @Roll => m_Wrapper.m_Spaceship_Roll;
-        public InputAction @PitchYaw => m_Wrapper.m_Spaceship_PitchYaw;
         public InputActionMap Get() { return m_Wrapper.m_Spaceship; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -460,9 +437,6 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                 @Roll.started -= m_Wrapper.m_SpaceshipActionsCallbackInterface.OnRoll;
                 @Roll.performed -= m_Wrapper.m_SpaceshipActionsCallbackInterface.OnRoll;
                 @Roll.canceled -= m_Wrapper.m_SpaceshipActionsCallbackInterface.OnRoll;
-                @PitchYaw.started -= m_Wrapper.m_SpaceshipActionsCallbackInterface.OnPitchYaw;
-                @PitchYaw.performed -= m_Wrapper.m_SpaceshipActionsCallbackInterface.OnPitchYaw;
-                @PitchYaw.canceled -= m_Wrapper.m_SpaceshipActionsCallbackInterface.OnPitchYaw;
             }
             m_Wrapper.m_SpaceshipActionsCallbackInterface = instance;
             if (instance != null)
@@ -479,9 +453,6 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                 @Roll.started += instance.OnRoll;
                 @Roll.performed += instance.OnRoll;
                 @Roll.canceled += instance.OnRoll;
-                @PitchYaw.started += instance.OnPitchYaw;
-                @PitchYaw.performed += instance.OnPitchYaw;
-                @PitchYaw.canceled += instance.OnPitchYaw;
             }
         }
     }
@@ -497,6 +468,5 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
         void OnStrafe(InputAction.CallbackContext context);
         void OnUpDown(InputAction.CallbackContext context);
         void OnRoll(InputAction.CallbackContext context);
-        void OnPitchYaw(InputAction.CallbackContext context);
     }
 }

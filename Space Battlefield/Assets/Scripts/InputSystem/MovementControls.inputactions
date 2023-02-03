@@ -132,15 +132,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "PitchYaw",
-                    "type": "PassThrough",
-                    "id": "923278a1-dce9-48ca-a9e8-83542356a7e9",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -257,7 +248,7 @@
                 {
                     "name": "negative",
                     "id": "92b7aa4b-9c15-4538-9e98-b8a2bafbdc62",
-                    "path": "<Mouse>/forwardButton",
+                    "path": "<Mouse>/backButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -268,24 +259,13 @@
                 {
                     "name": "positive",
                     "id": "b16a5670-1669-4667-8da2-c44216c6b5b1",
-                    "path": "<Mouse>/backButton",
+                    "path": "<Mouse>/forwardButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Roll",
                     "isComposite": false,
                     "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "70947e30-f791-47b1-8a38-7946ec1cacbd",
-                    "path": "<Mouse>/delta",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "PitchYaw",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         }
