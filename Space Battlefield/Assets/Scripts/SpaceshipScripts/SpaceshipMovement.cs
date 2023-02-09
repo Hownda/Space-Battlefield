@@ -17,7 +17,6 @@ public class SpaceshipMovement : MonoBehaviour
     private float velocityFactor = 10f;
 
     Rigidbody rb;
-    public GameObject crosshair;
 
     private float thrust1D;
     private float strafe1D;
@@ -34,7 +33,6 @@ public class SpaceshipMovement : MonoBehaviour
     private void FixedUpdate()
     {
         MovementInput();
-        CrosshairInteraction();
     }
 
     private void MovementInput()
@@ -74,12 +72,12 @@ public class SpaceshipMovement : MonoBehaviour
 
         // UpDown
         Quaternion upDownRotation = transform.rotation;
-        upDownRotation *= Quaternion.Euler(0, -upDown1D * upDownForce * Time.deltaTime, 0);
+        upDownRotation *= Quaternion.Euler(0, 0, upDown1D * upDownForce * Time.deltaTime);
         transform.rotation = Quaternion.Slerp(transform.rotation, upDownRotation, Time.deltaTime * .2f);
 
         // Strafe
         Quaternion strafeRotation = transform.rotation;
-        strafeRotation *= Quaternion.Euler(0, 0, strafe1D * strafeForce * Time.deltaTime);
+        strafeRotation *= Quaternion.Euler(0, strafe1D * strafeForce * Time.deltaTime, 0);
         transform.rotation = Quaternion.Slerp(transform.rotation, strafeRotation, Time.deltaTime * .2f);
     }
     public void OnThrust(InputAction.CallbackContext context)
@@ -104,17 +102,5 @@ public class SpaceshipMovement : MonoBehaviour
     {
         roll1D = context.ReadValue<float>();
         rb.angularVelocity = Vector3.zero;
-    }
-
-    private void CrosshairInteraction()
-    {
-        if (strafe1D < 0 || strafe1D > 0)
-        {
-            crosshair.GetComponent<InteractiveCrosshair>().HorizontalInteraction(strafe1D);
-        }
-        else
-        {
-            crosshair.GetComponent<InteractiveCrosshair>().ResetInteraction();
-        }
     }
 }
