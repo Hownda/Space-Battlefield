@@ -47,7 +47,7 @@ GameObject:
   - component: {fileID: 699980362954987331}
   m_Layer: 6
   m_Name: FPS Camera
-  m_TagString: Untagged
+  m_TagString: PlayerCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -132,6 +132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerBody: {fileID: 7280563771934411131}
+  spaceshipCamera: {fileID: 0}
 --- !u!114 &699980362954987331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5277,9 +5278,10 @@ GameObject:
   - component: {fileID: 147488592605214679}
   - component: {fileID: 1884460235153241912}
   - component: {fileID: 6189334553759393156}
+  - component: {fileID: 8367995664629020821}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5430,7 +5432,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 951099334
   AlwaysReplicateAsRoot: 0
-  DontDestroyWithOwner: 0
+  DontDestroyWithOwner: 1
   AutoObjectParentSync: 1
 --- !u!114 &-549974239151753633
 MonoBehaviour:
@@ -5496,6 +5498,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cube: {fileID: 8741428272865422945, guid: c5109eb7207807d47ae51bb858d3b8aa, type: 3}
+--- !u!114 &8367995664629020821
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7211011380062069533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c078d576b2e65004d80cb85f97c99411, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8855008724607860591
 GameObject:
   m_ObjectHideFlags: 0

@@ -8,6 +8,7 @@ public class MouseLook : NetworkBehaviour
     private float mouseSensitivity = 100f;
 
     public Transform playerBody;
+    public Camera spaceshipCamera;
     private Camera playerCamera;
 
     private float xRotation = 0f;
@@ -19,7 +20,7 @@ public class MouseLook : NetworkBehaviour
         if (!IsOwner)
         {
             playerCamera.enabled = false;
-            Destroy(playerCamera);
+            playerCamera.GetComponent<AudioListener>().enabled = false;
         }
     }
 

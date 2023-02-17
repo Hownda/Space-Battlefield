@@ -23,7 +23,7 @@ public class PlayerGravity : NetworkBehaviour
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Space) && IsOwner)
+        if (Input.GetKeyDown(KeyCode.Space) && IsOwner)
         {
             jump = true;
         }
@@ -41,7 +41,7 @@ public class PlayerGravity : NetworkBehaviour
             {
                 if (isGrounded)
                 {
-                    rb.AddForce(gravityUp * jumpStrength, ForceMode.Impulse);
+                    rb.AddForce(gravityUp * jumpStrength, ForceMode.Impulse);                    
                 }
                 jump = false;
             }

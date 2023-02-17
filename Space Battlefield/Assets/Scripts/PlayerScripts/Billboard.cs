@@ -1,21 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class Billboard : MonoBehaviour
+public class Billboard : NetworkBehaviour
 {
-    Camera cam;
+    public Camera cam;
 
     void Update()
     {
-        if (cam == null)
+        if (!IsOwner)
         {
-            cam = FindObjectOfType<Camera>();
+            if (cam == null)
+            {
+                cam = FindObjectOfType<Camera>();
+            }
+            
+            if (cam.enabled == false)
+            {
+                foreach (KeyValuePair<ulong, GameObject> player in PlayerDictionary.instance.playerDictionary)
+                {
+                    if (player.Value.GetComponentInChildren<Camera>().enabled == true)
+                    {
+                        cam = player.Value.GetComponentInChildren<Camera>();
+                    }
+                }
+            }
+
+            if (cam == null)
+            {
+                return;
+            }
+            transform.LookAt(cam.transform);
         }
-        if (cam == null)
-        {
-            return;
-        }
-        transform.LookAt(cam.transform);
     }
 }

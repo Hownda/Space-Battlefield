@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Unity.Netcode;
 
-public class Weapon : MonoBehaviour
+public class Weapon : NetworkBehaviour
 {
     public AudioManager audioManager;
     public ParticleSystem muzzleFlash;
@@ -28,7 +29,7 @@ public class Weapon : MonoBehaviour
     
     private void Shoot()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Fire1") && IsOwner)
         {
             Ray ray = fpsCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
             RaycastHit hit;

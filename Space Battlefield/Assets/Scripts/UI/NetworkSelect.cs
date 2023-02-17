@@ -9,6 +9,8 @@ public class NetworkSelect : MonoBehaviour
     public Button hostButton;
     public Button serverButton;
     public Button clientButton;
+
+    public GameObject eventManager;
     
     public void OnClickHost()
     {
