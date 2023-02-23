@@ -7,7 +7,7 @@ public class PlayerDictionary : NetworkBehaviour
 {
     public Dictionary<ulong, GameObject> playerDictionary = new Dictionary<ulong, GameObject>();
     public int dictionaryCount = 0;
-    private int playersInRoom = 2;
+    public int playersInRoom = 2;
 
     public static PlayerDictionary instance;
 
@@ -16,27 +16,28 @@ public class PlayerDictionary : NetworkBehaviour
         instance = this;
     }
 
-    [ServerRpc] public void newPlayerToDictServerRpc(ulong clientId)
+    [ServerRpc] public void newPlayerToDictServerRpc()
     {
+        newPlayerToDictClientRpc();
+    }
+
+    [ClientRpc] private void newPlayerToDictClientRpc()
+    {
+        playerDictionary.Clear();
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        if (!playerDictionary.ContainsKey(clientId))
+        foreach (GameObject player in players)
         {
-            playerDictionary.Add(clientId, players[clientId]);
-            Debug.Log("Added player with client ID: " + clientId + ". New length of dictionary: " + playerDictionary.Count);
-        }  
-        if (playerDictionary.Count == playersInRoom)
+            playerDictionary.Add(player.GetComponent<NetworkObject>().OwnerClientId, player);
+            Debug.Log(playerDictionary.Count);
+        }
+        if (playerDictionary.Count == playersInRoom && IsServer)
         {
-            StartGame();
+            GetComponent<Game>().StartGameServerRpc();
         }
     }
 
     [ServerRpc] public void removePlayerFromDictServerRpc(ulong clientId)
     {
         playerDictionary.Remove(clientId);
-    }
-
-    private void StartGame()
-    {
-
     }
 }

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using System;
+using Unity.Netcode;
 
-public class AudioManager : MonoBehaviour
+public class AudioManager : NetworkBehaviour
 {
     public Sound[] sounds;
     // Start is called before the first frame update
@@ -17,11 +18,21 @@ public class AudioManager : MonoBehaviour
 
             sound.source.volume = sound.volume;
             sound.source.pitch = sound.pitch;
+            sound.source.playOnAwake = false;
         }
     }
     public void Play(string name)
     {
+        if (IsOwner)
+        {
+            Sound sound = Array.Find(sounds, sound => sound.name == name);
+            sound.source.Play();
+        }
+    }
+
+    public float GetAudioLength(string name)
+    {
         Sound sound = Array.Find(sounds, sound => sound.name == name);
-        sound.source.Play();
+        return sound.clip.length;
     }
 }

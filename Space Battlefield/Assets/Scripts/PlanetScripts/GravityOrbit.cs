@@ -10,9 +10,10 @@ public class GravityOrbit : MonoBehaviour
         {
             other.GetComponent<PlayerGravity>().Gravity = this.GetComponent<GravityOrbit>();
         }
-        else if (other.GetComponent<ObjectGravity>())
+
+        if (other.transform.GetComponentInParent<ObjectGravity>())
         {
-            other.GetComponent<ObjectGravity>().Gravity = this.GetComponent<GravityOrbit>();
+            other.transform.GetComponentInParent<ObjectGravity>().Gravity = this.GetComponent<GravityOrbit>();
         }
     }
 }

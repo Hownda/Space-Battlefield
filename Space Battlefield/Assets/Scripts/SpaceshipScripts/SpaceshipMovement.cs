@@ -22,17 +22,26 @@ public class SpaceshipMovement : MonoBehaviour
     private float strafe1D;
     private float upDown1D;
     private float roll1D;
-    private float thrustPercent = 0;
-    private Vector2 pitchYaw;
+    public float thrustPercent = 0;
+
+    private float flySoundStart = 0f;
+
+    public AudioManager audioManager;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        flySoundStart = -(audioManager.GetAudioLength("spaceship-sound"));
     }
 
     private void FixedUpdate()
     {
         MovementInput();
+        if (thrustPercent > 10 && Time.time > flySoundStart + audioManager.GetAudioLength("spaceship-sound"))
+        {
+            audioManager.Play("spaceship-sound");
+            flySoundStart = Time.time;
+        }
     }
 
     private void MovementInput()
@@ -48,22 +57,21 @@ public class SpaceshipMovement : MonoBehaviour
             if (thrustPercent + velocityFactor < 100)
             {
                 thrustPercent += velocityFactor * Time.deltaTime;
-                Debug.Log("increasing" + thrustPercent);
             }
             else
             {
                 thrustPercent += 100 - thrustPercent;
             }
         }
-        else if (thrust1D < 0 && thrustPercent > 3)
+        else if (thrust1D < 0 && thrustPercent > 0)
         {
-            if (thrustPercent - velocityFactor > 3)
+            if (thrustPercent - velocityFactor > 0)
             {
                 thrustPercent -= velocityFactor * Time.deltaTime;
             }
             else
             {
-                thrustPercent -= thrustPercent - 3;
+                thrustPercent -= thrustPercent - 0;
             }
         }
         Vector3 spaceshipPosition = transform.position;
@@ -71,9 +79,23 @@ public class SpaceshipMovement : MonoBehaviour
         transform.position = Vector3.Lerp(transform.position, spaceshipPosition, Time.deltaTime * .2f);
 
         // UpDown
-        Quaternion upDownRotation = transform.rotation;
-        upDownRotation *= Quaternion.Euler(0, 0, upDown1D * upDownForce * Time.deltaTime);
-        transform.rotation = Quaternion.Slerp(transform.rotation, upDownRotation, Time.deltaTime * .2f);
+        if (!GetComponent<ObjectGravity>().isGrounded)
+        {
+            Quaternion upDownRotation = transform.rotation;
+            upDownRotation *= Quaternion.Euler(0, 0, upDown1D * upDownForce * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, upDownRotation, Time.deltaTime * .2f);
+        }
+        else if (GetComponent<ObjectGravity>().isGrounded && upDown1D >= 0)
+        {
+            GetComponent<ObjectGravity>().enabled = false;
+            Quaternion upDownRotation = transform.rotation;
+            upDownRotation *= Quaternion.Euler(0, 0, upDown1D * upDownForce * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, upDownRotation, Time.deltaTime * .2f);
+        }
+        else if (GetComponent<ObjectGravity>().isGrounded && upDown1D < 0 || GetComponent<ObjectGravity>().isGrounded && thrustPercent < 10)
+        {
+            GetComponent<ObjectGravity>().enabled = true;
+        }
 
         // Strafe
         Quaternion strafeRotation = transform.rotation;
@@ -81,26 +103,40 @@ public class SpaceshipMovement : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, strafeRotation, Time.deltaTime * .2f);
     }
     public void OnThrust(InputAction.CallbackContext context)
-    {
+    {       
         thrust1D = context.ReadValue<float>();
-        rb.velocity = Vector3.zero;
+        if (!GetComponent<ObjectGravity>().colliding)
+        {
+            rb.velocity = Vector3.zero;
+        }
     }
 
     public void OnStrafe(InputAction.CallbackContext context)
-    {
+    {        
         strafe1D = context.ReadValue<float>();
-        rb.angularVelocity = Vector3.zero;
+        if (!GetComponent<ObjectGravity>().colliding)
+        {
+            rb.angularVelocity = Vector3.zero;
+        }
     }
 
     public void OnUpDown(InputAction.CallbackContext context)
-    {
+    {        
         upDown1D = context.ReadValue<float>();
-        rb.angularVelocity = Vector3.zero;
+        if (!GetComponent<ObjectGravity>().colliding)
+        {
+            rb.angularVelocity = Vector3.zero;
+        }
     }
 
     public void OnRoll(InputAction.CallbackContext context)
-    {
+    {        
         roll1D = context.ReadValue<float>();
-        rb.angularVelocity = Vector3.zero;
+        if (!GetComponent<ObjectGravity>().colliding)
+        {
+            rb.angularVelocity = Vector3.zero;
+        }
     }
+
+    
 }

@@ -46,10 +46,6 @@ public class Weapon : NetworkBehaviour
                 {
                     hit.transform.gameObject.GetComponent<Healthbar>().TakeDamage(13);
                 }
-                else
-                {
-                    hit.transform.gameObject.GetComponent<Rigidbody>().AddForce(fpsCamera.transform.forward * impulseForce, ForceMode.Impulse);
-                }
             }
             else
             {

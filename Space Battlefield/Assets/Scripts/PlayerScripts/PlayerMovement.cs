@@ -15,6 +15,9 @@ public class PlayerMovement : NetworkBehaviour
     MovementControls.GroundMovementActions groundMovement;
     Vector2 horizontalInput;
 
+    private PlayerDictionary playerDictionary;
+    private AudioListener otherPlayerAudioListener;
+
     private void Awake()
     {
         controls = new MovementControls();
@@ -40,7 +43,58 @@ public class PlayerMovement : NetworkBehaviour
 
             Vector3 velocityChange = horizontalVelocity - currentVelocity;
 
-            rb.AddForce(velocityChange);
+            rb.AddForce(velocityChange);            
         }
+    }
+
+    private void Update()
+    {
+        if (IsOwner)
+        {
+            // Enter and exit spaceship
+            if (Input.GetKeyDown("f"))
+            {
+                Enter();
+            }
+        }
+
+        if (otherPlayerAudioListener == null)
+        {
+            return;            
+        }
+        else
+        {
+            otherPlayerAudioListener.enabled = false;
+        }
+    }
+
+    private void Enter()
+    {
+        GameObject[] spaceships = GameObject.FindGameObjectsWithTag("Spaceship");
+        foreach (GameObject spaceship in spaceships)
+        {
+            if (OwnerClientId == spaceship.GetComponent<NetworkObject>().OwnerClientId)
+            {
+                DisableGameObjectServerRpc();
+                spaceship.GetComponentInChildren<Camera>().enabled = true;
+                spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
+                spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
+                spaceship.GetComponentInChildren<AudioListener>().enabled = true;
+            }
+            else
+            {
+                otherPlayerAudioListener = spaceship.GetComponentInChildren<AudioListener>();
+            }
+        }
+    }
+
+    [ServerRpc] private void DisableGameObjectServerRpc()
+    {
+        DisableGameObjectClientRpc();
+    }
+
+    [ClientRpc] private void DisableGameObjectClientRpc()
+    {
+        gameObject.SetActive(false);
     }    
 }
