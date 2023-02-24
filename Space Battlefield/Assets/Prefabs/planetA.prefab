@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 321437297847624487}
   - component: {fileID: 3736336300317076610}
   - component: {fileID: 1458837904856651848}
-  - component: {fileID: -3308585475703700907}
+  - component: {fileID: 757786738761574398}
   m_Layer: 3
   m_Name: planetA
   m_TagString: Untagged
@@ -86,8 +86,8 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &-3308585475703700907
-SphereCollider:
+--- !u!64 &757786738761574398
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -96,9 +96,10 @@ SphereCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.923
-  m_Center: {x: -0.00005146861, y: -0.0016474426, z: 0.0009419322}
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 289301614986012343, guid: b200b8248f442d54db1ca5dcabd5ce12, type: 3}
 --- !u!1 &4803840168767630644
 GameObject:
   m_ObjectHideFlags: 0

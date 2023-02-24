@@ -3927,11 +3927,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 255326122}
     m_Modifications:
-    - target: {fileID: -3308585475703700907, guid: b63a7ac59c272384b9215911c38b5130, type: 3}
+    - target: {fileID: 0}
       propertyPath: m_Radius
       value: 0.923
       objectReference: {fileID: 0}
-    - target: {fileID: -3308585475703700907, guid: b63a7ac59c272384b9215911c38b5130, type: 3}
+    - target: {fileID: 0}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
@@ -4000,6 +4000,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 289301614986012343, guid: b200b8248f442d54db1ca5dcabd5ce12, type: 3}
     m_RemovedComponents:
+    - {fileID: 0}
     - {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: b63a7ac59c272384b9215911c38b5130, type: 3}
 --- !u!4 &5106891392962127456 stripped

@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.Netcode;
 
-public class SpaceshipMovement : MonoBehaviour
+public class SpaceshipMovement : NetworkBehaviour
 {
     [SerializeField]
     private float rollTorque = 20000f;
@@ -27,6 +28,7 @@ public class SpaceshipMovement : MonoBehaviour
     private float flySoundStart = 0f;
 
     public AudioManager audioManager;
+    public GameObject playerPrefab;
 
     private void Start()
     {
@@ -36,11 +38,25 @@ public class SpaceshipMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        MovementInput();
-        if (thrustPercent > 10 && Time.time > flySoundStart + audioManager.GetAudioLength("spaceship-sound"))
+        if (IsOwner)
         {
-            audioManager.Play("spaceship-sound");
-            flySoundStart = Time.time;
+            MovementInput();
+            if (thrustPercent > 10 && Time.time > flySoundStart + audioManager.GetAudioLength("spaceship-sound"))
+            {
+                audioManager.Play("spaceship-sound");
+                flySoundStart = Time.time;
+            }
+        }
+    }
+
+    private void Update()
+    {
+        if (IsOwner)
+        {
+            if (Input.GetKeyDown("f"))
+            {
+                Exit();
+            }
         }
     }
 
@@ -81,6 +97,7 @@ public class SpaceshipMovement : MonoBehaviour
         // UpDown
         if (!GetComponent<ObjectGravity>().isGrounded)
         {
+            GetComponent<ObjectGravity>().enabled = false;
             Quaternion upDownRotation = transform.rotation;
             upDownRotation *= Quaternion.Euler(0, 0, upDown1D * upDownForce * Time.deltaTime);
             transform.rotation = Quaternion.Slerp(transform.rotation, upDownRotation, Time.deltaTime * .2f);
@@ -103,39 +120,69 @@ public class SpaceshipMovement : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, strafeRotation, Time.deltaTime * .2f);
     }
     public void OnThrust(InputAction.CallbackContext context)
-    {       
-        thrust1D = context.ReadValue<float>();
-        if (!GetComponent<ObjectGravity>().colliding)
+    {
+        if (IsOwner)
         {
-            rb.velocity = Vector3.zero;
+            thrust1D = context.ReadValue<float>();
+            if (!GetComponent<ObjectGravity>().colliding)
+            {
+                rb.velocity = Vector3.zero;
+            }
         }
     }
 
     public void OnStrafe(InputAction.CallbackContext context)
-    {        
-        strafe1D = context.ReadValue<float>();
-        if (!GetComponent<ObjectGravity>().colliding)
+    {
+        if (IsOwner)
         {
-            rb.angularVelocity = Vector3.zero;
+            strafe1D = context.ReadValue<float>();
+            if (!GetComponent<ObjectGravity>().colliding)
+            {
+                rb.angularVelocity = Vector3.zero;
+            }
         }
     }
 
     public void OnUpDown(InputAction.CallbackContext context)
-    {        
-        upDown1D = context.ReadValue<float>();
-        if (!GetComponent<ObjectGravity>().colliding)
+    {
+        if (IsOwner)
         {
-            rb.angularVelocity = Vector3.zero;
+            upDown1D = context.ReadValue<float>();
+            if (!GetComponent<ObjectGravity>().colliding)
+            {
+                rb.angularVelocity = Vector3.zero;
+            }
         }
     }
 
     public void OnRoll(InputAction.CallbackContext context)
-    {        
-        roll1D = context.ReadValue<float>();
-        if (!GetComponent<ObjectGravity>().colliding)
+    {
+        if (IsOwner)
         {
-            rb.angularVelocity = Vector3.zero;
+            roll1D = context.ReadValue<float>();
+            if (!GetComponent<ObjectGravity>().colliding)
+            {
+                rb.angularVelocity = Vector3.zero;
+            }
         }
+    }
+
+    private void Exit()
+    {
+        thrustPercent = 0;
+        GetComponentInChildren<Camera>().enabled = false;
+        GetComponentInChildren<SpaceshipMovement>().enabled = false;
+        GetComponentInChildren<PlayerInput>().enabled = false;
+        GetComponentInChildren<AudioListener>().enabled = false;
+        SpawnPlayerServerRpc();
+    }
+
+    [ServerRpc] private void SpawnPlayerServerRpc()
+    {
+        GameObject player = Instantiate(playerPrefab, new Vector3(transform.position.x + 3, transform.position.y, transform.position.z), Quaternion.Euler(Vector3.zero));
+        player.GetComponent<NetworkObject>().Spawn();
+        player.GetComponent<NetworkObject>().ChangeOwnership(OwnerClientId);
+
     }
 
     

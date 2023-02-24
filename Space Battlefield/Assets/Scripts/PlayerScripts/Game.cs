@@ -21,12 +21,16 @@ public class Game : NetworkBehaviour
 
     [ServerRpc] public void StartGameServerRpc()
     {
-        foreach (KeyValuePair<ulong, GameObject> player in PlayerDictionary.instance.playerDictionary)
-        {            
+        GameObject[] spaceships = GameObject.FindGameObjectsWithTag("Spaceship");
+        if (spaceships.Length == 0)
+        {
+            foreach (KeyValuePair<ulong, GameObject> player in PlayerDictionary.instance.playerDictionary)
+            {
                 GameObject spaceship = Instantiate(spaceshipPrefab, new Vector3(player.Value.transform.position.x + spaceshipSpawnOffset, player.Value.transform.position.y, player.Value.transform.position.z + spaceshipSpawnOffset), Quaternion.Euler(Vector3.zero));
                 spaceship.GetComponent<NetworkObject>().Spawn();
                 spaceship.GetComponent<NetworkObject>().ChangeOwnership(player.Key);
-            
+
+            }
         }
     }
 }

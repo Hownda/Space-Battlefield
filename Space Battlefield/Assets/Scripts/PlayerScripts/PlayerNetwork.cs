@@ -20,7 +20,7 @@ public class PlayerNetwork : NetworkBehaviour
             }
             else
             {
-                dictionary.newPlayerToDictServerRpc();
+                dictionary.NewPlayerToDictServerRpc();
                 Debug.Log("Adding Player to " + dictionary);
             }
         }

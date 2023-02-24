@@ -16,12 +16,12 @@ public class PlayerDictionary : NetworkBehaviour
         instance = this;
     }
 
-    [ServerRpc] public void newPlayerToDictServerRpc()
+    [ServerRpc] public void NewPlayerToDictServerRpc()
     {
-        newPlayerToDictClientRpc();
+        NewPlayerToDictClientRpc();
     }
 
-    [ClientRpc] private void newPlayerToDictClientRpc()
+    [ClientRpc] private void NewPlayerToDictClientRpc()
     {
         playerDictionary.Clear();
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
@@ -36,7 +36,7 @@ public class PlayerDictionary : NetworkBehaviour
         }
     }
 
-    [ServerRpc] public void removePlayerFromDictServerRpc(ulong clientId)
+    [ServerRpc] public void RemovePlayerFromDictServerRpc(ulong clientId)
     {
         playerDictionary.Remove(clientId);
     }

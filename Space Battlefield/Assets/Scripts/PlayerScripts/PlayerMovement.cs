@@ -75,26 +75,27 @@ public class PlayerMovement : NetworkBehaviour
         {
             if (OwnerClientId == spaceship.GetComponent<NetworkObject>().OwnerClientId)
             {
-                DisableGameObjectServerRpc();
                 spaceship.GetComponentInChildren<Camera>().enabled = true;
                 spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
                 spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
                 spaceship.GetComponentInChildren<AudioListener>().enabled = true;
+                DespawnServerRpc();
             }
             else
             {
                 otherPlayerAudioListener = spaceship.GetComponentInChildren<AudioListener>();
             }
         }
+    }  
+    
+    [ServerRpc] private void DespawnServerRpc()
+    {
+        GetComponent<NetworkObject>().Despawn();
+        RemoveFromDictionaryClientRpc();
     }
 
-    [ServerRpc] private void DisableGameObjectServerRpc()
+    [ClientRpc] private void RemoveFromDictionaryClientRpc()
     {
-        DisableGameObjectClientRpc();
+        PlayerDictionary.instance.RemovePlayerFromDictServerRpc(OwnerClientId);
     }
-
-    [ClientRpc] private void DisableGameObjectClientRpc()
-    {
-        gameObject.SetActive(false);
-    }    
 }
