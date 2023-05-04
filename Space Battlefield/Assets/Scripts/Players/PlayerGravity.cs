@@ -6,7 +6,7 @@ using Unity.Netcode;
 public class PlayerGravity : NetworkBehaviour
 {
     private Rigidbody rb;
-    public GravityOrbit Gravity;
+    public GravityOrbit gravityOrbit;
 
     private float gravity = -20f;
 
@@ -31,10 +31,10 @@ public class PlayerGravity : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        if (Gravity && IsOwner)
+        if (gravityOrbit && IsOwner)
         {
             isGrounded = Physics.Raycast(transform.position, -transform.up, groundOffset, groundMask);
-            Vector3 gravityUp = (transform.position - Gravity.transform.position).normalized;
+            Vector3 gravityUp = (transform.position - gravityOrbit.transform.position).normalized;
             Vector3 localUp = transform.up;
 
             if (jump)

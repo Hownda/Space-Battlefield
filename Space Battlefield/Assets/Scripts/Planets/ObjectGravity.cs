@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class ObjectGravity : MonoBehaviour
 {
-    public GravityOrbit Gravity;
+    public GravityOrbit gravityOrbit;
     private Rigidbody rb;
     public float gravity = -20f;
 
@@ -28,9 +28,9 @@ public class ObjectGravity : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if (Gravity)
+        if (gravityOrbit)
         {
-            Vector3 gravityUp = (transform.position - Gravity.transform.position).normalized;
+            Vector3 gravityUp = (transform.position - gravityOrbit.transform.position).normalized;
 
             rb.AddForce(gravityUp * gravity);
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, gravityUp) * transform.rotation;

@@ -39,10 +39,10 @@ public class TerrainGenerator : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+        /*if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             PlaceObject();
-        }
+        }*/
     }
 
     private void PlaceObject()

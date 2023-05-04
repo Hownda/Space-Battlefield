@@ -8,12 +8,12 @@ public class GravityOrbit : MonoBehaviour
     {
         if (other.GetComponent<PlayerGravity>())
         {
-            other.GetComponent<PlayerGravity>().Gravity = this.GetComponent<GravityOrbit>();
+            other.GetComponent<PlayerGravity>().gravityOrbit = this.GetComponent<GravityOrbit>();
         }
 
         if (other.transform.GetComponentInParent<ObjectGravity>())
         {
-            other.transform.GetComponentInParent<ObjectGravity>().Gravity = this.GetComponent<GravityOrbit>();
+            other.transform.GetComponentInParent<ObjectGravity>().gravityOrbit = this.GetComponent<GravityOrbit>();
         }
     }
 }

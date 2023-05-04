@@ -6,7 +6,7 @@
             "id": "c8b34175-8e35-4edd-88a6-20a8e4f6ad39",
             "actions": [
                 {
-                    "name": "HorizontalMovement",
+                    "name": "Movement",
                     "type": "PassThrough",
                     "id": "43caa8d9-3c4c-4506-aa65-d43e3125b563",
                     "expectedControlType": "Vector2",
@@ -32,7 +32,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "HorizontalMovement",
+                    "action": "Movement",
                     "isComposite": true,
                     "isPartOfComposite": false
                 },
@@ -43,7 +43,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "HorizontalMovement",
+                    "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -54,7 +54,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "HorizontalMovement",
+                    "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -65,7 +65,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "HorizontalMovement",
+                    "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
@@ -76,7 +76,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "HorizontalMovement",
+                    "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },

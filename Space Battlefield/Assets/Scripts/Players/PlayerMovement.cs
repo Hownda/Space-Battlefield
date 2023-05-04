@@ -25,7 +25,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         controls = new MovementControls();
         groundMovement = controls.GroundMovement;
-        groundMovement.HorizontalMovement.performed += ctx => horizontalInput = ctx.ReadValue<Vector2>();
+        groundMovement.Movement.performed += ctx => horizontalInput = ctx.ReadValue<Vector2>();
     }
 
     private void OnEnable()

@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class PlanetTexture : MonoBehaviour
 {
-    public Material mipmap0;
-    public Material mipmap1;
+    public Material material0;
+    public Material material1;
 
     private MeshRenderer meshRenderer;
 
@@ -13,15 +13,15 @@ public class PlanetTexture : MonoBehaviour
     {
         meshRenderer = GetComponent<MeshRenderer>();
     }
-    public void SwapMipmap()
+    public void ChangeScaleLevel(int mipmapLevel)
     {
-        if (meshRenderer.material = mipmap0)
+        if (mipmapLevel == 0)
         {
-            meshRenderer.material = mipmap1;
+            meshRenderer.material = material0;
         }
         else
         {
-            meshRenderer.material = mipmap0;
+            meshRenderer.material = material1;
         }
     }
 }

@@ -28,7 +28,7 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
             ""id"": ""c8b34175-8e35-4edd-88a6-20a8e4f6ad39"",
             ""actions"": [
                 {
-                    ""name"": ""HorizontalMovement"",
+                    ""name"": ""Movement"",
                     ""type"": ""PassThrough"",
                     ""id"": ""43caa8d9-3c4c-4506-aa65-d43e3125b563"",
                     ""expectedControlType"": ""Vector2"",
@@ -54,7 +54,7 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""HorizontalMovement"",
+                    ""action"": ""Movement"",
                     ""isComposite"": true,
                     ""isPartOfComposite"": false
                 },
@@ -65,7 +65,7 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""HorizontalMovement"",
+                    ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -76,7 +76,7 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""HorizontalMovement"",
+                    ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -87,7 +87,7 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""HorizontalMovement"",
+                    ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -98,7 +98,7 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""HorizontalMovement"",
+                    ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
                 },
@@ -296,7 +296,7 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
 }");
         // GroundMovement
         m_GroundMovement = asset.FindActionMap("GroundMovement", throwIfNotFound: true);
-        m_GroundMovement_HorizontalMovement = m_GroundMovement.FindAction("HorizontalMovement", throwIfNotFound: true);
+        m_GroundMovement_Movement = m_GroundMovement.FindAction("Movement", throwIfNotFound: true);
         m_GroundMovement_Jump = m_GroundMovement.FindAction("Jump", throwIfNotFound: true);
         // Spaceship
         m_Spaceship = asset.FindActionMap("Spaceship", throwIfNotFound: true);
@@ -363,13 +363,13 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
     // GroundMovement
     private readonly InputActionMap m_GroundMovement;
     private IGroundMovementActions m_GroundMovementActionsCallbackInterface;
-    private readonly InputAction m_GroundMovement_HorizontalMovement;
+    private readonly InputAction m_GroundMovement_Movement;
     private readonly InputAction m_GroundMovement_Jump;
     public struct GroundMovementActions
     {
         private @MovementControls m_Wrapper;
         public GroundMovementActions(@MovementControls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @HorizontalMovement => m_Wrapper.m_GroundMovement_HorizontalMovement;
+        public InputAction @Movement => m_Wrapper.m_GroundMovement_Movement;
         public InputAction @Jump => m_Wrapper.m_GroundMovement_Jump;
         public InputActionMap Get() { return m_Wrapper.m_GroundMovement; }
         public void Enable() { Get().Enable(); }
@@ -380,9 +380,9 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
         {
             if (m_Wrapper.m_GroundMovementActionsCallbackInterface != null)
             {
-                @HorizontalMovement.started -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnHorizontalMovement;
-                @HorizontalMovement.performed -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnHorizontalMovement;
-                @HorizontalMovement.canceled -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnHorizontalMovement;
+                @Movement.started -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnMovement;
+                @Movement.performed -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnMovement;
+                @Movement.canceled -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnMovement;
                 @Jump.started -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnJump;
                 @Jump.performed -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnJump;
                 @Jump.canceled -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnJump;
@@ -390,9 +390,9 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
             m_Wrapper.m_GroundMovementActionsCallbackInterface = instance;
             if (instance != null)
             {
-                @HorizontalMovement.started += instance.OnHorizontalMovement;
-                @HorizontalMovement.performed += instance.OnHorizontalMovement;
-                @HorizontalMovement.canceled += instance.OnHorizontalMovement;
+                @Movement.started += instance.OnMovement;
+                @Movement.performed += instance.OnMovement;
+                @Movement.canceled += instance.OnMovement;
                 @Jump.started += instance.OnJump;
                 @Jump.performed += instance.OnJump;
                 @Jump.canceled += instance.OnJump;
@@ -459,7 +459,7 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
     public SpaceshipActions @Spaceship => new SpaceshipActions(this);
     public interface IGroundMovementActions
     {
-        void OnHorizontalMovement(InputAction.CallbackContext context);
+        void OnMovement(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
     }
     public interface ISpaceshipActions
