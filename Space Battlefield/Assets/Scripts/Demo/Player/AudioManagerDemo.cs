@@ -17,6 +17,7 @@ public class AudioManagerDemo : MonoBehaviour
 
             sound.source.volume = sound.volume;
             sound.source.pitch = sound.pitch;
+            sound.source.outputAudioMixerGroup = sound.outputAudioMixerGroup;
             sound.source.playOnAwake = false;
         }
     }

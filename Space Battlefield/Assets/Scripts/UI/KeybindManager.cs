@@ -50,7 +50,14 @@ public class KeybindManager : MonoBehaviour
         {
             return;
         }
-        statusText.text = $"Press a { actionToRebind.expectedControlType}";
+        if (allCompositeParts)
+        {
+            statusText.text = $"Press 4 keys";
+        }
+        else
+        {
+            statusText.text = $"Press a key";
+        }
 
         actionToRebind.Disable();
 

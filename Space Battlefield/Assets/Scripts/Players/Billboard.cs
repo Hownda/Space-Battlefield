@@ -20,9 +20,12 @@ public class Billboard : NetworkBehaviour
             {
                 foreach (KeyValuePair<ulong, GameObject> player in PlayerDictionary.instance.playerDictionary)
                 {
-                    if (player.Value.GetComponentInChildren<Camera>().enabled == true && player.Value.GetComponentInChildren<Camera>() != null)
+                    if (player.Value != null && player.Value.GetComponentInChildren<Camera>() != null)
                     {
-                        cam = player.Value.GetComponentInChildren<Camera>();
+                        if (player.Value.GetComponentInChildren<Camera>().enabled == true)
+                        {
+                            cam = player.Value.GetComponentInChildren<Camera>();
+                        }
                     }
                 }
             }

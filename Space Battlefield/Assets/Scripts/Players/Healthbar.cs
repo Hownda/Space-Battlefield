@@ -6,14 +6,14 @@ using UnityEngine.UI;
 
 public class Healthbar : NetworkBehaviour
 {
-    public int health = 100;
+    public NetworkVariable<int> health = new NetworkVariable<int>(100, writePerm:NetworkVariableWritePermission.Server);
     public Slider healthSlider;
 
     private void Start()
     {
         if (IsOwner)
         {
-            healthSlider.value = health;
+            healthSlider.value = health.Value;
         }
         else
         {
@@ -22,16 +22,17 @@ public class Healthbar : NetworkBehaviour
         
     }
 
+    public void Update()
+    {
+        healthSlider.value = health.Value;
+    }
+
     public void TakeDamage(int damage)
     {
-        if (IsOwner)
+        health.Value -= damage;
+        if (health.Value - damage <= 0)
         {
-            health -= damage;
-            healthSlider.value = health;
-            if (health - damage <= 0)
-            {
-                Die();
-            }
+            Die();
         }
     }
 

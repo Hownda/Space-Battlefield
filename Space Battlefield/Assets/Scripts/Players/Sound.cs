@@ -19,5 +19,7 @@ public class Sound
     [Range(0f, 1f)]
     public float volume;
 
+    public AudioMixerGroup outputAudioMixerGroup;
+
     [HideInInspector] public AudioSource source;
 }

@@ -13,12 +13,6 @@ public class NetworkSelect : MonoBehaviour
     public Button serverButton;
     public Button clientButton;
 
-    public GameObject eventManager;
-
-    private void Awake()
-    {
-        Application.targetFrameRate = 500;
-    }
     public void OnClickHost()
     {
         NetworkManager.Singleton.StartHost();
@@ -41,6 +35,5 @@ public class NetworkSelect : MonoBehaviour
         hostButton.gameObject.SetActive(false);
         serverButton.gameObject.SetActive(false);
         clientButton.gameObject.SetActive(false);
-        //Camera.main.GetComponent<TerrainMovement>().enabled = false;
     }
 }

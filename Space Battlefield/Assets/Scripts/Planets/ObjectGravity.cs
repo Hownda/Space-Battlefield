@@ -10,11 +10,9 @@ public class ObjectGravity : MonoBehaviour
     public GravityOrbit gravityOrbit;
     private Rigidbody rb;
     public float gravity = -20f;
-
-    public bool isGrounded;
+    
     public bool colliding;
-    public LayerMask ground;
-    public float distanceFromGround;
+    public LayerMask ground;    
 
     private float soundStart = 0f;
     private float soundCooldown = 2.5f;
@@ -38,16 +36,11 @@ public class ObjectGravity : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        isGrounded = Physics.Raycast(transform.position, -transform.up, distanceFromGround, ground);
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
         if (Time.time > soundStart + soundCooldown)
         {
-            if (!isGrounded)
+            if (!GetComponent<GroundManeuvering>().isGrounded)
             {
                 audioManager.Play("crash-sound");
                 soundStart = Time.time;
@@ -57,8 +50,7 @@ public class ObjectGravity : MonoBehaviour
         ParticleSystem particles = Instantiate(contactParticles, gameObject.transform);
         particles.transform.position = contactPoint;
         particles.Play();
-        Destroy(particles.gameObject, 1f);
-        colliding = true;
+        Destroy(particles.gameObject, 1f);       
     }
 
     private void OnCollisionExit()
@@ -70,10 +62,11 @@ public class ObjectGravity : MonoBehaviour
 
     private void OnCollisionStay(Collision collision)
     {
-        if (isGrounded && GetComponent<SpaceshipMovement>().thrustPercent <= 5)
+        if (GetComponent<GroundManeuvering>().isGrounded && GetComponent<SpaceshipMovement>().thrustPercent <= 5)
         {
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
         }
+        colliding = true;
     }
 }

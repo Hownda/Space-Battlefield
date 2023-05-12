@@ -22,6 +22,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Enter",
+                    "type": "Button",
+                    "id": "a59b9449-60a9-4e2e-9fb6-c809bf735ebc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -48,9 +57,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "down",
-                    "id": "9bc75a75-05e1-4547-87ca-705c6e65e00d",
-                    "path": "<Keyboard>/s",
+                    "name": "left",
+                    "id": "530073f4-e420-44c6-9ea4-b8c8f2a97e3d",
+                    "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -59,9 +68,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "left",
-                    "id": "530073f4-e420-44c6-9ea4-b8c8f2a97e3d",
-                    "path": "<Keyboard>/a",
+                    "name": "down",
+                    "id": "9bc75a75-05e1-4547-87ca-705c6e65e00d",
+                    "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -88,6 +97,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c3f531b0-b89b-4a69-97bf-ec6445659246",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Enter",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -132,6 +152,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Exit",
+                    "type": "Button",
+                    "id": "f32371ea-c86e-4277-871c-5ebbc7d65b2e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -147,9 +176,9 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "negative",
-                    "id": "fbe69d0a-14a2-45a4-b960-b7a89c6feda9",
-                    "path": "<Keyboard>/s",
+                    "name": "positive",
+                    "id": "9ac61c9e-432a-4201-bd4f-c71e5e096b22",
+                    "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -158,9 +187,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "positive",
-                    "id": "9ac61c9e-432a-4201-bd4f-c71e5e096b22",
-                    "path": "<Keyboard>/w",
+                    "name": "negative",
+                    "id": "fbe69d0a-14a2-45a4-b960-b7a89c6feda9",
+                    "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -180,9 +209,9 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "negative",
-                    "id": "494556f6-f9eb-4abc-a729-259640e63091",
-                    "path": "<Keyboard>/a",
+                    "name": "positive",
+                    "id": "6030c4dd-6547-4942-8288-feaca545b421",
+                    "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -191,9 +220,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "positive",
-                    "id": "6030c4dd-6547-4942-8288-feaca545b421",
-                    "path": "<Keyboard>/d",
+                    "name": "negative",
+                    "id": "494556f6-f9eb-4abc-a729-259640e63091",
+                    "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -213,9 +242,9 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "negative",
-                    "id": "25e1eb2d-0d44-4bb5-a139-f725bf5f64f5",
-                    "path": "<Keyboard>/c",
+                    "name": "positive",
+                    "id": "726905ab-7c08-4796-9a54-566f6d2c36d9",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -224,9 +253,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "positive",
-                    "id": "726905ab-7c08-4796-9a54-566f6d2c36d9",
-                    "path": "<Keyboard>/space",
+                    "name": "negative",
+                    "id": "25e1eb2d-0d44-4bb5-a139-f725bf5f64f5",
+                    "path": "<Keyboard>/c",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -246,9 +275,9 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "negative",
-                    "id": "92b7aa4b-9c15-4538-9e98-b8a2bafbdc62",
-                    "path": "<Mouse>/backButton",
+                    "name": "positive",
+                    "id": "b16a5670-1669-4667-8da2-c44216c6b5b1",
+                    "path": "<Keyboard>/q",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -257,15 +286,26 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "positive",
-                    "id": "b16a5670-1669-4667-8da2-c44216c6b5b1",
-                    "path": "<Mouse>/forwardButton",
+                    "name": "negative",
+                    "id": "92b7aa4b-9c15-4538-9e98-b8a2bafbdc62",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Roll",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "ce46116b-fc95-4f6c-9ce2-505c315514b0",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Exit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

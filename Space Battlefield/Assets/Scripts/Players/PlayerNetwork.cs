@@ -11,7 +11,7 @@ public class PlayerNetwork : NetworkBehaviour
     private PlayerDictionary dictionary;
     void Start()
     {
-        if (IsServer)
+        if (IsOwner)
         {
             dictionary = GameObject.FindGameObjectWithTag("GameManager").GetComponent<PlayerDictionary>();
             if (dictionary == null)

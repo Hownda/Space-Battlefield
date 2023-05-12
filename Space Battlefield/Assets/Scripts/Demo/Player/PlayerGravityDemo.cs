@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerGravityDemo : MonoBehaviour
 {
     private Rigidbody rb;
     public GravityOrbitDemo gravityOrbit;
+    private MovementControls gameActions;
 
     private float gravity = -20f;
 
@@ -15,17 +17,16 @@ public class PlayerGravityDemo : MonoBehaviour
     public bool isGrounded;
     [SerializeField] LayerMask groundMask;
 
+    private void Awake()
+    {
+        gameActions = KeybindManager.inputActions;
+        gameActions.GroundMovement.Jump.started += Jump;
+        gameActions.GroundMovement.Enable();
+    }
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            jump = true;
-        }
     }
 
     private void FixedUpdate()
@@ -49,5 +50,10 @@ public class PlayerGravityDemo : MonoBehaviour
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, gravityUp) * transform.rotation;
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 50 * Time.deltaTime);
         }
+    }
+
+    private void Jump(InputAction.CallbackContext obj)
+    {
+        jump = true;
     }
 }

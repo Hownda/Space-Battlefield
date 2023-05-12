@@ -8,6 +8,7 @@ TagManager:
   - PlayerCamera
   - Spaceship
   - Planet
+  - Root
   layers:
   - Default
   - TransparentFX
@@ -16,7 +17,7 @@ TagManager:
   - Water
   - UI
   - Volume
-  - 
+  - Self
   - 
   - 
   - 

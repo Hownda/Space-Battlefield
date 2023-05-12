@@ -14,33 +14,23 @@ public class PlayerMovement : NetworkBehaviour
     public float speed = 20f;
     public float maxForce = 1;
 
-    MovementControls controls;
-    MovementControls.GroundMovementActions groundMovement;
-    Vector2 horizontalInput;
-
-    private PlayerDictionary playerDictionary;
+    private MovementControls gameActions;
     private AudioListener otherPlayerAudioListener;
+    public GameObject crosshairOverlay;
 
     private void Awake()
     {
-        controls = new MovementControls();
-        groundMovement = controls.GroundMovement;
-        groundMovement.Movement.performed += ctx => horizontalInput = ctx.ReadValue<Vector2>();
+        gameActions = KeybindManager.inputActions;
+        gameActions.GroundMovement.Enter.started += Enter;
+        gameActions.GroundMovement.Enable();
+        crosshairOverlay.SetActive(true);
     }
 
-    private void OnEnable()
-    {
-        controls.Enable();
-    }
-
-    private void OnDisable()
-    {
-        controls.Disable();
-    }
     private void FixedUpdate()
     {
         if (IsOwner)
         {
+            Vector2 horizontalInput = gameActions.GroundMovement.Movement.ReadValue<Vector2>();
             Vector3 horizontalVelocity = speed * (transform.right * horizontalInput.x + transform.forward * horizontalInput.y);
             Vector3 currentVelocity = rb.velocity;
 
@@ -51,16 +41,7 @@ public class PlayerMovement : NetworkBehaviour
     }
 
     private void Update()
-    {
-        if (IsOwner)
-        {
-            // Enter and exit spaceship
-            if (Input.GetKeyDown("f"))
-            {
-                Enter();
-            }
-        }
-
+    {        
         if (otherPlayerAudioListener == null)
         {
             return;            
@@ -71,34 +52,37 @@ public class PlayerMovement : NetworkBehaviour
         }
     }
 
-    private void Enter()
+    private void Enter(InputAction.CallbackContext obj)
     {
-        GameObject[] spaceships = GameObject.FindGameObjectsWithTag("Spaceship");
-        foreach (GameObject spaceship in spaceships)
+        if (IsOwner)
         {
-            if (OwnerClientId == spaceship.GetComponent<NetworkObject>().OwnerClientId)
+            GameObject[] spaceships = GameObject.FindGameObjectsWithTag("Spaceship");
+            foreach (GameObject spaceship in spaceships)
             {
-                spaceship.GetComponentInChildren<Camera>().enabled = true;
-                spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
-                spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
-                spaceship.GetComponentInChildren<AudioListener>().enabled = true;
-                DespawnServerRpc();
+                if (OwnerClientId == spaceship.GetComponent<NetworkObject>().OwnerClientId)
+                {
+                    spaceship.GetComponentInChildren<Camera>().enabled = true;
+                    spaceship.GetComponentInChildren<SpaceshipCamera>().enabled = true;
+                    spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
+                    spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
+                    spaceship.GetComponentInChildren<AudioListener>().enabled = true;
+                    DespawnServerRpc();
+                }
+                else
+                {
+                    otherPlayerAudioListener = spaceship.GetComponentInChildren<AudioListener>();
+                }
             }
-            else
-            {
-                otherPlayerAudioListener = spaceship.GetComponentInChildren<AudioListener>();
-            }
+            Debug.Log("Entering...");
+        }
+        else
+        {
+            crosshairOverlay.SetActive(false);
         }
     }  
     
     [ServerRpc] private void DespawnServerRpc()
     {
         GetComponent<NetworkObject>().Despawn();
-        RemoveFromDictionaryClientRpc();
-    }
-
-    [ClientRpc] private void RemoveFromDictionaryClientRpc()
-    {
-        PlayerDictionary.instance.RemovePlayerFromDictServerRpc(OwnerClientId);
     }
 }

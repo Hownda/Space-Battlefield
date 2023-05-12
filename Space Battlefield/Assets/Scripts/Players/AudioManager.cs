@@ -18,6 +18,7 @@ public class AudioManager : NetworkBehaviour
 
             sound.source.volume = sound.volume;
             sound.source.pitch = sound.pitch;
+            sound.source.outputAudioMixerGroup = sound.outputAudioMixerGroup;
             sound.source.playOnAwake = false;
         }
     }

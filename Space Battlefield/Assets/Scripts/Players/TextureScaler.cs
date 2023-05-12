@@ -20,9 +20,9 @@ public class TextureScaler : NetworkBehaviour
     private void Update()
     {
         if (IsOwner) {
-            if (GetComponentInParent<PlayerGravity>() != null)
+            // If player is not inside a gravity orbit, mipmap level will be 1 to cover up repetition in the textures.
+            if (GetComponentInParent<PlayerGravity>() != null || previousOrbit == null)
             {
-                // If player is not inside a gravity orbit, mipmap level will be 1 to cover up repetition in the textures.
                 if (GetComponentInParent<PlayerGravity>().gravityOrbit.gameObject != previousOrbit)
                 {
                     foreach (GameObject planet in planets)
@@ -38,11 +38,10 @@ public class TextureScaler : NetworkBehaviour
                     }
                     previousOrbit = GetComponentInParent<PlayerGravity>().gravityOrbit.gameObject;
                 }
-                
-            }
+            }                          
+            // If spaceship is not inside a gravity orbit, mipmap level will be 1 to cover up repetition in the textures.
             if (GetComponentInParent<ObjectGravity>() != null && GetComponentInParent<SpaceshipMovement>().enabled == true)
             {
-                // If spaceship is not inside a gravity orbit, mipmap level will be 1 to cover up repetition in the textures.
                 if (GetComponentInParent<ObjectGravity>().gravityOrbit != previousOrbit)
                 {
                     foreach (GameObject planet in planets)
@@ -58,8 +57,7 @@ public class TextureScaler : NetworkBehaviour
                     }
                     previousOrbit = GetComponentInParent<ObjectGravity>().gravityOrbit.gameObject;
                 }
-                
-            }            
+            }                                      
         }
     }
 }

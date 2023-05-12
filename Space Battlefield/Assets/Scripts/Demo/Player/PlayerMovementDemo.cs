@@ -13,30 +13,20 @@ public class PlayerMovementDemo : MonoBehaviour
     public float speed = 20f;
     public float maxForce = 1;
 
-    MovementControls controls;
-    MovementControls.GroundMovementActions groundMovement;
-    Vector2 horizontalInput;
+    private MovementControls gameActions;
 
     private AudioListener otherPlayerAudioListener;
 
     private void Awake()
     {
-        controls = new MovementControls();
-        groundMovement = controls.GroundMovement;
-        groundMovement.Movement.performed += ctx => horizontalInput = ctx.ReadValue<Vector2>();
+        gameActions = KeybindManager.inputActions;
+        gameActions.GroundMovement.Enter.started += Enter;
+        gameActions.GroundMovement.Enable();
     }
 
-    private void OnEnable()
-    {
-        controls.Enable();
-    }
-
-    private void OnDisable()
-    {
-        controls.Disable();
-    }
     private void FixedUpdate()
     {
+        Vector2 horizontalInput = gameActions.GroundMovement.Movement.ReadValue<Vector2>();
         Vector3 horizontalVelocity = speed * (transform.right * horizontalInput.x + transform.forward * horizontalInput.y);
         Vector3 currentVelocity = rb.velocity;
 
@@ -47,12 +37,6 @@ public class PlayerMovementDemo : MonoBehaviour
 
     private void Update()
     {
-        // Enter and exit spaceship
-        if (Input.GetKeyDown("f"))
-        {
-            Enter();
-        }
-
         if (otherPlayerAudioListener == null)
         {
             return;
@@ -63,13 +47,13 @@ public class PlayerMovementDemo : MonoBehaviour
         }
     }
 
-    private void Enter()
+    private void Enter(InputAction.CallbackContext obj)
     {
         GameObject spaceship = GameObject.FindGameObjectWithTag("Spaceship");
         spaceship.GetComponentInChildren<Camera>().enabled = true;
         spaceship.GetComponentInChildren<SpaceshipMovementDemo>().enabled = true;
         spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
         spaceship.GetComponentInChildren<AudioListener>().enabled = true;
-        Destroy(gameObject);
+        Destroy(this.gameObject);
     }
 }

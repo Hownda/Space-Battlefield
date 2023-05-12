@@ -9,8 +9,9 @@ using Unity.Netcode;
 public class PlayerDictionary : NetworkBehaviour
 {
     public Dictionary<ulong, GameObject> playerDictionary = new Dictionary<ulong, GameObject>();
-    public int dictionaryCount = 0;
-    public int playersInRoom = 2;
+    private int playersInRoom = 2;
+
+    private bool savedToDict = false;
 
     public static PlayerDictionary instance;
 
@@ -19,23 +20,18 @@ public class PlayerDictionary : NetworkBehaviour
         instance = this;
     }
 
-    [ServerRpc] public void NewPlayerToDictServerRpc()
-    {
-        NewPlayerToDictClientRpc();
-    }
-
-    [ClientRpc] private void NewPlayerToDictClientRpc()
+    [ServerRpc(RequireOwnership = false)] public void NewPlayerToDictServerRpc()
     {
         playerDictionary.Clear();
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Root");
         foreach (GameObject player in players)
         {
             playerDictionary.Add(player.GetComponent<NetworkObject>().OwnerClientId, player);
-            Debug.Log(playerDictionary.Count);
         }
-        if (playerDictionary.Count == playersInRoom && IsServer)
+        if (playerDictionary.Count == playersInRoom && savedToDict == false && IsServer)
         {
-            GetComponent<Game>().StartGameServerRpc();
+            GetComponent<Game>().StartGame();
+            savedToDict = true;
         }
     }
 

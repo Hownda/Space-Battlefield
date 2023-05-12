@@ -15,9 +15,9 @@ public class TextureScalerDemo : MonoBehaviour
 
     private void Update()
     {
-        if (GetComponentInParent<PlayerGravityDemo>() != null)
+        // If player is not inside a gravity orbit, mipmap level will be 1 to cover up repetition in the textures.
+        if (GetComponentInParent<PlayerGravityDemo>() != null || previousOrbit == null)
         {
-            // If player is not inside a gravity orbit, mipmap level will be 1 to cover up repetition in the textures.
             if (GetComponentInParent<PlayerGravityDemo>().gravityOrbit.gameObject != previousOrbit)
             {
                 foreach (GameObject planet in planets)
@@ -33,16 +33,15 @@ public class TextureScalerDemo : MonoBehaviour
                 }
                 previousOrbit = GetComponentInParent<PlayerGravityDemo>().gravityOrbit.gameObject;
             }
-
         }
-        else
+        // If spaceship is not inside a gravity orbit, mipmap level will be 1 to cover up repetition in the textures.
+        if (GetComponentInParent<ObjectGravityDemo>() != null && GetComponentInParent<SpaceshipMovementDemo>().enabled == true)
         {
-            // If spaceship is not inside a gravity orbit, mipmap level will be 1 to cover up repetition in the textures.
-            if (GetComponentInParent<ObjectGravityDemo>().gravityOrbit.gameObject != previousOrbit)
+            if (GetComponentInParent<ObjectGravityDemo>().gravityOrbit != previousOrbit)
             {
                 foreach (GameObject planet in planets)
                 {
-                    if (planet.GetComponentInChildren<GravityOrbitDemo>().gameObject == GetComponentInParent<ObjectGravityDemo>().gravityOrbit.gameObject)
+                    if (planet.GetComponentInChildren<GravityOrbitDemo>() == GetComponentInParent<ObjectGravityDemo>().gravityOrbit)
                     {
                         planet.GetComponent<PlanetTexture>().ChangeScaleLevel(0);
                     }
@@ -51,8 +50,8 @@ public class TextureScalerDemo : MonoBehaviour
                         planet.GetComponent<PlanetTexture>().ChangeScaleLevel(1);
                     }
                 }
+                previousOrbit = GetComponentInParent<ObjectGravityDemo>().gravityOrbit.gameObject;
             }
-            previousOrbit = GetComponentInParent<ObjectGravityDemo>().gravityOrbit.gameObject;
         }
     }
 }

@@ -13,18 +13,21 @@ public class Weapon : NetworkBehaviour
     public ParticleSystem muzzleFlash;
     public Camera fpsCamera;
 
-    public Transform attackPoint;
     public GameObject bulletPrefab;
-    public GameObject impactEffect;
-    public GameObject projectileSpawn;
 
     public float bulletForce = 100f;
-    private float impulseForce = 10f;
+    private float fireRate = 0.2f;
+    private float lastShot;
+
+    private void Start()
+    {
+        lastShot = Time.time;  
+    }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (Input.GetKey(KeyCode.Mouse0) && Options.instance.disableCameraMovement == false)
         {
             Shoot();
         }
@@ -34,32 +37,18 @@ public class Weapon : NetworkBehaviour
     {
         if (Input.GetButtonDown("Fire1") && IsOwner)
         {
-            Ray ray = fpsCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-            RaycastHit hit;
-            Vector3 targetPoint;
-
-            if (Physics.Raycast(ray, out hit))
+            if (Time.time - lastShot > fireRate)
             {
-                targetPoint = hit.point;
-                GameObject particle = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-                particle.GetComponent<ParticleSystem>().Play();
-                Destroy(particle, 2f);
+                lastShot = Time.time;
+                GameObject bullet = Instantiate(bulletPrefab, fpsCamera.transform.position, Quaternion.Euler(Vector3.zero));
+                bullet.GetComponent<Bullet>().IgnoreSelfCollision(GetComponentInParent<CapsuleCollider>());
+                bullet.transform.rotation = Quaternion.LookRotation(fpsCamera.transform.forward);
+                bullet.GetComponent<Rigidbody>().AddForce(bulletForce * -transform.forward, ForceMode.Impulse);
+                Destroy(bullet, 2.5f);
 
-                if (hit.transform.gameObject.GetComponent<Healthbar>() != null)
-                {
-                    Game.instance.DealDamageToPlayerServerRpc(hit.transform.gameObject.GetComponent<NetworkObject>().OwnerClientId, 13);
-                }
+                audioManager.Play("blaster-sound");
+                muzzleFlash.Play();
             }
-            else
-            {
-                GameObject bullet = Instantiate(bulletPrefab, attackPoint.transform.position, Quaternion.Euler(new Vector3(0, 0, 0)));                
-                bullet.transform.LookAt(ray.GetPoint(30));
-                bullet.GetComponent<Rigidbody>().AddForce(bullet.transform.forward * bulletForce, ForceMode.Impulse);
-                Destroy(bullet, 1.5f);
-            }
-
-            audioManager.Play("blaster-sound");
-            muzzleFlash.Play();
         }
     }
 }
