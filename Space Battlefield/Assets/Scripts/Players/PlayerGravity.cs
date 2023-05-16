@@ -21,8 +21,8 @@ public class PlayerGravity : NetworkBehaviour
     private void Awake()
     {
         gameActions = KeybindManager.inputActions;
-        gameActions.GroundMovement.Jump.started += Jump;
-        gameActions.GroundMovement.Enable();
+        gameActions.Player.Jump.started += Jump;
+        gameActions.Player.Enable();
     }
 
     private void Start()

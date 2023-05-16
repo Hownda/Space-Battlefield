@@ -10,45 +10,67 @@ using Unity.Netcode;
 public class PlayerMovement : NetworkBehaviour
 {
     public Rigidbody rb;
+    public Animator animator;
+    public Animator handAnimator;
 
     public float speed = 20f;
     public float maxForce = 1;
 
     private MovementControls gameActions;
-    private AudioListener otherPlayerAudioListener;
-    public GameObject crosshairOverlay;
 
     private void Awake()
     {
         gameActions = KeybindManager.inputActions;
-        gameActions.GroundMovement.Enter.started += Enter;
-        gameActions.GroundMovement.Enable();
-        crosshairOverlay.SetActive(true);
+        gameActions.Player.Enter.started += Enter;
+        gameActions.Player.Enable();        
     }
 
     private void FixedUpdate()
     {
         if (IsOwner)
         {
-            Vector2 horizontalInput = gameActions.GroundMovement.Movement.ReadValue<Vector2>();
+            // Get input
+            Vector2 horizontalInput = gameActions.Player.Movement.ReadValue<Vector2>();
+
+            // Animate input
+            Animate(horizontalInput);
+
+            // Move with input
             Vector3 horizontalVelocity = speed * (transform.right * horizontalInput.x + transform.forward * horizontalInput.y);
             Vector3 currentVelocity = rb.velocity;
-
             Vector3 velocityChange = horizontalVelocity - currentVelocity;
-
-            rb.AddForce(velocityChange);            
+            rb.AddForce(velocityChange);
         }
     }
 
-    private void Update()
-    {        
-        if (otherPlayerAudioListener == null)
+    private void Animate(Vector2 input)
+    {
+        if (input.y > 0 || input.y > 0 && input.x != 0 || input.y > 0 && input.x == 0)
         {
-            return;            
+            animator.SetInteger("Vertical", 1);
+            handAnimator.SetInteger("Vertical", 1);
         }
-        else
+        else if (input.y < 0 || input.y < 0 && input.x != 0 || input.y > 0 && input.x == 0)
         {
-            otherPlayerAudioListener.enabled = false;
+            animator.SetInteger("Vertical", -1);
+            handAnimator.SetInteger("Vertical", -1);
+        }
+        else if (input.y == 0 && input.x == 0)
+        {
+            animator.SetInteger("Vertical", 0);
+            animator.SetInteger("Horizontal", 0);
+            handAnimator.SetInteger("Vertical", 0);
+            handAnimator.SetInteger("Horizontal", 0);
+        }
+        else if (input.x > 0 && input.y == 0)
+        {
+            animator.SetInteger("Horizontal", 1);
+            handAnimator.SetInteger("Horizontal", 1);
+        }
+        else if (input.x < 0 && input.y == 0)
+        {
+            animator.SetInteger("Horizontal", -1);
+            handAnimator.SetInteger("Horizontal", -1);
         }
     }
 
@@ -66,22 +88,15 @@ public class PlayerMovement : NetworkBehaviour
                     spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
                     spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
                     spaceship.GetComponentInChildren<AudioListener>().enabled = true;
-                    DespawnServerRpc();
-                }
-                else
-                {
-                    otherPlayerAudioListener = spaceship.GetComponentInChildren<AudioListener>();
+                    spaceship.GetComponentInChildren<Cannons>().enabled = true;
+                    GetComponentInChildren<CameraScript>().crosshairOverlay.SetActive(false);
+                    DespawnPlayerServerRpc();
                 }
             }
-            Debug.Log("Entering...");
-        }
-        else
-        {
-            crosshairOverlay.SetActive(false);
         }
     }  
     
-    [ServerRpc] private void DespawnServerRpc()
+    [ServerRpc] private void DespawnPlayerServerRpc()
     {
         GetComponent<NetworkObject>().Despawn();
     }

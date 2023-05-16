@@ -3,37 +3,7 @@ guid: ba821511cba802444ba120b0ffc46048
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Alien Eyes
-    second: {fileID: 2100000, guid: f8761ebcd40ddd04cadc586b2c583453, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Alien Skin
-    second: {fileID: 2100000, guid: f4dcefe8c1e76a54290e868a2758e429, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: BlackHandle
-    second: {fileID: 2100000, guid: ef7a783c058913f4896a357661def1de, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Blue_Glow
-    second: {fileID: 2100000, guid: 33f9e3cd84d7e384e81d72869d725113, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Metallic
-    second: {fileID: 2100000, guid: 4d2640a7a5145434b8443b73d8f59da5, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: RedBlasterTexture
-    second: {fileID: 2100000, guid: 95d7d073a1ea7094ba82f02bc07602a3, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0

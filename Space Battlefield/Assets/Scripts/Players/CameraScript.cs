@@ -11,6 +11,7 @@ public class CameraScript : NetworkBehaviour
     public Camera spaceshipCamera;
     private Camera playerCamera;
     public GameObject weapon;
+    public GameObject crosshairOverlay;
 
     private float xRotation = 0f;
 
@@ -22,6 +23,7 @@ public class CameraScript : NetworkBehaviour
         {
             playerCamera.enabled = false;
             playerCamera.GetComponent<AudioListener>().enabled = false;
+            crosshairOverlay.SetActive(false);
         }
         if (PlayerPrefs.HasKey("Sensitivity"))
         {

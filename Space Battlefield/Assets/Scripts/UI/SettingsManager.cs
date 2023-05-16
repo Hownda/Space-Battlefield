@@ -12,8 +12,6 @@ public class SettingsManager : MonoBehaviour
     public Slider volumeSlider;
     public AudioMixer audioMixer;
 
-    #region RESOLUTION
-
     public Dropdown resolutionDropdown;
 
     public Slider sensitivitySlider;
@@ -72,8 +70,6 @@ public class SettingsManager : MonoBehaviour
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
     }
 
-    #endregion
-
     public void SetScreenMode(int screenModeIndex)
     {
         if (screenModeIndex == 0)
@@ -113,11 +109,7 @@ public class SettingsManager : MonoBehaviour
         {
             if (player.GetComponentInChildren<CameraScript>() != null) {
                 player.GetComponentInChildren<CameraScript>().mouseSensitivity = sensitivity;
-            }
-            if (player.GetComponentInChildren<CameraScriptDemo>() != null)
-            {
-                player.GetComponentInChildren<CameraScriptDemo>().mouseSensitivity = sensitivity;
-            }
+            }            
         }
     }
 }

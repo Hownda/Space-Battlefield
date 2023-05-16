@@ -24,7 +24,7 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
     ""name"": ""MovementControls"",
     ""maps"": [
         {
-            ""name"": ""GroundMovement"",
+            ""name"": ""Player"",
             ""id"": ""c8b34175-8e35-4edd-88a6-20a8e4f6ad39"",
             ""actions"": [
                 {
@@ -49,6 +49,24 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                     ""name"": ""Enter"",
                     ""type"": ""Button"",
                     ""id"": ""a59b9449-60a9-4e2e-9fb6-c809bf735ebc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hotbar1"",
+                    ""type"": ""Button"",
+                    ""id"": ""187f3aa6-aa9a-4a5a-8f4a-902d7b7db7b8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hotbar2"",
+                    ""type"": ""Button"",
+                    ""id"": ""c2352c34-6394-4619-9eab-ee20f09d3957"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -130,6 +148,28 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Enter"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9e1bf079-211d-40e6-83cf-055b628b8577"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hotbar2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5ee64341-874a-4157-8bea-8d2f083be733"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hotbar1"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -334,11 +374,13 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
     ],
     ""controlSchemes"": []
 }");
-        // GroundMovement
-        m_GroundMovement = asset.FindActionMap("GroundMovement", throwIfNotFound: true);
-        m_GroundMovement_Movement = m_GroundMovement.FindAction("Movement", throwIfNotFound: true);
-        m_GroundMovement_Jump = m_GroundMovement.FindAction("Jump", throwIfNotFound: true);
-        m_GroundMovement_Enter = m_GroundMovement.FindAction("Enter", throwIfNotFound: true);
+        // Player
+        m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
+        m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
+        m_Player_Jump = m_Player.FindAction("Jump", throwIfNotFound: true);
+        m_Player_Enter = m_Player.FindAction("Enter", throwIfNotFound: true);
+        m_Player_Hotbar1 = m_Player.FindAction("Hotbar1", throwIfNotFound: true);
+        m_Player_Hotbar2 = m_Player.FindAction("Hotbar2", throwIfNotFound: true);
         // Spaceship
         m_Spaceship = asset.FindActionMap("Spaceship", throwIfNotFound: true);
         m_Spaceship_Thrust = m_Spaceship.FindAction("Thrust", throwIfNotFound: true);
@@ -402,39 +444,49 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
         return asset.FindBinding(bindingMask, out action);
     }
 
-    // GroundMovement
-    private readonly InputActionMap m_GroundMovement;
-    private IGroundMovementActions m_GroundMovementActionsCallbackInterface;
-    private readonly InputAction m_GroundMovement_Movement;
-    private readonly InputAction m_GroundMovement_Jump;
-    private readonly InputAction m_GroundMovement_Enter;
-    public struct GroundMovementActions
+    // Player
+    private readonly InputActionMap m_Player;
+    private IPlayerActions m_PlayerActionsCallbackInterface;
+    private readonly InputAction m_Player_Movement;
+    private readonly InputAction m_Player_Jump;
+    private readonly InputAction m_Player_Enter;
+    private readonly InputAction m_Player_Hotbar1;
+    private readonly InputAction m_Player_Hotbar2;
+    public struct PlayerActions
     {
         private @MovementControls m_Wrapper;
-        public GroundMovementActions(@MovementControls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Movement => m_Wrapper.m_GroundMovement_Movement;
-        public InputAction @Jump => m_Wrapper.m_GroundMovement_Jump;
-        public InputAction @Enter => m_Wrapper.m_GroundMovement_Enter;
-        public InputActionMap Get() { return m_Wrapper.m_GroundMovement; }
+        public PlayerActions(@MovementControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Movement => m_Wrapper.m_Player_Movement;
+        public InputAction @Jump => m_Wrapper.m_Player_Jump;
+        public InputAction @Enter => m_Wrapper.m_Player_Enter;
+        public InputAction @Hotbar1 => m_Wrapper.m_Player_Hotbar1;
+        public InputAction @Hotbar2 => m_Wrapper.m_Player_Hotbar2;
+        public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(GroundMovementActions set) { return set.Get(); }
-        public void SetCallbacks(IGroundMovementActions instance)
+        public static implicit operator InputActionMap(PlayerActions set) { return set.Get(); }
+        public void SetCallbacks(IPlayerActions instance)
         {
-            if (m_Wrapper.m_GroundMovementActionsCallbackInterface != null)
+            if (m_Wrapper.m_PlayerActionsCallbackInterface != null)
             {
-                @Movement.started -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnMovement;
-                @Movement.performed -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnMovement;
-                @Movement.canceled -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnMovement;
-                @Jump.started -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnJump;
-                @Jump.performed -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnJump;
-                @Jump.canceled -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnJump;
-                @Enter.started -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnEnter;
-                @Enter.performed -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnEnter;
-                @Enter.canceled -= m_Wrapper.m_GroundMovementActionsCallbackInterface.OnEnter;
+                @Movement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
+                @Movement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
+                @Movement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
+                @Jump.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                @Jump.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                @Jump.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnJump;
+                @Enter.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEnter;
+                @Enter.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEnter;
+                @Enter.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnEnter;
+                @Hotbar1.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHotbar1;
+                @Hotbar1.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHotbar1;
+                @Hotbar1.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHotbar1;
+                @Hotbar2.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHotbar2;
+                @Hotbar2.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHotbar2;
+                @Hotbar2.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHotbar2;
             }
-            m_Wrapper.m_GroundMovementActionsCallbackInterface = instance;
+            m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
             {
                 @Movement.started += instance.OnMovement;
@@ -446,10 +498,16 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                 @Enter.started += instance.OnEnter;
                 @Enter.performed += instance.OnEnter;
                 @Enter.canceled += instance.OnEnter;
+                @Hotbar1.started += instance.OnHotbar1;
+                @Hotbar1.performed += instance.OnHotbar1;
+                @Hotbar1.canceled += instance.OnHotbar1;
+                @Hotbar2.started += instance.OnHotbar2;
+                @Hotbar2.performed += instance.OnHotbar2;
+                @Hotbar2.canceled += instance.OnHotbar2;
             }
         }
     }
-    public GroundMovementActions @GroundMovement => new GroundMovementActions(this);
+    public PlayerActions @Player => new PlayerActions(this);
 
     // Spaceship
     private readonly InputActionMap m_Spaceship;
@@ -515,11 +573,13 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
         }
     }
     public SpaceshipActions @Spaceship => new SpaceshipActions(this);
-    public interface IGroundMovementActions
+    public interface IPlayerActions
     {
         void OnMovement(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnEnter(InputAction.CallbackContext context);
+        void OnHotbar1(InputAction.CallbackContext context);
+        void OnHotbar2(InputAction.CallbackContext context);
     }
     public interface ISpaceshipActions
     {

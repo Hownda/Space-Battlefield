@@ -12,7 +12,7 @@ public class SpaceshipMovement : NetworkBehaviour
 {
     // Movement Factors
     private float rollTorque = 40000f;
-    private float thrust = 50f;
+    private float thrust = 30f;
     private float upDownForce = 6000f;
     private float strafeForce = 4000f;
     private float velocityFactor = 15f;
@@ -36,7 +36,7 @@ public class SpaceshipMovement : NetworkBehaviour
     private void OnEnable()
     {
         gameActions = KeybindManager.inputActions;
-        gameActions.GroundMovement.Disable();
+        gameActions.Player.Disable();
         gameActions.Spaceship.Exit.started += Exit;
         gameActions.Spaceship.Enable();
 
@@ -193,7 +193,8 @@ public class SpaceshipMovement : NetworkBehaviour
         if (IsOwner)
         {
             thrustPercent = 0;
-            thrustSlider.gameObject.SetActive(true);
+            thrustSlider.value = 0;
+            thrustSlider.gameObject.SetActive(false);
             GetComponentInChildren<Camera>().enabled = false;
             GetComponentInChildren<SpaceshipCamera>().enabled = false;
             GetComponentInChildren<SpaceshipMovement>().enabled = false;

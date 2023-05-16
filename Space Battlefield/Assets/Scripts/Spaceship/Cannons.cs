@@ -12,9 +12,9 @@ public class Cannons : NetworkBehaviour
     public GameObject crosshair;
 
     public Collider[] spaceshipColliders;
-    public GameObject dummy;
+    public GameObject physicalCrosshairPrefab;
 
-    public float scaleFactor = 0.1f;
+    private float scaleFactor = 0.02f;
     public float missileForce = 100f;
     private float fireRate = 0.2f;
     private float lastShot;
@@ -36,14 +36,23 @@ public class Cannons : NetworkBehaviour
     {
         if (Time.time - lastShot > fireRate)
         {
+            // Start Cooldown
             lastShot = Time.time;
-            Vector3 crosshairPosition = GetComponentInParent<Camera>().ScreenToWorldPoint(crosshair.transform.position);
-            GameObject physicalCrosshair = Instantiate(dummy, transform.parent.parent);
-            physicalCrosshair.transform.position = crosshairPosition;
 
-            Vector3 screenCenter = GetComponentInParent<SpaceshipCamera>().screenCenter;
+            // Spawns a physical crosshair at location of crosshair on canvas with ScreenToWorldPoint function
+            Vector3 crosshairWorldPosition = GetComponentInParent<Camera>().ScreenToWorldPoint(crosshair.transform.position);
+            GameObject physicalCrosshair = Instantiate(physicalCrosshairPrefab, transform.parent.parent);
+            physicalCrosshair.transform.position = crosshairWorldPosition;
 
-            physicalCrosshair.transform.localPosition += (new Vector3(0, -crosshair.transform.position.y, crosshair.transform.position.x) - new Vector3(0, -screenCenter.y, screenCenter.x)) * scaleFactor;
+            // Since the ScreenToWorldPoint function returns a way too small value, the physical crosshair
+            // is going to need to be moved even more in the direction of the crosshair.
+            // For that we subtract the shootingAreaCenter from the crosshair on the canvas to get the exact offset of the crosshair.
+            // We can then add that offset to the physicalCrosshair. Since the value is too large it has to be multiplied with a scale factor.
+            Vector3 shootingAreaCenter = GetComponentInParent<SpaceshipCamera>().screenCenter;
+            physicalCrosshair.transform.localPosition += (new Vector3(0, -crosshair.transform.position.y, crosshair.transform.position.x) - new Vector3(0, -shootingAreaCenter.y, shootingAreaCenter.x)) * scaleFactor;
+
+            // Creates a ray that originates from the physicalCrosshair and passes through the cannon itself.
+            // The directions are inverted so we had to use negative y values when adding to the position of the physicalCrosshair.
             Ray directionRay = new Ray(physicalCrosshair.transform.position, transform.position - physicalCrosshair.transform.position);
             GameObject missile = Instantiate(missilePrefab, transform.position, Quaternion.LookRotation(directionRay.direction));
             Destroy(physicalCrosshair);

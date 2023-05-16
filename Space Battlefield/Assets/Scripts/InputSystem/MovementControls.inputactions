@@ -2,7 +2,7 @@
     "name": "MovementControls",
     "maps": [
         {
-            "name": "GroundMovement",
+            "name": "Player",
             "id": "c8b34175-8e35-4edd-88a6-20a8e4f6ad39",
             "actions": [
                 {
@@ -27,6 +27,24 @@
                     "name": "Enter",
                     "type": "Button",
                     "id": "a59b9449-60a9-4e2e-9fb6-c809bf735ebc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Hotbar1",
+                    "type": "Button",
+                    "id": "187f3aa6-aa9a-4a5a-8f4a-902d7b7db7b8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Hotbar2",
+                    "type": "Button",
+                    "id": "c2352c34-6394-4619-9eab-ee20f09d3957",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -108,6 +126,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Enter",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9e1bf079-211d-40e6-83cf-055b628b8577",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hotbar2",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5ee64341-874a-4157-8bea-8d2f083be733",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Hotbar1",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

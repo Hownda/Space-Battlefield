@@ -6015,7 +6015,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4854542626247667789}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 73b17aaecc77f81419dce02d81cec671, type: 3}
   m_Name: 
@@ -6028,8 +6028,7 @@ MonoBehaviour:
   - {fileID: 7951433464434841866}
   - {fileID: 8459624079093346860}
   - {fileID: 5444569125903877914}
-  dummy: {fileID: 5607448142122801897, guid: a07b0968a9ba1c1469ec7e6695031e36, type: 3}
-  scaleFactor: 0.02
+  physicalCrosshairPrefab: {fileID: 5607448142122801897, guid: a07b0968a9ba1c1469ec7e6695031e36, type: 3}
   missileForce: 100
 --- !u!1 &4992340085862621206
 GameObject:
@@ -6966,7 +6965,6 @@ GameObject:
   - component: {fileID: 5711029567131657144}
   - component: {fileID: -6865298388556552567}
   - component: {fileID: 8794413218378572582}
-  - component: {fileID: 8533700570815849331}
   m_Layer: 0
   m_Name: Spaceship
   m_TagString: Spaceship
@@ -7115,6 +7113,14 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: f32371ea-c86e-4277-871c-5ebbc7d65b2e
     m_ActionName: Spaceship/Exit[/Keyboard/f]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 187f3aa6-aa9a-4a5a-8f4a-902d7b7db7b8
+    m_ActionName: Player/Hotbar1[/Keyboard/1]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c2352c34-6394-4619-9eab-ee20f09d3957
+    m_ActionName: Player/Hotbar2[/Keyboard/2]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Spaceship
@@ -7215,26 +7221,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   distanceFromGround: 2
---- !u!114 &8533700570815849331
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6591201588958069936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73b17aaecc77f81419dce02d81cec671, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  audioManager: {fileID: 0}
-  muzzleFlash: {fileID: 0}
-  missilePrefab: {fileID: 0}
-  crosshair: {fileID: 0}
-  spaceshipColliders: []
-  dummy: {fileID: 0}
-  scaleFactor: 0.1
-  missileForce: 100
 --- !u!1 &6621168923162172627
 GameObject:
   m_ObjectHideFlags: 0
