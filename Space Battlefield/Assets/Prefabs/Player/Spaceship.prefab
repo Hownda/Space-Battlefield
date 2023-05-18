@@ -5677,8 +5677,8 @@ GameObject:
   - component: {fileID: 4979298325853825830}
   - component: {fileID: 6599991533070823859}
   - component: {fileID: 817182483914539956}
-  - component: {fileID: 2904416309587077174}
   - component: {fileID: 91853076435522614}
+  - component: {fileID: 4678155238860506690}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: Untagged
@@ -5776,7 +5776,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -5786,19 +5786,6 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
---- !u!114 &2904416309587077174
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4177344907717394639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 608d4aab21f6c0a4c8fed3fa2cf4ed7c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  planets: []
 --- !u!114 &91853076435522614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5816,6 +5803,18 @@ MonoBehaviour:
   overlay: {fileID: 2328874154995992111}
   shootingAreaRadius: 200
   cannonRotationStrength: 50
+--- !u!114 &4678155238860506690
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4177344907717394639}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 608d4aab21f6c0a4c8fed3fa2cf4ed7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4196618021271190096
 GameObject:
   m_ObjectHideFlags: 0
@@ -6963,8 +6962,9 @@ GameObject:
   - component: {fileID: 2389620593315888865}
   - component: {fileID: 4036017677913119669}
   - component: {fileID: 5711029567131657144}
-  - component: {fileID: -6865298388556552567}
   - component: {fileID: 8794413218378572582}
+  - component: {fileID: 1786066013894933193}
+  - component: {fileID: 5981744322823593703}
   m_Layer: 0
   m_Name: Spaceship
   m_TagString: Spaceship
@@ -7138,8 +7138,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0b8b3acfa94b984e988c7a3c624f7a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioManager: {fileID: 3855297088734374154}
   playerPrefab: {fileID: 2593770671970477129, guid: 107398602555352449ed4876916bd6d4, type: 3}
+  audioManager: {fileID: 3855297088734374154}
   thrustSlider: {fileID: 1707791811844443034}
   thrustPercent: 0
 --- !u!114 &4036017677913119669
@@ -7184,26 +7184,6 @@ MonoBehaviour:
   AlwaysReplicateAsRoot: 0
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
---- !u!114 &-6865298388556552567
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6591201588958069936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 222fb3706e8f8fe498445ee65576166d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gravityOrbit: {fileID: 0}
-  gravity: -5
-  colliding: 0
-  ground:
-    serializedVersion: 2
-    m_Bits: 8
-  contactParticles: {fileID: 3509683862831861796, guid: d5565f382e3b15d47ad3eef7f11827de, type: 3}
-  audioManager: {fileID: 3855297088734374154}
 --- !u!114 &8794413218378572582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7221,6 +7201,41 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   distanceFromGround: 2
+--- !u!114 &1786066013894933193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6591201588958069936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da1d09e66b8d33c4686f7098cd6735cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gravityOrbit: {fileID: 0}
+--- !u!114 &5981744322823593703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6591201588958069936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b1754cb5190715489eec2d6bbc14765, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  contactParticles: {fileID: 3509683862831861796, guid: d5565f382e3b15d47ad3eef7f11827de, type: 3}
+  audioManager: {fileID: 3855297088734374154}
+  colliding: 0
+  ground:
+    serializedVersion: 2
+    m_Bits: 8
+  colliders:
+  - {fileID: 7951433464434841866}
+  - {fileID: 8459624079093346860}
+  - {fileID: 5444569125903877914}
 --- !u!1 &6621168923162172627
 GameObject:
   m_ObjectHideFlags: 0

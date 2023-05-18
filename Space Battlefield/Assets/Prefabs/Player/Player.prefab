@@ -4819,7 +4819,7 @@ GameObject:
   - component: {fileID: 5002307557946091076}
   - component: {fileID: 4652312355058851563}
   - component: {fileID: 7725503238667546192}
-  - component: {fileID: 2184499173407469304}
+  - component: {fileID: 4321798894125406632}
   m_Layer: 6
   m_Name: FPS Camera
   m_TagString: PlayerCamera
@@ -4874,7 +4874,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 127
+    m_Bits: 383
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -4944,7 +4944,7 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
---- !u!114 &2184499173407469304
+--- !u!114 &4321798894125406632
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4956,7 +4956,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 608d4aab21f6c0a4c8fed3fa2cf4ed7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  planets: []
 --- !u!1 &2316371071499090690
 GameObject:
   m_ObjectHideFlags: 0
@@ -5697,6 +5696,10 @@ MonoBehaviour:
   handAnimator: {fileID: 3108132816687343187}
   speed: 20
   maxForce: 1
+  isGrounded: 0
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!114 &342156379453551736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5710,11 +5713,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravityOrbit: {fileID: 0}
-  groundOffset: 0.2
-  isGrounded: 0
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 8
+  stickToSurface: 1
 --- !u!114 &-2483728695932217488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5743,7 +5742,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hammers:
-  - {fileID: 5262467149956456270}
+  - {fileID: 2044069712031009106}
   - {fileID: 1171123289221155199}
   blasters:
   - {fileID: 7857053307629470057}
@@ -10409,13 +10408,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5729601171054057335}
+  - component: {fileID: 6559971331690109247}
   m_Layer: 7
   m_Name: Hammer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5729601171054057335
 Transform:
   m_ObjectHideFlags: 0
@@ -10432,6 +10432,25 @@ Transform:
   m_Father: {fileID: 1115459487840304744}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 78.1, y: -25.4, z: -18.381}
+--- !u!114 &6559971331690109247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5262467149956456270}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39001b0b91cf37b45b23d81bd5889031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  range: 50
+  naturalResource:
+    serializedVersion: 2
+    m_Bits: 256
+  miningPower: 10
+  handAnimator: {fileID: 3108132816687343187}
+  animator: {fileID: 1112268733011449105}
 --- !u!1 &5293214718673179758
 GameObject:
   m_ObjectHideFlags: 0
@@ -23980,11 +23999,20 @@ PrefabInstance:
       propertyPath: m_Name
       value: hammer
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: f0e008ee055818a4c808fcf1bc5d1c50, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0e008ee055818a4c808fcf1bc5d1c50, type: 3}
 --- !u!4 &1663567956770952168 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f0e008ee055818a4c808fcf1bc5d1c50, type: 3}
+  m_PrefabInstance: {fileID: 1196997916564354051}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &2044069712031009106 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: f0e008ee055818a4c808fcf1bc5d1c50, type: 3}
   m_PrefabInstance: {fileID: 1196997916564354051}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4274562497690400884

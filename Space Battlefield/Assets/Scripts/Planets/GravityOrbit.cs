@@ -9,11 +9,22 @@ public class GravityOrbit : MonoBehaviour
         if (other.GetComponent<PlayerGravity>())
         {
             other.GetComponent<PlayerGravity>().gravityOrbit = this.GetComponent<GravityOrbit>();
-        }
-
-        if (other.transform.GetComponentInParent<ObjectGravity>())
+        }  
+        if (other.GetComponentInParent<PlayerGravity>())
         {
-            other.transform.GetComponentInParent<ObjectGravity>().gravityOrbit = this.GetComponent<GravityOrbit>();
+            other.GetComponentInParent<PlayerGravity>().gravityOrbit = this.GetComponent<GravityOrbit>();
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.GetComponent<PlayerGravity>())
+        {
+            other.GetComponent<PlayerGravity>().gravityOrbit = null;
+        }
+        if (other.GetComponentInParent<PlayerGravity>())
+        {
+            other.GetComponentInParent<PlayerGravity>().gravityOrbit = null;
         }
     }
 }

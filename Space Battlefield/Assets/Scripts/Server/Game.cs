@@ -76,11 +76,12 @@ public class Game : NetworkBehaviour
         {
             for (int i = 0; i < players.Length; i++)   
             {
+                ulong clientId = players[i].GetComponent<NetworkObject>().OwnerClientId;
+
                 GameObject spaceship = Instantiate(spaceshipPrefab, new Vector3(players[i].transform.position.x + spaceshipSpawnOffset, players[i].transform.position.y, players[i].transform.position.z + spaceshipSpawnOffset), Quaternion.Euler(Vector3.zero));
                 spaceship.GetComponent<NetworkObject>().Spawn();
-                spaceship.GetComponent<NetworkObject>().ChangeOwnership(players[i].GetComponent<NetworkObject>().OwnerClientId);
-
+                spaceship.GetComponent<NetworkObject>().ChangeOwnership(clientId);                
             }
         }
-    }
+    }    
 }

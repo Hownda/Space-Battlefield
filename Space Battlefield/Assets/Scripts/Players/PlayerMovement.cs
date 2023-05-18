@@ -16,13 +16,29 @@ public class PlayerMovement : NetworkBehaviour
     public float speed = 20f;
     public float maxForce = 1;
 
+    // Jump Values
+    private bool jump;
+    private float jumpStrength = 10f;
+    private float groundOffset = 1.1f;
+    public bool isGrounded;
+    [SerializeField] LayerMask groundMask;
+
+    private PlayerGravity playerGravity;
+
     private MovementControls gameActions;
 
     private void Awake()
     {
         gameActions = KeybindManager.inputActions;
+        gameActions.Player.Jump.started += Jump;
         gameActions.Player.Enter.started += Enter;
-        gameActions.Player.Enable();        
+        gameActions.Spaceship.Disable();
+        gameActions.Player.Enable();
+    }
+
+    private void Start()
+    {
+        playerGravity = GetComponent<PlayerGravity>();
     }
 
     private void FixedUpdate()
@@ -40,7 +56,23 @@ public class PlayerMovement : NetworkBehaviour
             Vector3 currentVelocity = rb.velocity;
             Vector3 velocityChange = horizontalVelocity - currentVelocity;
             rb.AddForce(velocityChange);
+
+            //Jump with Input
+            isGrounded = Physics.Raycast(transform.position, -transform.up, groundOffset, groundMask);
+            if (jump)
+            {
+                if (isGrounded)
+                {
+                    rb.AddForce(playerGravity.GetGravityUp() * jumpStrength, ForceMode.Impulse);
+                }
+                jump = false;
+            }
         }
+    }
+
+    private void Jump(InputAction.CallbackContext obj)
+    {
+        jump = true;
     }
 
     private void Animate(Vector2 input)
@@ -81,7 +113,7 @@ public class PlayerMovement : NetworkBehaviour
             GameObject[] spaceships = GameObject.FindGameObjectsWithTag("Spaceship");
             foreach (GameObject spaceship in spaceships)
             {
-                if (OwnerClientId == spaceship.GetComponent<NetworkObject>().OwnerClientId)
+                if (spaceship.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
                 {
                     spaceship.GetComponentInChildren<Camera>().enabled = true;
                     spaceship.GetComponentInChildren<SpaceshipCamera>().enabled = true;
@@ -89,14 +121,19 @@ public class PlayerMovement : NetworkBehaviour
                     spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
                     spaceship.GetComponentInChildren<AudioListener>().enabled = true;
                     spaceship.GetComponentInChildren<Cannons>().enabled = true;
+                    GetComponentInChildren<TextureScaler>().enabled = false;
+                    spaceship.GetComponentInChildren<TextureScaler>().enabled = true;
+                    spaceship.GetComponentInChildren<SpaceshipMovement>().thrustSlider.gameObject.SetActive(true);
                     GetComponentInChildren<CameraScript>().crosshairOverlay.SetActive(false);
+                    gameActions.Player.Disable();
                     DespawnPlayerServerRpc();
                 }
             }
         }
-    }  
-    
-    [ServerRpc] private void DespawnPlayerServerRpc()
+    }
+
+    [ServerRpc]
+    private void DespawnPlayerServerRpc()
     {
         GetComponent<NetworkObject>().Despawn();
     }

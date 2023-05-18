@@ -18,8 +18,9 @@ public class SpaceshipMovement : NetworkBehaviour
     private float velocityFactor = 15f;
 
     Rigidbody rb;
-    public AudioManager audioManager;
     public GameObject playerPrefab;
+
+    public AudioManager audioManager;
     private GroundManeuvering groundManeuvering;
     private MovementControls gameActions;
     public Slider thrustSlider;
@@ -36,11 +37,8 @@ public class SpaceshipMovement : NetworkBehaviour
     private void OnEnable()
     {
         gameActions = KeybindManager.inputActions;
-        gameActions.Player.Disable();
         gameActions.Spaceship.Exit.started += Exit;
-        gameActions.Spaceship.Enable();
-
-        thrustSlider.gameObject.SetActive(true);
+        gameActions.Spaceship.Enable();       
     }
 
     private void Start()
@@ -94,21 +92,21 @@ public class SpaceshipMovement : NetworkBehaviour
     {
         if (!groundManeuvering.isGrounded)
         {
-            GetComponent<ObjectGravity>().enabled = false;
+            GetComponent<PlayerGravity>().enabled = false;
             Quaternion upDownRotation = transform.rotation;
             upDownRotation *= Quaternion.Euler(0, 0, upDown1D * upDownForce * Time.deltaTime);
             transform.rotation = Quaternion.Slerp(transform.rotation, upDownRotation, Time.deltaTime * .2f);
         }
         else if (groundManeuvering.isGrounded && upDown1D >= 0)
         {
-            GetComponent<ObjectGravity>().enabled = false;
+            GetComponent<PlayerGravity>().enabled = false;
             Quaternion upDownRotation = transform.rotation;
             upDownRotation *= Quaternion.Euler(0, 0, upDown1D * upDownForce * Time.deltaTime);
             transform.rotation = Quaternion.Slerp(transform.rotation, upDownRotation, Time.deltaTime * .2f);
         }
         else if (groundManeuvering.isGrounded && upDown1D < 0 || groundManeuvering.isGrounded && thrustPercent < 10)
         {
-            GetComponent<ObjectGravity>().enabled = true;
+            GetComponent<PlayerGravity>().enabled = true;
         }
     }
 
@@ -171,7 +169,7 @@ public class SpaceshipMovement : NetworkBehaviour
     public void ResetRigidbodyForces(string forceType)
     {
         // Prevents spaceship from glitching into environment
-        if (!GetComponent<ObjectGravity>().colliding)
+        if (!GetComponent<CollisionManager>().colliding)
         {
             if (forceType == "angularVelocity")
             {
@@ -186,8 +184,6 @@ public class SpaceshipMovement : NetworkBehaviour
         }
     }
 
-    // When exiting the spaceship the player character gets spawned above the spaceship.
-    // The movement inputs and camera informations will now only tracked on the player.
     private void Exit(InputAction.CallbackContext obj)
     {
         if (IsOwner)
@@ -200,20 +196,28 @@ public class SpaceshipMovement : NetworkBehaviour
             GetComponentInChildren<SpaceshipMovement>().enabled = false;
             GetComponentInChildren<PlayerInput>().enabled = false;
             GetComponentInChildren<AudioListener>().enabled = false;
+            GetComponentInChildren<TextureScaler>().enabled = false;
+            GetComponentInChildren<Cannons>().enabled = false;
             gameActions.Spaceship.Disable();
             SpawnPlayerServerRpc();
             Debug.Log("Exiting...");
         }
     }
 
-    [ServerRpc] private void SpawnPlayerServerRpc()
+    [ServerRpc]
+    private void SpawnPlayerServerRpc()
     {
-        Vector3 spawnPosition = transform.position + 3*((transform.position - GetComponent<ObjectGravity>().gravityOrbit.transform.position).normalized);
+        Vector3 spawnPosition;
+        if (GetComponent<PlayerGravity>().gravityOrbit != null)
+        {
+            spawnPosition = transform.position + 3 * ((transform.position - GetComponent<PlayerGravity>().gravityOrbit.transform.position).normalized);
+        }
+        else
+        {
+            spawnPosition = transform.position + 3 * transform.up;
+        }
         GameObject player = Instantiate(playerPrefab, new Vector3(spawnPosition.x, spawnPosition.y, spawnPosition.z), Quaternion.Euler(Vector3.zero));
         player.GetComponent<NetworkObject>().Spawn();
         player.GetComponent<NetworkObject>().ChangeOwnership(OwnerClientId);
-
     }
-
-    
 }

@@ -27,10 +27,10 @@ public class ToolSwitching : NetworkBehaviour
             {
                 hammer.SetActive(false);
             }
+            GetComponentInChildren<Hammer>().enabled = false;
             foreach (GameObject blaster in blasters)
             {
-                blaster.SetActive(true);
-                
+                blaster.SetActive(true);                
             }
         }
     }
@@ -43,6 +43,7 @@ public class ToolSwitching : NetworkBehaviour
             {
                 hammer.SetActive(true);
             }
+            GetComponentInChildren<Hammer>().enabled = true;
             foreach (GameObject blaster in blasters)
             {
                 blaster.SetActive(false);

@@ -4,24 +4,20 @@ using UnityEngine;
 
 public class PlanetTexture : MonoBehaviour
 {
-    public Material material0;
-    public Material material1;
+    public GameObject farGraphics;
+    public GameObject closeGraphics;
 
-    private MeshRenderer meshRenderer;
-
-    private void Start()
-    {
-        meshRenderer = GetComponent<MeshRenderer>();
-    }
     public void ChangeScaleLevel(int mipmapLevel)
     {
         if (mipmapLevel == 0)
         {
-            meshRenderer.material = material0;
+            farGraphics.SetActive(false);
+            closeGraphics.SetActive(true);
         }
         else
         {
-            meshRenderer.material = material1;
+            closeGraphics.SetActive(false);
+            farGraphics.SetActive(true);
         }
     }
 }

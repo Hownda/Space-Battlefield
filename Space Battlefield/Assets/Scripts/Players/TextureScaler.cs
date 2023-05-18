@@ -5,59 +5,29 @@ using Unity.Netcode;
 
 public class TextureScaler : NetworkBehaviour
 {
-    public GameObject[] planets;
-    private GameObject previousOrbit;
+    private GameObject[] planets;
 
-    private void Start()
+    void Start()
+    {
+        planets = GameObject.FindGameObjectsWithTag("Planet");
+    }
+
+    // Update is called once per frame
+    void Update()
     {
         if (IsOwner)
         {
-            planets = GameObject.FindGameObjectsWithTag("Planet");
-            previousOrbit = planets[0];
-        }
-    }
-
-    private void Update()
-    {
-        if (IsOwner) {
-            // If player is not inside a gravity orbit, mipmap level will be 1 to cover up repetition in the textures.
-            if (GetComponentInParent<PlayerGravity>() != null || previousOrbit == null)
+            foreach (GameObject planet in planets)
             {
-                if (GetComponentInParent<PlayerGravity>().gravityOrbit.gameObject != previousOrbit)
+                if (planet.GetComponentInChildren<GravityOrbit>() == GetComponentInParent<PlayerGravity>().gravityOrbit)
                 {
-                    foreach (GameObject planet in planets)
-                    {
-                        if (planet.GetComponentInChildren<GravityOrbit>() == GetComponentInParent<PlayerGravity>().gravityOrbit)
-                        {
-                            planet.GetComponent<PlanetTexture>().ChangeScaleLevel(0);
-                        }
-                        else
-                        {
-                            planet.GetComponent<PlanetTexture>().ChangeScaleLevel(1);
-                        }
-                    }
-                    previousOrbit = GetComponentInParent<PlayerGravity>().gravityOrbit.gameObject;
+                    planet.GetComponent<PlanetTexture>().ChangeScaleLevel(0);
                 }
-            }                          
-            // If spaceship is not inside a gravity orbit, mipmap level will be 1 to cover up repetition in the textures.
-            if (GetComponentInParent<ObjectGravity>() != null && GetComponentInParent<SpaceshipMovement>().enabled == true)
-            {
-                if (GetComponentInParent<ObjectGravity>().gravityOrbit != previousOrbit)
+                else
                 {
-                    foreach (GameObject planet in planets)
-                    {
-                        if (planet.GetComponentInChildren<GravityOrbit>() == GetComponentInParent<ObjectGravity>().gravityOrbit)
-                        {
-                            planet.GetComponent<PlanetTexture>().ChangeScaleLevel(0);
-                        }
-                        else
-                        {
-                            planet.GetComponent<PlanetTexture>().ChangeScaleLevel(1);
-                        }
-                    }
-                    previousOrbit = GetComponentInParent<ObjectGravity>().gravityOrbit.gameObject;
+                    planet.GetComponent<PlanetTexture>().ChangeScaleLevel(1);
                 }
-            }                                      
+            }
         }
     }
 }

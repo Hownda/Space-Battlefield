@@ -17,32 +17,33 @@ public class NetworkCommandLine : MonoBehaviour
         if (Application.isEditor)
         {
             NetworkButtons.SetActive(true);
-            return;
-        }
-
-        var args = GetCommandLineArgs();
-
-        if (args.TryGetValue("-mode", out string mode))
-        {
-            if (mode == "server")
-            {
-                networkManager.StartServer();
-                Debug.Log("Starting Server...");
-            }
-            if (mode == "client")
-            {
-                networkManager.StartClient();
-                Debug.Log("Starting Client...");
-            }
         }
         else
         {
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(
-            (string)PhotonNetwork.CurrentRoom.CustomProperties["ip"],
-            (ushort)System.Convert.ToInt32((string)PhotonNetwork.CurrentRoom.CustomProperties["port"]),
-            "0.0.0.0"
-            );
-            NetworkManager.Singleton.StartClient();
+            var args = GetCommandLineArgs();
+
+            if (args.TryGetValue("-mode", out string mode))
+            {
+                if (mode == "server")
+                {
+                    networkManager.StartServer();
+                    Debug.Log("Starting Server...");
+                }
+                if (mode == "client")
+                {
+                    networkManager.StartClient();
+                    Debug.Log("Starting Client...");
+                }
+            }
+            else
+            {
+                NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(
+                (string)PhotonNetwork.CurrentRoom.CustomProperties["ip"],
+                (ushort)System.Convert.ToInt32((string)PhotonNetwork.CurrentRoom.CustomProperties["port"]),
+                "0.0.0.0"
+                );
+                NetworkManager.Singleton.StartClient();
+            }
         }
     }
     private Dictionary<string, string> GetCommandLineArgs()
