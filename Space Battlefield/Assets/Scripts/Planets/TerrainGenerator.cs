@@ -4,13 +4,11 @@ using UnityEngine;
 
 public class TerrainGenerator : MonoBehaviour
 {
-    public int numObjects = 20;
     public GameObject prefab;
-    public GameObject sphere;
-    public int radius = 50;
+
+    public LayerMask ground;
 
     public GameObject impactEffect;
-    public GameObject objectToPlace;
 
     void Start()
     {
@@ -39,10 +37,10 @@ public class TerrainGenerator : MonoBehaviour
 
     private void Update()
     {
-        /*if (Input.GetKeyDown(KeyCode.Mouse0))
+        if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             PlaceObject();
-        }*/
+        }
     }
 
     private void PlaceObject()
@@ -51,7 +49,7 @@ public class TerrainGenerator : MonoBehaviour
         RaycastHit hit;
         Vector3 targetPoint;
 
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out hit, 10000, ground))
         {
             targetPoint = hit.point;
             GameObject particle = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
@@ -64,7 +62,7 @@ public class TerrainGenerator : MonoBehaviour
 
     private void SpawnObject(Vector3 location, Vector3 center)
     {
-        Quaternion rot = Quaternion.FromToRotation(-Vector3.up, center - location);
+        Quaternion rot = Quaternion.FromToRotation(-Vector3.right, center - location);
         Instantiate(prefab, location, rot);
     }
 }

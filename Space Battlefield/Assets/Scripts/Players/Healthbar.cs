@@ -38,6 +38,6 @@ public class Healthbar : NetworkBehaviour
 
     private void Die()
     {
-        GetComponent<NetworkObject>().Despawn(gameObject);
+        Game.instance.TriggerVictoryServerRpc(OwnerClientId);     
     }
 }

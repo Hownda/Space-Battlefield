@@ -124,7 +124,7 @@ public class PlayerMovement : NetworkBehaviour
                     GetComponentInChildren<TextureScaler>().enabled = false;
                     spaceship.GetComponentInChildren<TextureScaler>().enabled = true;
                     spaceship.GetComponentInChildren<SpaceshipMovement>().thrustSlider.gameObject.SetActive(true);
-                    GetComponentInChildren<CameraScript>().crosshairOverlay.SetActive(false);
+                    GetComponentInChildren<CameraScript>().playerCanvas.SetActive(false);
                     gameActions.Player.Disable();
                     DespawnPlayerServerRpc();
                 }

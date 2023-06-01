@@ -11,7 +11,7 @@ public class CameraScript : NetworkBehaviour
     public Camera spaceshipCamera;
     private Camera playerCamera;
     public GameObject weapon;
-    public GameObject crosshairOverlay;
+    public GameObject playerCanvas;
 
     private float xRotation = 0f;
 
@@ -23,7 +23,7 @@ public class CameraScript : NetworkBehaviour
         {
             playerCamera.enabled = false;
             playerCamera.GetComponent<AudioListener>().enabled = false;
-            crosshairOverlay.SetActive(false);
+            playerCanvas.SetActive(false);
         }
         if (PlayerPrefs.HasKey("Sensitivity"))
         {
@@ -48,20 +48,26 @@ public class CameraScript : NetworkBehaviour
             transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
             playerBody.Rotate(Vector3.up * mouseX);
         }
-        DisableBodyParts();
     }
 
-    private void DisableBodyParts()
+    public void DisableBodyParts()
     {
-        if (!IsOwner && IsClient && GameObject.FindGameObjectsWithTag("Player").Length == 2)
+        if (!IsOwner && IsClient)
         {
+            // Makes other player visible
             playerCamera.transform.parent.gameObject.layer = 0;
             Renderer[] renderers = playerCamera.transform.parent.gameObject.GetComponentsInChildren<Renderer>();
             foreach (Renderer renderer in renderers)
             {
                 renderer.gameObject.layer = 0;
             }
-            weapon.layer = 7;
+
+            // Makes floating weapon invisible
+            Renderer[] weaponRenderers = weapon.GetComponentsInChildren<Renderer>();
+            foreach (Renderer renderer in weaponRenderers)
+            {
+                renderer.gameObject.layer = 7;
+            }
         }
     }
 }

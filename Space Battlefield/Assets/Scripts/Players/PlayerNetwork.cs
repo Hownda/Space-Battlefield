@@ -9,6 +9,11 @@ using Unity.Netcode;
 public class PlayerNetwork : NetworkBehaviour
 {
     private PlayerDictionary dictionary;
+
+    public GameObject victoryOverlay;
+    public GameObject defeatOverlay;
+    public Camera endCamera;
+
     void Start()
     {
         if (IsOwner)
@@ -22,6 +27,41 @@ public class PlayerNetwork : NetworkBehaviour
             {
                 dictionary.NewPlayerToDictServerRpc();
                 Debug.Log("Adding Player to " + dictionary);
+            }
+        }
+    }
+
+    public void Lose()
+    {
+        if (IsOwner)
+        {
+            defeatOverlay.SetActive(true);
+            defeatOverlay.GetComponentInChildren<ParticleSystem>().Play();
+            endCamera.enabled = true;
+            DespawnServerRpc();
+        }
+    }
+
+    public void Win()
+    {
+        if (IsOwner)
+        {
+            victoryOverlay.SetActive(true);
+            victoryOverlay.GetComponentInChildren<ParticleSystem>().Play();
+            endCamera.enabled = true;
+            DespawnServerRpc();
+        }
+    }
+
+    [ServerRpc] private void DespawnServerRpc()
+    {
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
+            {
+                player.GetComponent<NetworkObject>().Despawn();
+                Destroy(player);
             }
         }
     }

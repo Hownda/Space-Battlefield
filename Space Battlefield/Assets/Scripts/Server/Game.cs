@@ -10,6 +10,7 @@ using UnityEngine.InputSystem;
 public class Game : NetworkBehaviour
 {
     public GameObject spaceshipPrefab;
+    private GameObject[] players;
 
     public float enteringDistance = 20f;
 
@@ -40,7 +41,6 @@ public class Game : NetworkBehaviour
 
     [ServerRpc(RequireOwnership = false)] public void DealDamageToPlayerServerRpc(ulong clientId, int damage)
     {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject player in players)
         {
             if (player.GetComponent<NetworkObject>().OwnerClientId == clientId)
@@ -63,7 +63,7 @@ public class Game : NetworkBehaviour
         {
             GameObject spawnedPlayer = Instantiate(playerPrefab, spawnLocations[i], Quaternion.Euler(spawnRotations[i]));
             spawnedPlayer.GetComponent<NetworkObject>().Spawn();
-            spawnedPlayer.GetComponent<NetworkObject>().ChangeOwnership(players[i].GetComponent<NetworkObject>().OwnerClientId);
+            spawnedPlayer.GetComponent<NetworkObject>().ChangeOwnership(players[i].GetComponent<NetworkObject>().OwnerClientId);           
         }
         StartCoroutine(spawnDelay());
     }
@@ -71,7 +71,7 @@ public class Game : NetworkBehaviour
     private void SpawnSpaceships()
     {
         GameObject[] spaceships = GameObject.FindGameObjectsWithTag("Spaceship");
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        players = GameObject.FindGameObjectsWithTag("Player");
         if (spaceships.Length == 0)
         {
             for (int i = 0; i < players.Length; i++)   
@@ -83,5 +83,37 @@ public class Game : NetworkBehaviour
                 spaceship.GetComponent<NetworkObject>().ChangeOwnership(clientId);                
             }
         }
-    }    
+        // Disable body parts marked as self
+        DisableBodyPartsClientRpc();
+    }   
+    
+    [ClientRpc] private void DisableBodyPartsClientRpc()
+    {
+        players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            player.GetComponentInChildren<CameraScript>().DisableBodyParts();
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)] public void TriggerVictoryServerRpc(ulong loserClientId)
+    {
+        TriggerVictoryClientRpc(loserClientId);
+    }
+
+    [ClientRpc] private void TriggerVictoryClientRpc(ulong loserClientId)
+    {
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Root");
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<NetworkObject>().OwnerClientId == loserClientId)
+            {
+                player.GetComponent<PlayerNetwork>().Lose();
+            }
+            else
+            {
+                player.GetComponent<PlayerNetwork>().Win();
+            }
+        }
+    }
 }

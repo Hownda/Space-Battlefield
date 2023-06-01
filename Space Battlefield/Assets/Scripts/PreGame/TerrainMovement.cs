@@ -51,7 +51,7 @@ public class TerrainMovement : MonoBehaviour
         if (mainCam == null) mainCam = this.transform.GetComponentInChildren<Camera>();
         if (mainCam == null) mainCam = Camera.main;
         if (mainCam == null) Debug.LogWarning("the Class Move Camera could not find any camera.");
-
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void OnDisable()

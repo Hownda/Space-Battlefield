@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4277562590103474376}
   m_Layer: 5
-  m_Name: RockItem
+  m_Name: RockCounter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4866,7 +4866,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.01
   far clip plane: 1000
   field of view: 90
   orthographic: 0
@@ -4909,8 +4909,8 @@ MonoBehaviour:
   mouseSensitivity: 0
   playerBody: {fileID: 2933316718318075635}
   spaceshipCamera: {fileID: 0}
-  weapon: {fileID: 7857053307629470057}
-  crosshairOverlay: {fileID: 7278013240649073404}
+  weapon: {fileID: 8541554071854622355}
+  playerCanvas: {fileID: 5447334458701084241}
 --- !u!114 &7725503238667546192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5713,7 +5713,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravityOrbit: {fileID: 0}
-  stickToSurface: 1
 --- !u!114 &-2483728695932217488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7339,6 +7338,78 @@ Transform:
   m_Father: {fileID: 9149515111818861605}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 80.579285, y: 67.34366, z: -67.49267}
+--- !u!1 &3578512029619896684
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7213686611601318771}
+  - component: {fileID: 2252519798719566839}
+  - component: {fileID: 2538066519588136030}
+  m_Layer: 0
+  m_Name: CollectionDisplay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7213686611601318771
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3578512029619896684}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 200.00002}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 1300388612836756179}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -50, y: -50}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &2252519798719566839
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3578512029619896684}
+  m_CullTransparentMesh: 1
+--- !u!114 &2538066519588136030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3578512029619896684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59f8146938fff824cb5fd77236b75775, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: -6
+    m_Top: 20
+    m_Bottom: 0
+  m_ChildAlignment: 1
+  m_Spacing: -55.88
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 1
+  m_ChildScaleHeight: 1
+  m_ReverseArrangement: 0
 --- !u!1 &3615594215000997485
 GameObject:
   m_ObjectHideFlags: 0
@@ -10451,6 +10522,10 @@ MonoBehaviour:
   miningPower: 10
   handAnimator: {fileID: 3108132816687343187}
   animator: {fileID: 1112268733011449105}
+  rockItem: {fileID: 6964086647634162700, guid: fb79e823b96a03348a6dbc0870d7c5ca, type: 3}
+  rockCollectionUI: {fileID: 7213686611601318771}
+  rockCounter: {fileID: 7699915468426406410}
+  audioManager: {fileID: 5596182136626477485}
 --- !u!1 &5293214718673179758
 GameObject:
   m_ObjectHideFlags: 0
@@ -10709,6 +10784,7 @@ RectTransform:
   - {fileID: 7884628013922393264}
   - {fileID: 7278013240649073405}
   - {fileID: 5317971050670336076}
+  - {fileID: 7213686611601318771}
   m_Father: {fileID: 2933316718318075635}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -19111,6 +19187,12 @@ MonoBehaviour:
     volume: 1
     outputAudioMixerGroup: {fileID: 24300002, guid: eefae1bd6484a0d48bff9cc480693cbc, type: 2}
     source: {fileID: 0}
+  - clip: {fileID: 8300000, guid: e835506d790f3b948a9c7ffd2a132bf9, type: 3}
+    name: stone-mining
+    pitch: 1
+    volume: 1
+    outputAudioMixerGroup: {fileID: 24300002, guid: eefae1bd6484a0d48bff9cc480693cbc, type: 2}
+    source: {fileID: 0}
 --- !u!1 &7103826692673797050
 GameObject:
   m_ObjectHideFlags: 0
@@ -22309,6 +22391,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9061913705341516841}
   - component: {fileID: 3108132816687343187}
+  - component: {fileID: 4097836474740755930}
   m_Layer: 0
   m_Name: alien-arms
   m_TagString: Untagged
@@ -22354,6 +22437,20 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &4097836474740755930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8541554071854622355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransitionStateInfoList: []
+  m_Animator: {fileID: 3108132816687343187}
 --- !u!1 &8546120574669314294
 GameObject:
   m_ObjectHideFlags: 0
@@ -24112,11 +24209,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 81a72df4a62a0f44c80a0717b4647d86, type: 3}
---- !u!1 &7278013240649073404 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6796769162957994632, guid: 81a72df4a62a0f44c80a0717b4647d86, type: 3}
-  m_PrefabInstance: {fileID: 4274562497690400884}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &7278013240649073405 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6796769162957994633, guid: 81a72df4a62a0f44c80a0717b4647d86, type: 3}
