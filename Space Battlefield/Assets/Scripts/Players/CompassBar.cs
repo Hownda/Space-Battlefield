@@ -8,6 +8,7 @@ public class CompassBar : NetworkBehaviour
 {
     public RawImage compassImage;
     public Image enemyIcon;
+    public Image altitudeArrow;
 
     private Transform enemy;
 
@@ -24,6 +25,15 @@ public class CompassBar : NetworkBehaviour
                 compassImage.uvRect = new Rect(transform.localEulerAngles.y / 360f, 0f, 1f, 1f);
                 float angle = Vector2.SignedAngle(new Vector2(enemy.position.x, enemy.position.z) - new Vector2(transform.position.x, transform.position.z), new Vector2(transform.forward.x, transform.forward.z));
                 enemyIcon.rectTransform.anchoredPosition = new Vector2((compassImage.rectTransform.rect.width / 360f) * angle, 0f);
+
+                if (enemy.position.y > transform.position.y)
+                {
+                    altitudeArrow.rectTransform.rotation = Quaternion.Euler(Vector3.zero);
+                }
+                else
+                {
+                    altitudeArrow.rectTransform.rotation = Quaternion.Euler(new Vector3(0, 0, 180));
+                }
             }
         }
     }

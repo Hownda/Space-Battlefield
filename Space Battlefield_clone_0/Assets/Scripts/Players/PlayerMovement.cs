@@ -39,6 +39,7 @@ public class PlayerMovement : NetworkBehaviour
     private void Start()
     {
         playerGravity = GetComponent<PlayerGravity>();
+        GetComponentInChildren<Billboard>().UpdateCamera(GetComponentInChildren<Camera>());
     }
 
     private void FixedUpdate()
@@ -115,17 +116,20 @@ public class PlayerMovement : NetworkBehaviour
             {
                 if (spaceship.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
                 {
+                    // Camera components
                     spaceship.GetComponentInChildren<Camera>().enabled = true;
-                    spaceship.GetComponentInChildren<SpaceshipCamera>().enabled = true;
+                    spaceship.GetComponentInChildren<SpaceshipCamera>().enabled = true;                    
+                    spaceship.GetComponentInChildren<AudioListener>().enabled = true;
+                    spaceship.GetComponentInChildren<TextureScaler>().enabled = true;
+                    GetComponentInChildren<Billboard>().UpdateCamera(spaceship.GetComponentInChildren<Camera>());
+                
+                    // Interaction components
                     spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
                     spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
-                    spaceship.GetComponentInChildren<AudioListener>().enabled = true;
-                    spaceship.GetComponentInChildren<Cannons>().enabled = true;
-                    GetComponentInChildren<TextureScaler>().enabled = false;
-                    spaceship.GetComponentInChildren<TextureScaler>().enabled = true;
                     spaceship.GetComponentInChildren<SpaceshipMovement>().spaceshipCanvas.SetActive(true);
-                    GetComponentInChildren<CameraScript>().playerCanvas.SetActive(false);
+                    spaceship.GetComponentInChildren<Cannons>().enabled = true;
                     gameActions.Player.Disable();
+
                     DespawnPlayerServerRpc();
                 }
             }

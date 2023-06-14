@@ -230,5 +230,7 @@ public class SpaceshipMovement : NetworkBehaviour
         GameObject player = Instantiate(playerPrefab, new Vector3(spawnPosition.x, spawnPosition.y, spawnPosition.z), Quaternion.Euler(Vector3.zero));
         player.GetComponent<NetworkObject>().Spawn();
         player.GetComponent<NetworkObject>().ChangeOwnership(OwnerClientId);
+
+        GetComponent<Hull>().cam = player.GetComponentInChildren<Camera>();
     }
 }

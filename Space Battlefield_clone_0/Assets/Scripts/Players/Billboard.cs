@@ -5,36 +5,24 @@ using Unity.Netcode;
 
 public class Billboard : NetworkBehaviour
 {
-    public Camera cam;
+    private Camera cam;
 
     void Update()
     {
-        if (!IsOwner)
-        {
-            if (cam == null)
-            {
-                cam = FindObjectOfType<Camera>();
-            }
-            
-            if (cam.enabled == false)
-            {
-                foreach (KeyValuePair<ulong, GameObject> player in PlayerDictionary.instance.playerDictionary)
-                {
-                    if (player.Value != null && player.Value.GetComponentInChildren<Camera>() != null)
-                    {
-                        if (player.Value.GetComponentInChildren<Camera>().enabled == true)
-                        {
-                            cam = player.Value.GetComponentInChildren<Camera>();
-                        }
-                    }
-                }
-            }
+        transform.LookAt(cam.transform);
+    }
 
-            if (cam == null)
+    public void UpdateCamera(Camera newCamera)
+    {
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<NetworkObject>().OwnerClientId != OwnerClientId)
             {
-                return;
+                player.GetComponentInChildren<Billboard>().cam = newCamera;
             }
-            transform.LookAt(cam.transform);
         }
     }
+
+    
 }
