@@ -92,7 +92,7 @@ public class Hammer : NetworkBehaviour
             if (hit.transform.GetComponent<Resource>())
             {
                 hit.transform.GetComponent<Resource>().Mine(miningPower);
-                playerNetwork.AddObjectToInventoryServerRpc("Rock", 1);
+                playerNetwork.AddObjectToInventoryServerRpc("Rock", 1, OwnerClientId);
                 audioManager.Play("stone-mining");
             }
 

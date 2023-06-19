@@ -47,14 +47,25 @@ public class PlayerNetwork : NetworkBehaviour
         }
     }
 
-    [ServerRpc] public void AddObjectToInventoryServerRpc(string item, int amount)
+    [ServerRpc] public void AddObjectToInventoryServerRpc(string item, int amount, ulong clientId)
     {
         if (item == "Rock")
         {
-            rockCount.Value += amount;            
+            rockCount.Value += amount;
 
-            GameObject rockAdditionUI = Instantiate(rockItem, rockCollectionUI);
-            Destroy(rockAdditionUI, 2f);
+            AddObjectToInventoryClientRpc(item, clientId);            
+        }
+    }
+
+    [ClientRpc] private void AddObjectToInventoryClientRpc(string item, ulong clientId)
+    {
+        if (OwnerClientId == clientId)
+        {
+            if (item == "Rock")
+            {
+                GameObject rockAdditionUI = Instantiate(rockItem, rockCollectionUI);
+                Destroy(rockAdditionUI, 2f);
+            }
         }
     }
 

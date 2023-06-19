@@ -167,6 +167,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -5117700066308340382, guid: 2b466f50da779974f9603913ab66720c, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: -4587302668392987624, guid: 2b466f50da779974f9603913ab66720c, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -175,9 +179,17 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 49ad54956eb19d247b937ce8fdbc8a67, type: 2}
+    - target: {fileID: 117214286460000749, guid: 2b466f50da779974f9603913ab66720c, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2b466f50da779974f9603913ab66720c, type: 3}
       propertyPath: m_Name
       value: planetA Close
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2b466f50da779974f9603913ab66720c, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2b466f50da779974f9603913ab66720c, type: 3}
       propertyPath: m_IsActive
@@ -310,9 +322,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -5117700066308340382, guid: 2b466f50da779974f9603913ab66720c, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 117214286460000749, guid: 2b466f50da779974f9603913ab66720c, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2b466f50da779974f9603913ab66720c, type: 3}
       propertyPath: m_Name
       value: planetA
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 2b466f50da779974f9603913ab66720c, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2b466f50da779974f9603913ab66720c, type: 3}
       propertyPath: m_IsActive
