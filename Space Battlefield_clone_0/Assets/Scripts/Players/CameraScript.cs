@@ -66,7 +66,7 @@ public class CameraScript : NetworkBehaviour
             Renderer[] weaponRenderers = weapon.GetComponentsInChildren<Renderer>();
             foreach (Renderer renderer in weaponRenderers)
             {
-                renderer.gameObject.layer = 7;
+                renderer.gameObject.layer = 11;
             }
         }
     }

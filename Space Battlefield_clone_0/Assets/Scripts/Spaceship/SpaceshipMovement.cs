@@ -204,7 +204,8 @@ public class SpaceshipMovement : NetworkBehaviour
     public void Exit()
     {
         if (IsOwner)
-        {           
+        {
+            GetComponent<Hull>().integrityBillboard.SetActive(true);
             GetComponentInChildren<Camera>().enabled = false;
             GetComponentInChildren<SpaceshipCamera>().enabled = false;
             GetComponentInChildren<SpaceshipMovement>().enabled = false;            

@@ -13,11 +13,13 @@ public class PlayerMovement : NetworkBehaviour
     public Animator animator;
     public Animator handAnimator;
 
-    public float speed = 20f;
+    private float speed = 20f;
+    private float swimSpeed = 5f;
     public float maxForce = 1;
 
     // Jump Values
     private bool jump;
+    private int swimVertical;
     private float jumpStrength = 10f;
     private float groundOffset = 1.1f;
     public bool isGrounded;
@@ -31,6 +33,12 @@ public class PlayerMovement : NetworkBehaviour
     {
         gameActions = KeybindManager.inputActions;
         gameActions.Player.Jump.started += Jump;
+
+        gameActions.Player.Jump.started += _ => swimVertical = 1;
+        gameActions.Player.Jump.canceled += _ => swimVertical = 0;
+        gameActions.Player.Down.started += _ => swimVertical = -1;
+        gameActions.Player.Down.canceled += _ => swimVertical = 0;
+
         gameActions.Player.Enter.started += Enter;
         gameActions.Spaceship.Disable();
         gameActions.Player.Enable();
@@ -39,7 +47,6 @@ public class PlayerMovement : NetworkBehaviour
     private void Start()
     {
         playerGravity = GetComponent<PlayerGravity>();
-        GetComponentInChildren<Billboard>().UpdateCamera(GetComponentInChildren<Camera>());
     }
 
     private void FixedUpdate()
@@ -49,26 +56,51 @@ public class PlayerMovement : NetworkBehaviour
             // Get input
             Vector2 horizontalInput = gameActions.Player.Movement.ReadValue<Vector2>();
 
-            // Animate input
-            Animate(horizontalInput);
-
-            // Move with input
-            Vector3 horizontalVelocity = speed * (transform.right * horizontalInput.x + transform.forward * horizontalInput.y);
-            Vector3 currentVelocity = rb.velocity;
-            Vector3 velocityChange = horizontalVelocity - currentVelocity;
-            rb.AddForce(velocityChange);
-
-            //Jump with Input
-            isGrounded = Physics.Raycast(transform.position, -transform.up, groundOffset, groundMask);
-            if (jump)
+            if (playerGravity.gravityOrbit == null)
             {
-                if (isGrounded)
-                {
-                    rb.AddForce(playerGravity.GetGravityUp() * jumpStrength, ForceMode.Impulse);
-                }
-                jump = false;
+                SpaceMovement(horizontalInput); 
             }
+            else
+            {
+                GroundMovement(horizontalInput);
+            }
+            
         }
+    }
+
+    private void GroundMovement(Vector2 horizontalInput)
+    {
+        // Animate input
+        Animate(horizontalInput);
+
+        // Move with input
+        Vector3 horizontalVelocity = speed * (transform.right * horizontalInput.x + transform.forward * horizontalInput.y);
+        Vector3 currentVelocity = rb.velocity;
+        Vector3 velocityChange = horizontalVelocity - currentVelocity;
+        rb.AddForce(velocityChange);
+
+        //Jump with Input
+        isGrounded = Physics.Raycast(transform.position, -transform.up, groundOffset, groundMask);
+        if (jump)
+        {
+            if (isGrounded)
+            {
+                rb.AddForce(playerGravity.GetGravityUp() * jumpStrength, ForceMode.Impulse);
+            }
+            jump = false;
+        }
+    }
+
+    private void SpaceMovement(Vector2 horizontalInput)
+    {
+        Vector3 horizontalVelocity = swimSpeed * (transform.right * horizontalInput.x + transform.forward * horizontalInput.y);
+        Vector3 verticalVelocity = swimSpeed * transform.up * swimVertical;
+        Vector3 currentVelocity = rb.velocity;
+        Vector3 velocityChange = horizontalVelocity + verticalVelocity - currentVelocity;
+        rb.AddForce(velocityChange);
+
+        animator.SetBool("Swim", true);
+        handAnimator.SetBool("Swim", true);
     }
 
     private void Jump(InputAction.CallbackContext obj)
@@ -78,6 +110,8 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Animate(Vector2 input)
     {
+        animator.SetBool("Swim", false);
+        handAnimator.SetBool("Swim", false);
         if (input.y > 0 || input.y > 0 && input.x != 0 || input.y > 0 && input.x == 0)
         {
             animator.SetInteger("Vertical", 1);
@@ -121,13 +155,13 @@ public class PlayerMovement : NetworkBehaviour
                     spaceship.GetComponentInChildren<SpaceshipCamera>().enabled = true;                    
                     spaceship.GetComponentInChildren<AudioListener>().enabled = true;
                     spaceship.GetComponentInChildren<TextureScaler>().enabled = true;
-                    GetComponentInChildren<Billboard>().UpdateCamera(spaceship.GetComponentInChildren<Camera>());
                 
                     // Interaction components
                     spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
                     spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
                     spaceship.GetComponentInChildren<SpaceshipMovement>().spaceshipCanvas.SetActive(true);
                     spaceship.GetComponentInChildren<Cannons>().enabled = true;
+                    spaceship.GetComponent<Hull>().integrityBillboard.SetActive(false);
                     gameActions.Player.Disable();
 
                     DespawnPlayerServerRpc();

@@ -71,6 +71,15 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Down"",
+                    ""type"": ""Button"",
+                    ""id"": ""dd918624-0db1-4a20-8dfb-1a05dcaba62e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -170,6 +179,17 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Hotbar1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cbdc95a7-04f1-49b0-83e6-44154199e4cd"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -381,6 +401,7 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
         m_Player_Enter = m_Player.FindAction("Enter", throwIfNotFound: true);
         m_Player_Hotbar1 = m_Player.FindAction("Hotbar1", throwIfNotFound: true);
         m_Player_Hotbar2 = m_Player.FindAction("Hotbar2", throwIfNotFound: true);
+        m_Player_Down = m_Player.FindAction("Down", throwIfNotFound: true);
         // Spaceship
         m_Spaceship = asset.FindActionMap("Spaceship", throwIfNotFound: true);
         m_Spaceship_Thrust = m_Spaceship.FindAction("Thrust", throwIfNotFound: true);
@@ -452,6 +473,7 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Enter;
     private readonly InputAction m_Player_Hotbar1;
     private readonly InputAction m_Player_Hotbar2;
+    private readonly InputAction m_Player_Down;
     public struct PlayerActions
     {
         private @MovementControls m_Wrapper;
@@ -461,6 +483,7 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
         public InputAction @Enter => m_Wrapper.m_Player_Enter;
         public InputAction @Hotbar1 => m_Wrapper.m_Player_Hotbar1;
         public InputAction @Hotbar2 => m_Wrapper.m_Player_Hotbar2;
+        public InputAction @Down => m_Wrapper.m_Player_Down;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -485,6 +508,9 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                 @Hotbar2.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHotbar2;
                 @Hotbar2.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHotbar2;
                 @Hotbar2.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnHotbar2;
+                @Down.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDown;
+                @Down.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDown;
+                @Down.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDown;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -504,6 +530,9 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
                 @Hotbar2.started += instance.OnHotbar2;
                 @Hotbar2.performed += instance.OnHotbar2;
                 @Hotbar2.canceled += instance.OnHotbar2;
+                @Down.started += instance.OnDown;
+                @Down.performed += instance.OnDown;
+                @Down.canceled += instance.OnDown;
             }
         }
     }
@@ -580,6 +609,7 @@ public partial class @MovementControls : IInputActionCollection2, IDisposable
         void OnEnter(InputAction.CallbackContext context);
         void OnHotbar1(InputAction.CallbackContext context);
         void OnHotbar2(InputAction.CallbackContext context);
+        void OnDown(InputAction.CallbackContext context);
     }
     public interface ISpaceshipActions
     {

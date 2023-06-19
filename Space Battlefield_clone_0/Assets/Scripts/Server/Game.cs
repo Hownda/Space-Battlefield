@@ -62,6 +62,17 @@ public class Game : NetworkBehaviour
         }
     }
 
+    [ServerRpc(RequireOwnership = false)] public void RepairDamageOnSpaceshipServerRpc(ulong clientId, int amount)
+    {
+        foreach (GameObject spaceship in spaceships)
+        {
+            if (spaceship.GetComponent<NetworkObject>().OwnerClientId == clientId)
+            {
+                spaceship.GetComponent<Hull>().Repair(amount);
+            }
+        }
+    }
+
     private IEnumerator spawnDelay()
     {      
         yield return new WaitForSeconds(2f);

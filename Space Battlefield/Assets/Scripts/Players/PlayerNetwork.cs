@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.UI;
 
 /// <summary>
 /// The class <c>Player Network</c> executes functions on player spawn.
@@ -14,10 +15,17 @@ public class PlayerNetwork : NetworkBehaviour
     public GameObject defeatOverlay;
     public Camera endCamera;
 
+    public GameObject inventoryCanvas;
+    public NetworkVariable<int> rockCount = new NetworkVariable<int>(0, writePerm: NetworkVariableWritePermission.Server);
+    public Text rockCounter;
+    public GameObject rockItem;
+    public Transform rockCollectionUI;
+
     void Start()
     {
         if (IsOwner)
         {
+            inventoryCanvas.SetActive(true);
             dictionary = GameObject.FindGameObjectWithTag("GameManager").GetComponent<PlayerDictionary>();
             if (dictionary == null)
             {
@@ -27,6 +35,34 @@ public class PlayerNetwork : NetworkBehaviour
             {
                 dictionary.NewPlayerToDictServerRpc();
                 Debug.Log("Adding Player to " + dictionary);
+            }
+        }
+    }
+
+    [ServerRpc] public void AddObjectToInventoryServerRpc(string item, int amount)
+    {
+        if (item == "Rock")
+        {
+            rockCount.Value += amount;
+            rockCounter.text = rockCount.Value.ToString();
+
+            GameObject rockAdditionUI = Instantiate(rockItem, rockCollectionUI);
+            Destroy(rockAdditionUI, 2f);
+        }
+    }
+
+    [ServerRpc] public void RemoveObjectFromInventoryServerRpc(string item, int amount)
+    {
+        if (item == "Rock")
+        {
+            rockCount.Value -= amount;
+            rockCounter.text = rockCount.Value.ToString();
+
+            for (int i = 0; i < amount; i++)
+            {
+                GameObject rockAdditionUI = Instantiate(rockItem, rockCollectionUI);
+                rockAdditionUI.GetComponentInChildren<Text>().text = (-1).ToString();
+                Destroy(rockAdditionUI, 2f);
             }
         }
     }

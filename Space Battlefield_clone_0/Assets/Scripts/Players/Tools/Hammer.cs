@@ -6,19 +6,29 @@ using UnityEngine.UI;
 
 public class Hammer : NetworkBehaviour
 {
-    public float range;
-    public LayerMask naturalResource;
-    public float miningPower;
+    private PlayerNetwork playerNetwork;
+
+    private float range = 2;
+    public LayerMask interactableObjects;
+    public int miningPower;
+    public int repairPower;
 
     public Animator handAnimator;
     public Animator animator;
 
-    public GameObject rockItem;
-    public Transform rockCollectionUI;
-    public Text rockCounter;
-    private int rockCount;
-
     public AudioManager audioManager;
+
+    private void Start()
+    {
+        GameObject[] playerRoots = GameObject.FindGameObjectsWithTag("Root");
+        foreach(GameObject playerRoot in playerRoots)
+        {
+            if (playerRoot.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
+            {
+                playerNetwork = playerRoot.GetComponent<PlayerNetwork>();
+            }
+        }
+    }
 
     // Update is called once per frame
     void Update()
@@ -33,16 +43,12 @@ public class Hammer : NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            Ray ray = new Ray(GetComponentInParent<Camera>().transform.position, GetComponentInParent<Camera>().transform.forward);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, range, naturalResource))
+            if (CheckAnimationFinished())
             {
-                if (hit.transform.GetComponent<Resource>() && CheckAnimationFinished())
-                {
-                    animator.Play("Mine");
-                    handAnimator.Play("Mine");
-                    StartCoroutine(CollectionDelay(hit.transform));
-                }
+                animator.Play("Mine");
+                handAnimator.Play("Mine");
+
+                StartCoroutine(ActionDelay());
             }
         }
     }
@@ -73,17 +79,38 @@ public class Hammer : NetworkBehaviour
         }
     }
     
-    private IEnumerator CollectionDelay(Transform rock)
+    private IEnumerator ActionDelay()
     {
         yield return new WaitForSeconds(1f);
-        rock.GetComponent<Resource>().Mine(miningPower);
 
-        rockCount += 1;
-        rockCounter.text = rockCount.ToString();
-        GameObject rockAdditionUI = Instantiate(rockItem, rockCollectionUI);
+        Ray ray = new Ray(GetComponentInParent<Camera>().transform.position, GetComponentInParent<Camera>().transform.forward);
+        RaycastHit hit;
 
-        audioManager.Play("stone-mining");
+        if (Physics.Raycast(ray, out hit, range, interactableObjects))
+        {
+            //Mining
+            if (hit.transform.GetComponent<Resource>())
+            {
+                hit.transform.GetComponent<Resource>().Mine(miningPower);
+                playerNetwork.AddObjectToInventoryServerRpc("Rock", 1);
+                audioManager.Play("stone-mining");
+            }
 
-        Destroy(rockAdditionUI, 2f);
+            //Repairing
+            if (hit.transform.GetComponent<Hull>())
+            {
+                if (hit.transform.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
+                {
+                    audioManager.Play("stone-mining");
+                    if (playerNetwork.rockCount.Value >= 5)
+                    {
+                        if (hit.transform.GetComponent<Hull>().integrity.Value < 100)
+                        {
+                            Game.instance.RepairDamageOnSpaceshipServerRpc(OwnerClientId, repairPower);
+                        }
+                    }                   
+                }
+            }          
+        }       
     }
 }
