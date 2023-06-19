@@ -39,12 +39,19 @@ public class PlayerNetwork : NetworkBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (IsOwner)
+        {
+            rockCounter.text = rockCount.Value.ToString();
+        }
+    }
+
     [ServerRpc] public void AddObjectToInventoryServerRpc(string item, int amount)
     {
         if (item == "Rock")
         {
-            rockCount.Value += amount;
-            rockCounter.text = rockCount.Value.ToString();
+            rockCount.Value += amount;            
 
             GameObject rockAdditionUI = Instantiate(rockItem, rockCollectionUI);
             Destroy(rockAdditionUI, 2f);
@@ -56,12 +63,12 @@ public class PlayerNetwork : NetworkBehaviour
         if (item == "Rock")
         {
             rockCount.Value -= amount;
-            rockCounter.text = rockCount.Value.ToString();
 
             for (int i = 0; i < amount; i++)
             {
                 GameObject rockAdditionUI = Instantiate(rockItem, rockCollectionUI);
                 rockAdditionUI.GetComponentInChildren<Text>().text = (-1).ToString();
+                rockAdditionUI.GetComponentInChildren<Text>().color = new Color(255, 0, 0);
                 Destroy(rockAdditionUI, 2f);
             }
         }

@@ -19,11 +19,13 @@ public class CameraScript : NetworkBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         playerCamera = GetComponent<Camera>();
+
         if (!IsOwner)
         {
             playerCamera.enabled = false;
             playerCamera.GetComponent<AudioListener>().enabled = false;
             playerCanvas.SetActive(false);
+            DisableBodyParts();
         }
         if (PlayerPrefs.HasKey("Sensitivity"))
         {
@@ -52,7 +54,7 @@ public class CameraScript : NetworkBehaviour
 
     public void DisableBodyParts()
     {
-        if (!IsOwner && IsClient)
+        if (!IsOwner)
         {
             // Makes other player visible
             playerCamera.transform.parent.gameObject.layer = 0;
@@ -66,7 +68,7 @@ public class CameraScript : NetworkBehaviour
             Renderer[] weaponRenderers = weapon.GetComponentsInChildren<Renderer>();
             foreach (Renderer renderer in weaponRenderers)
             {
-                renderer.gameObject.layer = 11;
+                renderer.gameObject.layer = 7;
             }
         }
     }

@@ -107,6 +107,7 @@ public class Hammer : NetworkBehaviour
                         if (hit.transform.GetComponent<Hull>().integrity.Value < 100)
                         {
                             Game.instance.RepairDamageOnSpaceshipServerRpc(OwnerClientId, repairPower);
+                            playerNetwork.RemoveObjectFromInventoryServerRpc("Rock", 5);
                         }
                     }                   
                 }
