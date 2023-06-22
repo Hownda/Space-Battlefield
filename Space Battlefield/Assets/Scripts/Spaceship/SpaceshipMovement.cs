@@ -28,7 +28,7 @@ public class SpaceshipMovement : NetworkBehaviour
     // Inputs
     private float thrust1D;
     private float strafe1D;
-    private float upDown1D;
+    public float upDown1D;
     private float roll1D;
 
     public float thrustPercent = 0;
@@ -94,25 +94,28 @@ public class SpaceshipMovement : NetworkBehaviour
             thrustSlider.value -= velocityFactor * Time.deltaTime;
         }
         thrustPercent = thrustSlider.value;
-        rb.AddForce(thrustPercent * thrust * transform.forward * Time.deltaTime, ForceMode.VelocityChange);
-        if (rb.velocity.magnitude > maxVelocity)
+        if (!GetComponent<Hull>().colliding)
         {
-            rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxVelocity);
+            rb.AddForce(thrustPercent * thrust * transform.forward * Time.deltaTime, ForceMode.VelocityChange);
+            if (rb.velocity.magnitude > maxVelocity)
+            {
+                rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxVelocity);
+            }
         }
     }
 
     private void UpDown()
     {
-        if (!groundManeuvering.isGrounded)
+        if (!GetComponent<Hull>().isGrounded)
         {
             GetComponent<PlayerGravity>().enabled = false;
             rb.AddRelativeTorque(-upDown1D * upDownForce * Time.deltaTime, 0, 0, ForceMode.Force);
         }
-        else if (groundManeuvering.isGrounded && upDown1D >= 0)
+        else if (GetComponent<Hull>().isGrounded && upDown1D >= 0)
         {
             rb.AddRelativeTorque(-upDown1D * upDownForce * Time.deltaTime, 0, 0, ForceMode.Force);
         }
-        else if (groundManeuvering.isGrounded && upDown1D < 0 || groundManeuvering.isGrounded && thrustPercent < 10)
+        else if (GetComponent<Hull>().isGrounded && upDown1D < 0 || GetComponent<Hull>().isGrounded && thrustPercent < 10)
         {
             GetComponent<PlayerGravity>().enabled = true;
         }
@@ -183,8 +186,7 @@ public class SpaceshipMovement : NetworkBehaviour
         GetComponentInChildren<SpaceshipCamera>().enabled = false;
         GetComponentInChildren<SpaceshipMovement>().enabled = false;            
         GetComponentInChildren<AudioListener>().enabled = false;
-        GetComponentInChildren<TextureScaler>().enabled = false;
-        GetComponentInChildren<Cannons>().enabled = false;                       
+        GetComponent<Cannons>().enabled = false;                       
         SpawnPlayerServerRpc();
     }
 

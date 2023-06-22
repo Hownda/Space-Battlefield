@@ -10,7 +10,7 @@ public class Resource : MonoBehaviour
     {
         health -= miningPower;
         transform.localScale -= new Vector3(0.1f, 0.1f, 0.1f);
-        if (health <= 30)
+        if (health <= 30 || transform.localScale.x <= 0.2f)
         {
             Depleted();
             Destroy(gameObject);

@@ -21,6 +21,8 @@ public class Weapon : NetworkBehaviour
     private float fireRate = 0.2f;
     private float lastShot;
 
+    public Collider[] colliders;
+
     private void Start()
     {
         lastShot = Time.time;
@@ -49,6 +51,7 @@ public class Weapon : NetworkBehaviour
                 lastShot = Time.time;
                 GameObject bullet = Instantiate(bulletPrefab, fpsCamera.transform.position, Quaternion.Euler(Vector3.zero));
                 bullet.GetComponent<Bullet>().parentClient = OwnerClientId;
+                bullet.GetComponent<Bullet>().IgnoreCollisions(colliders);
                 bullet.transform.rotation = Quaternion.LookRotation(fpsCamera.transform.forward);
                 bullet.GetComponent<Rigidbody>().AddForce(bulletForce * bullet.transform.forward, ForceMode.Impulse);
                 Destroy(bullet, 2.5f);

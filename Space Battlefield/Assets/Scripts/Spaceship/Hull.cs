@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using Unity.Netcode;
 using UnityEngine;
@@ -17,12 +19,17 @@ public class Hull : NetworkBehaviour
     public GameObject explosionPrefab;
     private Rigidbody rb;
     public bool colliding;
-    public float collisionFactor;
     public float damageFactor = 1;
     public ParticleSystem contactParticles;
     public AudioManager audioManager;
     private float soundStart = 0f;
     private float soundCooldown = 2.5f;
+
+    public bool isGrounded;
+    public LayerMask ground;
+    public float distanceFromGround;
+
+    public Material red;
 
     void Start()
     {
@@ -75,15 +82,28 @@ public class Hull : NetworkBehaviour
         }
     }
 
-    void Update()
+    private void FixedUpdate()
     {
+        if (IsOwner)
+        {
+            isGrounded = Physics.Raycast(transform.position, -transform.up, distanceFromGround, ground);
+            RaycastHit hit;
+            if (Physics.Raycast(new Ray(transform.position, -transform.up), out hit, distanceFromGround, ground))
+            {
+                Debug.DrawLine(transform.position, hit.point);
+            }
+        }
+    }
+
+    void Update()
+    {       
         integritySlider.value = integrity.Value;
         integrityBillboardSlider.value = integrity.Value;
 
         if (cam != null)
         {
             integrityBillboard.transform.LookAt(cam.transform);            
-        }       
+        }
     }
 
     public void TakeDamage(float damage)
@@ -141,7 +161,7 @@ public class Hull : NetworkBehaviour
         if (IsOwner)
         {
             // Check if player is landing
-            if (!GetComponent<GroundManeuvering>().isGrounded)
+            if (!isGrounded)
             {
                 if (Time.time > soundStart + soundCooldown)
                 {
@@ -164,33 +184,42 @@ public class Hull : NetworkBehaviour
         particles.Play();
         Destroy(particles.gameObject, 1f);
 
-        float collisionAngle = Vector3.Angle(collision.contacts[0].normal, transform.forward);
-        Debug.Log(collisionAngle);
-        if (collisionAngle > 120)
-        {
-            Game.instance.DealDamageToSpaceshipServerRpc(OwnerClientId, 1000);
-        }
-        else
-        {
-            // Damage based on impact force
-            float collisionForce = rb.velocity.magnitude;
-            Game.instance.DealDamageToSpaceshipServerRpc(OwnerClientId, (int)collisionForce * damageFactor);
-        }
+        Game.instance.DealDamageToSpaceshipServerRpc(OwnerClientId, damageFactor);
+
+        
     }
 
     private void OnCollisionStay(Collision collision)
     {
+        
         if (IsOwner)
         {
-            colliding = true;
+            if (collision.transform.GetComponent<Resource>())
+            {
+                collision.transform.GetComponent<Resource>().Mine(5*Time.deltaTime);
+            }
+            else
+            {
+                if (!isGrounded)
+                {
+                    colliding = true;
+                    GetComponent<SpaceshipMovement>().upDown1D = 1;
+                }
+            }
         }
     }
-
     private void OnCollisionExit()
     {
         if (IsOwner)
         {
-            colliding = false;
+            StartCoroutine(EngineActivationDelay());
         }
+    }
+
+    private IEnumerator EngineActivationDelay()
+    {
+        yield return new WaitForSeconds(.5f);
+        colliding = false;
+        GetComponent<SpaceshipMovement>().upDown1D = 0;
     }
 }

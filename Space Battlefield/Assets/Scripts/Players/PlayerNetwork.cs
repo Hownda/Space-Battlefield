@@ -89,6 +89,7 @@ public class PlayerNetwork : NetworkBehaviour
     {
         if (IsOwner)
         {
+            inventoryCanvas.SetActive(false);
             defeatOverlay.SetActive(true);
             defeatOverlay.GetComponentInChildren<ParticleSystem>().Play();
             endCamera.enabled = true;
@@ -100,6 +101,7 @@ public class PlayerNetwork : NetworkBehaviour
     {
         if (IsOwner)
         {
+            inventoryCanvas.SetActive(false);
             victoryOverlay.SetActive(true);
             victoryOverlay.GetComponentInChildren<ParticleSystem>().Play();
             endCamera.enabled = true;

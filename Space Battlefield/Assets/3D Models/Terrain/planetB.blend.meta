@@ -1,19 +1,19 @@
 fileFormatVersion: 2
 guid: ce0a4e49e9c572844b60c7c5c42dcc16
 ModelImporter:
-  serializedVersion: 21300
+  serializedVersion: 22200
   internalIDToNameTable: []
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: EarthDirt
-    second: {fileID: 2100000, guid: e49f6f92e4ce98241a7c444584508c64, type: 2}
+      name: Moss
+    second: {fileID: 2100000, guid: d1c02fce149deea428bdf8dec7b6d74a, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Rock
-    second: {fileID: 2100000, guid: 6d2b2300631c2c6488c938543ddc004e, type: 2}
+      name: MossyRock
+    second: {fileID: 2100000, guid: f6c73ea807f9e254f98e365d5845da02, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -24,7 +24,7 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
-    removeConstantScaleCurves: 1
+    removeConstantScaleCurves: 0
     motionNodeName: 
     rigImportErrors: 
     rigImportWarnings: 
@@ -50,6 +50,7 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -77,6 +78,7 @@ ModelImporter:
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -109,6 +111,7 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
   remapMaterialsIfMaterialImportModeIsNone: 0
   additionalBone: 0
   userData: 

@@ -24,7 +24,7 @@ public class Bullet : MonoBehaviour
             {
                 Game.instance.DealDamageToSpaceshipServerRpc(other.gameObject.GetComponent<NetworkObject>().OwnerClientId, 2);
                 
-            }
+            }            
             Impact();
         }
         else
@@ -39,5 +39,13 @@ public class Bullet : MonoBehaviour
         impactEffect.GetComponent<ParticleSystem>().Play();
         Destroy(impactEffect, 0.5f);
         Destroy(gameObject);
+    }
+
+    public void IgnoreCollisions(Collider[] colliders)
+    {
+        foreach (Collider otherCollider in colliders)
+        {
+            Physics.IgnoreCollision(GetComponent<Collider>(), otherCollider);
+        }
     }
 }

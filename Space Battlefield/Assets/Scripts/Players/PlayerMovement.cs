@@ -9,7 +9,7 @@ using Unity.Netcode;
 /// </summary>
 public class PlayerMovement : NetworkBehaviour
 {
-    public Rigidbody rb;
+    private Rigidbody rb;
     public Animator animator;
     public Animator handAnimator;
 
@@ -22,7 +22,7 @@ public class PlayerMovement : NetworkBehaviour
     private int swimVertical;
     private float jumpStrength = 10f;
     private float groundOffset = 1.1f;
-    public bool isGrounded;
+    private bool isGrounded;
     [SerializeField] LayerMask groundMask;
 
     private PlayerGravity playerGravity;
@@ -47,12 +47,15 @@ public class PlayerMovement : NetworkBehaviour
     private void Start()
     {
         playerGravity = GetComponent<PlayerGravity>();
+        rb = GetComponent<Rigidbody>();
+        
     }
 
     private void FixedUpdate()
     {
         if (IsOwner)
         {
+            rb.maxLinearVelocity = maxForce;
             // Get input
             Vector2 horizontalInput = gameActions.Player.Movement.ReadValue<Vector2>();
 
@@ -154,13 +157,12 @@ public class PlayerMovement : NetworkBehaviour
                     spaceship.GetComponentInChildren<Camera>().enabled = true;
                     spaceship.GetComponentInChildren<SpaceshipCamera>().enabled = true;                    
                     spaceship.GetComponentInChildren<AudioListener>().enabled = true;
-                    spaceship.GetComponentInChildren<TextureScaler>().enabled = true;
                 
                     // Interaction components
                     spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
                     spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
                     spaceship.GetComponentInChildren<SpaceshipMovement>().spaceshipCanvas.SetActive(true);
-                    spaceship.GetComponentInChildren<Cannons>().enabled = true;
+                    spaceship.GetComponent<Cannons>().enabled = true;
                     spaceship.GetComponent<Hull>().integrityBillboard.SetActive(false);
                     gameActions.Player.Disable();
 

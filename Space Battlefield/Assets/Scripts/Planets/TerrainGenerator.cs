@@ -10,6 +10,8 @@ public class TerrainGenerator : MonoBehaviour
 
     public GameObject impactEffect;
 
+    public Vector3 direction;
+
     void Start()
     {
         /*Vector3 center = sphere.transform.position;
@@ -62,7 +64,7 @@ public class TerrainGenerator : MonoBehaviour
 
     private void SpawnObject(Vector3 location, Vector3 center)
     {
-        Quaternion rot = Quaternion.FromToRotation(-Vector3.right, center - location);
+        Quaternion rot = Quaternion.FromToRotation(direction, center - location);
         Instantiate(prefab, location, rot);
     }
 }

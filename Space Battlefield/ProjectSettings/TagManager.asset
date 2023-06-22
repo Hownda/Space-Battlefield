@@ -7,14 +7,12 @@ TagManager:
   - GameManager
   - PlayerCamera
   - Spaceship
-  - Planet
   - Root
-  - Orbit
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Ground
+  - 
   - Water
   - UI
   - Volume
@@ -23,7 +21,7 @@ TagManager:
   - Particles
   - RenderAbove
   - Arms
-  - 
+  - Ground
   - 
   - 
   - 
