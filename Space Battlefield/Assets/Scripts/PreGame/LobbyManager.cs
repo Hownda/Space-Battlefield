@@ -12,8 +12,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public static LobbyManager instance;
 
     public InputField roomNameField;
-    public InputField ipInput;
-    public InputField portInput;
 
     public GameObject lobbyPanel;
     public GameObject roomPanel;
@@ -55,8 +53,8 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public void OnClickConfirmCreate()
     {
-        ipAddress = ipInput.text;
-        portAddress = portInput.text;
+        ipAddress = "142.93.100.187";
+        portAddress = 7777.ToString();
         RoomOptions roomOptions =
         new RoomOptions()
         {
@@ -77,27 +75,6 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     public void OnClickLocal()
     {
         ipAddress = "127.0.0.1";
-        portAddress = "7777";
-        RoomOptions roomOptions =
-        new RoomOptions()
-        {
-            MaxPlayers = 4,
-            BroadcastPropsChangeToAll = true
-        };
-
-        Hashtable roomCustomProps = new Hashtable();
-
-        roomCustomProps.Add("ip", ipAddress);
-        roomCustomProps.Add("port", portAddress);
-
-        roomOptions.CustomRoomProperties = roomCustomProps;
-
-        PhotonNetwork.CreateRoom(roomNameField.text, roomOptions);
-    }
-
-    public void OnClickLan()
-    {
-        ipAddress = "192.168.1.1";
         portAddress = "7777";
         RoomOptions roomOptions =
         new RoomOptions()
@@ -225,7 +202,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     public void OnClickStartGame()
     {
-        PhotonNetwork.LoadLevel("MainScene");
+        PhotonNetwork.LoadLevel("Game");
     }
 
     public void MainMenu()

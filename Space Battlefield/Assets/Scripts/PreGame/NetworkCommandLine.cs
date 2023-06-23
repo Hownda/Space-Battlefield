@@ -14,11 +14,11 @@ public class NetworkCommandLine : MonoBehaviour
     {
         networkManager = GetComponentInParent<NetworkManager>();
 
-        //if (Application.isEditor)
-        //{
+        if (Application.isEditor)
+        {
             NetworkButtons.SetActive(true);
-        //}
-        /*else
+        }
+        else
         {
             var args = GetCommandLineArgs();
 
@@ -44,9 +44,9 @@ public class NetworkCommandLine : MonoBehaviour
                 );
                 NetworkManager.Singleton.StartClient();
             }
-        }*/
+        }
     }
-    /*private Dictionary<string, string> GetCommandLineArgs()
+    private Dictionary<string, string> GetCommandLineArgs()
     {
         Dictionary<string, string> argsDictionary = new Dictionary<string, string>();
         var args = System.Environment.GetCommandLineArgs();
@@ -63,5 +63,5 @@ public class NetworkCommandLine : MonoBehaviour
             }
         }
         return argsDictionary;
-    }*/
+    }
 }

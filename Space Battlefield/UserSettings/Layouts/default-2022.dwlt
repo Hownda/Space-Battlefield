@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 2048
     height: 1060.8
   m_ShowMode: 4
-  m_Title: Scene
+  m_Title: Hierarchy
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 321}
   m_MaxSize: {x: 10000, y: 10000}
@@ -111,7 +111,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: ConsoleWindow
+  m_Name: ProjectBrowser
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -120,14 +120,14 @@ MonoBehaviour:
     y: 597.6
     width: 1558.4
     height: 413.20007
-  m_MinSize: {x: 101, y: 121}
-  m_MaxSize: {x: 4001, y: 4021}
-  m_ActualView: {fileID: 17}
+  m_MinSize: {x: 231, y: 271}
+  m_MaxSize: {x: 10001, y: 10021}
+  m_ActualView: {fileID: 12}
   m_Panes:
   - {fileID: 12}
   - {fileID: 17}
-  m_Selected: 1
-  m_LastSelected: 0
+  m_Selected: 0
+  m_LastSelected: 1
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -223,7 +223,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 54
+  controlID: 45
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -259,7 +259,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 1
   m_Script: {fileID: 12006, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: SceneView
+  m_Name: GameView
   m_EditorClassIdentifier: 
   m_Children: []
   m_Position:
@@ -270,12 +270,12 @@ MonoBehaviour:
     height: 597.6
   m_MinSize: {x: 202, y: 221}
   m_MaxSize: {x: 4002, y: 4021}
-  m_ActualView: {fileID: 15}
+  m_ActualView: {fileID: 16}
   m_Panes:
   - {fileID: 15}
   - {fileID: 16}
-  m_Selected: 0
-  m_LastSelected: 1
+  m_Selected: 1
+  m_LastSelected: 0
 --- !u!114 &12
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -321,7 +321,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Materials/Terrain
+    - Assets/Scenes
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -329,16 +329,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Materials/Terrain
+  - Assets/Scenes
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\hound\Documents\GitHub\Space-Battlefield\Space Battlefield
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 43.799927}
-    m_SelectedIDs: cc661000
-    m_LastClickedID: 1074892
-    m_ExpandedIDs: 00000000b0610100b2610100b4610100b6610100b8610100ba610100bc610100be610100c0610100c2610100c4610100c6610100c8610100ca610100cc610100
+    scrollPos: {x: 0, y: 79}
+    m_SelectedIDs: 1a640100
+    m_LastClickedID: 91162
+    m_ExpandedIDs: 00000000b0610100b2610100b4610100b6610100b8610100ba610100bc610100be610100c0610100c2610100c4610100c6610100c8610100ca610100cc61010012640100186401001a6401001c64010000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -506,9 +506,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
+      m_SelectedIDs: 9c640100
       m_LastClickedID: 0
-      m_ExpandedIDs: f4faffff
+      m_ExpandedIDs: 403ee4ff9244e4ff3a46e4fff6c7e5ffeacde5ffac4ee7ffb057e7ff3e58e7ff28d3e8ff30d3e8ff3cd3e8ffeed6e8ff04d8e8ffd658eaffee61eaff8262eaff78ddebff8cddebffa4ddebff66e1ebff32faebff447cedffa085edff5486edff3e01efff4601efff5201efff0405efff9c07efffae89f0ff0693f0ffba93f0fff40af2fffc0af2ff080bf2ffba0ef2ff2410f2ffd810f2ffc28bf3ffca8bf3ffd68bf3ff888ff3ffa499f3ffc61bf5ff401df5fff61df5fff098f6ffa2a2f6ff58a3f6ff921af8ff9a1af8ffa61af8ff581ef8ff1c20f8ffd220f8ffb29bf9ffc69bf9ffde9bf9ff9e9ff9ff38a4f9ff66adf9ffa8aff9ff94bbf9ff7cd6f9ffacd9f9ff9654fbff9e54fbffaa54fbff5c58fbff8e77fbff4478fbff36f3fcff46f3fcff5af3fcff14f7fcfffafbfcff4076feff387efefff4faffff7067010088670100888001009e800100ca880100e28801001c890100568901006c890100d48a0100e68a0100f48a0100068b01000c8b0100288b0100548b0100068c01001e8c01009e8c0100a88c0100b28c0100a28d0100b48d0100be8d0100d08d0100d88d01004cb00100ccb001006830030042260600e6260600022706002c170900a0900a0000910a0038910a0062910a00
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -888,9 +888,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 315.04977, y: -49.54613, z: 50.5857}
+    m_Target: {x: 405.1792, y: 198.10597, z: -651.16144}
     speed: 2
-    m_Value: {x: 315.04977, y: -49.54613, z: 50.5857}
+    m_Value: {x: 405.1792, y: 198.10597, z: -651.16144}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -936,9 +936,9 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: 0.03269811, y: -0.77924454, z: 0.038759146, w: 0.6246617}
+    m_Target: {x: 0.05336727, y: -0.03979018, z: -0.0008552065, w: -0.997776}
     speed: 2
-    m_Value: {x: 0.03269818, y: -0.7792462, z: 0.038759228, w: 0.624663}
+    m_Value: {x: 0.053367563, y: -0.0397904, z: -0.0008552112, w: -0.9977815}
   m_Size:
     m_Target: 1.2024672
     speed: 2
@@ -1034,7 +1034,7 @@ MonoBehaviour:
     m_HSlider: 0
     m_VSlider: 0
     m_IgnoreScrollWheelUntilClicked: 0
-    m_EnableMouseInput: 0
+    m_EnableMouseInput: 1
     m_EnableSliderZoomHorizontal: 0
     m_EnableSliderZoomVertical: 0
     m_UniformScale: 1
