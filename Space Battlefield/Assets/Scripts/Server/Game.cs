@@ -48,6 +48,7 @@ public class Game : NetworkBehaviour
             if (player.GetComponent<NetworkObject>().OwnerClientId == clientId)
             {
                 player.GetComponent<Healthbar>().TakeDamage(damage);
+                player.GetComponent<Healthbar>().DisplayDamageIndicatorClientRpc();
             }
         }
     }
@@ -59,6 +60,18 @@ public class Game : NetworkBehaviour
             if (spaceship.GetComponent<NetworkObject>().OwnerClientId == clientId)
             {
                 spaceship.GetComponent<Hull>().TakeDamage(damage);
+            }
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)] public void HealDamageOnPlayerServerRpc(ulong clientId, int amount)
+    {
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<NetworkObject>().OwnerClientId == clientId)
+            {
+                player.GetComponent<Healthbar>().Heal(amount);
             }
         }
     }

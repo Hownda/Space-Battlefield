@@ -21,9 +21,11 @@ public class PlayerMovement : NetworkBehaviour
     private bool jump;
     private int swimVertical;
     private float jumpStrength = 10f;
-    private float groundOffset = 1.1f;
+    public float groundOffset = 1.1f;
     private bool isGrounded;
     [SerializeField] LayerMask groundMask;
+    public float jumpCooldown = 0.3f;
+    private float jumpTime;
 
     private PlayerGravity playerGravity;
 
@@ -38,8 +40,7 @@ public class PlayerMovement : NetworkBehaviour
         gameActions.Player.Jump.canceled += _ => swimVertical = 0;
         gameActions.Player.Down.started += _ => swimVertical = -1;
         gameActions.Player.Down.canceled += _ => swimVertical = 0;
-
-        gameActions.Player.Enter.started += Enter;
+        
         gameActions.Spaceship.Disable();
         gameActions.Player.Enable();
     }
@@ -108,7 +109,11 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Jump(InputAction.CallbackContext obj)
     {
-        jump = true;
+        if (jumpTime + jumpCooldown <= Time.time)
+        {
+            jumpTime = Time.time;
+            jump = true;
+        }
     }
 
     private void Animate(Vector2 input)
@@ -142,39 +147,5 @@ public class PlayerMovement : NetworkBehaviour
             animator.SetInteger("Horizontal", -1);
             handAnimator.SetInteger("Horizontal", -1);
         }
-    }
-
-    private void Enter(InputAction.CallbackContext obj)
-    {
-        if (IsOwner)
-        {
-            GameObject[] spaceships = GameObject.FindGameObjectsWithTag("Spaceship");
-            foreach (GameObject spaceship in spaceships)
-            {
-                if (spaceship.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
-                {
-                    // Camera components
-                    spaceship.GetComponentInChildren<Camera>().enabled = true;
-                    spaceship.GetComponentInChildren<SpaceshipCamera>().enabled = true;                    
-                    spaceship.GetComponentInChildren<AudioListener>().enabled = true;
-                
-                    // Interaction components
-                    spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
-                    spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
-                    spaceship.GetComponentInChildren<SpaceshipMovement>().spaceshipCanvas.SetActive(true);
-                    spaceship.GetComponent<Cannons>().enabled = true;
-                    spaceship.GetComponent<Hull>().integrityBillboard.SetActive(false);
-                    gameActions.Player.Disable();
-
-                    DespawnPlayerServerRpc();
-                }
-            }
-        }
-    }
-
-    [ServerRpc]
-    private void DespawnPlayerServerRpc()
-    {
-        GetComponent<NetworkObject>().Despawn();
     }
 }

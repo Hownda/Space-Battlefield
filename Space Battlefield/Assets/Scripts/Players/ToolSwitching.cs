@@ -9,18 +9,18 @@ public class ToolSwitching : NetworkBehaviour
 {
     private MovementControls gameActions;
 
-    public GameObject[] hammers;
-    public GameObject[] blasters;
+    private Weapon[] weapons;
+    private Hammer[] hammers;
 
     public Image toolbarHammerBackground;
-    public Image toolbarBlasterBackground;
+    public Image toolbarWeaponBackground;
     public Text toolbarHammerText;
-    public Text toolbarBlasterText;
+    public Text toolbarWeaponText;
 
     private void Awake()
     {
         gameActions = KeybindManager.inputActions;
-        gameActions.Player.Hotbar1.started += SetBlasterActive;
+        gameActions.Player.Hotbar1.started += SetWeaponActive;
         gameActions.Player.Hotbar2.started += SetHammerActive;
         gameActions.Player.Enable();
     }
@@ -30,25 +30,35 @@ public class ToolSwitching : NetworkBehaviour
         if (IsOwner)
         {
             toolbarHammerText.text = KeybindManager.inputActions.Player.Hotbar2.GetBindingDisplayString();
-            toolbarBlasterText.text = KeybindManager.inputActions.Player.Hotbar1.GetBindingDisplayString();
-        }               
+            toolbarWeaponText.text = KeybindManager.inputActions.Player.Hotbar1.GetBindingDisplayString();
+        }
+        hammers = GetComponentsInChildren<Hammer>();
+        weapons = GetComponentsInChildren<Weapon>();
+        ActivateWeapon();
+        SetWeaponActiveServerRpc();
     }
 
-    public void SetBlasterActive(InputAction.CallbackContext obj)
+    public void SetWeaponActive(InputAction.CallbackContext obj)
     {
         if (IsOwner)
         {
-            foreach (GameObject hammer in hammers)
-            {
-                hammer.SetActive(false);
-                toolbarHammerBackground.color = new Color(127.5f, 0, 0, .3f);
-            }
-            GetComponentInChildren<Hammer>().enabled = false;
-            foreach (GameObject blaster in blasters)
-            {
-                blaster.SetActive(true);
-                toolbarBlasterBackground.color = new Color(0, 255, 0, .3f);
-            }
+            ActivateWeapon();
+            //SetWeaponActiveServerRpc();
+        }
+    }
+
+    private void ActivateWeapon()
+    {
+        foreach (Hammer hammer in hammers)
+        {
+            hammer.gameObject.SetActive(false);
+            toolbarHammerBackground.color = new Color(0, 0, 0, 0);
+        }
+
+        foreach (Weapon weapon in weapons)
+        {
+            weapon.gameObject.SetActive(true);
+            toolbarWeaponBackground.color = new Color(.3f, .3f, .3f, .4f);
         }
     }
 
@@ -56,18 +66,49 @@ public class ToolSwitching : NetworkBehaviour
     {
         if (IsOwner)
         {
-            foreach (GameObject hammer in hammers)
-            {
-                hammer.SetActive(true);
-                toolbarHammerBackground.color = new Color(0, 255, 0, .3f);
-            }
-            GetComponentInChildren<Hammer>().enabled = true;
-            foreach (GameObject blaster in blasters)
-            {
-                blaster.SetActive(false);
-                toolbarBlasterBackground.color = new Color(127.5f, 0, 0, .3f);
+            ActivateHammer();
+            //SetHammerActiveServerRpc();
+        }
+    }
 
-            }
+    private void ActivateHammer()
+    {
+        foreach (Hammer hammer in hammers)
+        {
+            hammer.gameObject.SetActive(true);
+            toolbarHammerBackground.color = new Color(.3f, .3f, .3f, .4f);
+        }
+
+        foreach (Weapon weapon in weapons)
+        {
+            weapon.gameObject.SetActive(false);
+            toolbarWeaponBackground.color = new Color(0, 0, 0, 0);
+        }
+    }
+
+    [ServerRpc] private void SetWeaponActiveServerRpc()
+    {
+        SetWeaponActiveClientRpc();
+    }
+
+    [ClientRpc] private void SetWeaponActiveClientRpc()
+    {
+        if (!IsOwner)
+        {
+            ActivateWeapon();
+        }
+    }
+
+    [ServerRpc] private void SetHammerActiveServerRpc()
+    {
+        SetHammerActiveClientRpc();
+    }
+
+    [ClientRpc] private void SetHammerActiveClientRpc()
+    {
+        if (!IsOwner)
+        {
+            ActivateHammer();
         }
     }
 }

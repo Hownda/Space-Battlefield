@@ -80,6 +80,24 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pickup"",
+                    ""type"": ""Button"",
+                    ""id"": ""c666caf2-0da0-4b1c-a032-de8bbfe11cdf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Eat"",
+                    ""type"": ""Button"",
+                    ""id"": ""ea7bc82d-b0a7-440e-9d94-5ff9942ca888"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -192,6 +210,28 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
                     ""action"": ""Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0b5573b4-c604-4205-8f5b-4ca5af75a94d"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pickup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""05cc5bbe-d7c8-4bfa-9987-d9706d1eb1a3"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Eat"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -239,6 +279,15 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
                     ""name"": ""Exit"",
                     ""type"": ""Button"",
                     ""id"": ""f32371ea-c86e-4277-871c-5ebbc7d65b2e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Boost"",
+                    ""type"": ""Button"",
+                    ""id"": ""49d7a4ff-49ba-424f-8dd6-12a8d2f949aa"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -388,6 +437,17 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
                     ""action"": ""Exit"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5993cc4c-c790-4316-8638-1f2447aeed08"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Boost"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -402,6 +462,8 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
         m_Player_Hotbar1 = m_Player.FindAction("Hotbar1", throwIfNotFound: true);
         m_Player_Hotbar2 = m_Player.FindAction("Hotbar2", throwIfNotFound: true);
         m_Player_Down = m_Player.FindAction("Down", throwIfNotFound: true);
+        m_Player_Pickup = m_Player.FindAction("Pickup", throwIfNotFound: true);
+        m_Player_Eat = m_Player.FindAction("Eat", throwIfNotFound: true);
         // Spaceship
         m_Spaceship = asset.FindActionMap("Spaceship", throwIfNotFound: true);
         m_Spaceship_Thrust = m_Spaceship.FindAction("Thrust", throwIfNotFound: true);
@@ -409,6 +471,7 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
         m_Spaceship_UpDown = m_Spaceship.FindAction("UpDown", throwIfNotFound: true);
         m_Spaceship_Roll = m_Spaceship.FindAction("Roll", throwIfNotFound: true);
         m_Spaceship_Exit = m_Spaceship.FindAction("Exit", throwIfNotFound: true);
+        m_Spaceship_Boost = m_Spaceship.FindAction("Boost", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -476,6 +539,8 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Hotbar1;
     private readonly InputAction m_Player_Hotbar2;
     private readonly InputAction m_Player_Down;
+    private readonly InputAction m_Player_Pickup;
+    private readonly InputAction m_Player_Eat;
     public struct PlayerActions
     {
         private @MovementControls m_Wrapper;
@@ -486,6 +551,8 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
         public InputAction @Hotbar1 => m_Wrapper.m_Player_Hotbar1;
         public InputAction @Hotbar2 => m_Wrapper.m_Player_Hotbar2;
         public InputAction @Down => m_Wrapper.m_Player_Down;
+        public InputAction @Pickup => m_Wrapper.m_Player_Pickup;
+        public InputAction @Eat => m_Wrapper.m_Player_Eat;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -513,6 +580,12 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
             @Down.started += instance.OnDown;
             @Down.performed += instance.OnDown;
             @Down.canceled += instance.OnDown;
+            @Pickup.started += instance.OnPickup;
+            @Pickup.performed += instance.OnPickup;
+            @Pickup.canceled += instance.OnPickup;
+            @Eat.started += instance.OnEat;
+            @Eat.performed += instance.OnEat;
+            @Eat.canceled += instance.OnEat;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -535,6 +608,12 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
             @Down.started -= instance.OnDown;
             @Down.performed -= instance.OnDown;
             @Down.canceled -= instance.OnDown;
+            @Pickup.started -= instance.OnPickup;
+            @Pickup.performed -= instance.OnPickup;
+            @Pickup.canceled -= instance.OnPickup;
+            @Eat.started -= instance.OnEat;
+            @Eat.performed -= instance.OnEat;
+            @Eat.canceled -= instance.OnEat;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -561,6 +640,7 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Spaceship_UpDown;
     private readonly InputAction m_Spaceship_Roll;
     private readonly InputAction m_Spaceship_Exit;
+    private readonly InputAction m_Spaceship_Boost;
     public struct SpaceshipActions
     {
         private @MovementControls m_Wrapper;
@@ -570,6 +650,7 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
         public InputAction @UpDown => m_Wrapper.m_Spaceship_UpDown;
         public InputAction @Roll => m_Wrapper.m_Spaceship_Roll;
         public InputAction @Exit => m_Wrapper.m_Spaceship_Exit;
+        public InputAction @Boost => m_Wrapper.m_Spaceship_Boost;
         public InputActionMap Get() { return m_Wrapper.m_Spaceship; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -594,6 +675,9 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
             @Exit.started += instance.OnExit;
             @Exit.performed += instance.OnExit;
             @Exit.canceled += instance.OnExit;
+            @Boost.started += instance.OnBoost;
+            @Boost.performed += instance.OnBoost;
+            @Boost.canceled += instance.OnBoost;
         }
 
         private void UnregisterCallbacks(ISpaceshipActions instance)
@@ -613,6 +697,9 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
             @Exit.started -= instance.OnExit;
             @Exit.performed -= instance.OnExit;
             @Exit.canceled -= instance.OnExit;
+            @Boost.started -= instance.OnBoost;
+            @Boost.performed -= instance.OnBoost;
+            @Boost.canceled -= instance.OnBoost;
         }
 
         public void RemoveCallbacks(ISpaceshipActions instance)
@@ -638,6 +725,8 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
         void OnHotbar1(InputAction.CallbackContext context);
         void OnHotbar2(InputAction.CallbackContext context);
         void OnDown(InputAction.CallbackContext context);
+        void OnPickup(InputAction.CallbackContext context);
+        void OnEat(InputAction.CallbackContext context);
     }
     public interface ISpaceshipActions
     {
@@ -646,5 +735,6 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
         void OnUpDown(InputAction.CallbackContext context);
         void OnRoll(InputAction.CallbackContext context);
         void OnExit(InputAction.CallbackContext context);
+        void OnBoost(InputAction.CallbackContext context);
     }
 }

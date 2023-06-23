@@ -31,14 +31,17 @@ public class Weapon : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKey(KeyCode.Mouse0) && Options.instance.disableCameraMovement == false)
+        if (IsOwner)
         {
-            Shoot();
-            handAnimator.SetBool("Shoot", true);
-        }
-        if (Input.GetKeyUp(KeyCode.Mouse0) && Options.instance.disableCameraMovement == false)
-        {
-            handAnimator.SetBool("Shoot", false);
+            if (Input.GetKey(KeyCode.Mouse0) && Options.instance.disableCameraMovement == false)
+            {
+                Shoot();
+                handAnimator.SetBool("Shoot", true);
+            }
+            if (Input.GetKeyUp(KeyCode.Mouse0) && Options.instance.disableCameraMovement == false)
+            {
+                handAnimator.SetBool("Shoot", false);
+            }
         }
     }
     

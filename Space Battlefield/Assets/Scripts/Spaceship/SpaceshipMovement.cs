@@ -17,10 +17,8 @@ public class SpaceshipMovement : NetworkBehaviour
     public float maxAngularVelocity;
 
     Rigidbody rb;
-    public GameObject playerPrefab;
 
     public AudioManager audioManager;
-    private GroundManeuvering groundManeuvering;
     private MovementControls gameActions;
     public Slider thrustSlider;
     public GameObject spaceshipCanvas;
@@ -37,7 +35,6 @@ public class SpaceshipMovement : NetworkBehaviour
     private void OnEnable()
     {
         gameActions = KeybindManager.inputActions;
-        gameActions.Spaceship.Exit.started += ExitInput;
         gameActions.Spaceship.Enable();       
     }
 
@@ -58,7 +55,6 @@ public class SpaceshipMovement : NetworkBehaviour
     {
         rb = GetComponent<Rigidbody>();
         flySoundStart = -(audioManager.GetAudioLength("spaceship-sound"));
-        groundManeuvering = GetComponent<GroundManeuvering>();
     }
 
     private void FixedUpdate()
@@ -75,10 +71,7 @@ public class SpaceshipMovement : NetworkBehaviour
     }    
 
     private void Roll()
-    {
-        //Quaternion rotation = transform.rotation;
-        //rotation *= Quaternion.Euler(0 , 0, roll1D * rollTorque * Time.deltaTime);
-        //transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * .8f);
+    { 
         rb.maxAngularVelocity = maxAngularVelocity;
         rb.AddRelativeTorque(0, 0, roll1D * rollTorque * Time.deltaTime, ForceMode.Force);        
     }
@@ -122,10 +115,7 @@ public class SpaceshipMovement : NetworkBehaviour
     }
 
     private void Strafe()
-    {
-        //Quaternion strafeRotation = transform.rotation;
-        //strafeRotation *= Quaternion.Euler(0, strafe1D * strafeForce * Time.deltaTime, 0);
-        //transform.rotation = Quaternion.Slerp(transform.rotation, strafeRotation, Time.deltaTime * .2f);
+    {    
         rb.AddRelativeTorque(0, strafe1D * strafeForce * Time.deltaTime, 0, ForceMode.Force);
     }
 
@@ -169,43 +159,5 @@ public class SpaceshipMovement : NetworkBehaviour
         {
             roll1D = context.ReadValue<float>();
         }
-    }
-
-    public void ExitInput(InputAction.CallbackContext obj)
-    {
-        if (IsOwner)
-        {
-            Exit();
-        }
-    }
-
-    public void Exit()
-    {
-        GetComponent<Hull>().integrityBillboard.SetActive(true);
-        GetComponentInChildren<Camera>().enabled = false;
-        GetComponentInChildren<SpaceshipCamera>().enabled = false;
-        GetComponentInChildren<SpaceshipMovement>().enabled = false;            
-        GetComponentInChildren<AudioListener>().enabled = false;
-        GetComponent<Cannons>().enabled = false;                       
-        SpawnPlayerServerRpc();
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void SpawnPlayerServerRpc()
-    {
-        Vector3 spawnPosition;
-        if (GetComponent<PlayerGravity>().gravityOrbit != null)
-        {
-            spawnPosition = transform.position + 3 * ((transform.position - GetComponent<PlayerGravity>().gravityOrbit.transform.position).normalized);
-        }
-        else
-        {
-            spawnPosition = transform.position + 3 * transform.up;
-        }
-        GameObject player = Instantiate(playerPrefab, new Vector3(spawnPosition.x, spawnPosition.y, spawnPosition.z), Quaternion.Euler(Vector3.zero));
-        player.GetComponent<NetworkObject>().Spawn();
-        player.GetComponent<NetworkObject>().ChangeOwnership(OwnerClientId);
-
-        GetComponent<Hull>().cam = player.GetComponentInChildren<Camera>();
     }
 }

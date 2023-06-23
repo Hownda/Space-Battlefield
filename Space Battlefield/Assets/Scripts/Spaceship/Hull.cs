@@ -137,7 +137,7 @@ public class Hull : NetworkBehaviour
 
         if (PlayerSpawned() == false)
         {
-            GetComponent<SpaceshipMovement>().Exit();
+            GetComponent<SpaceshipActions>().Exit();
         }
         Game.instance.RemoveSpaceshipServerRpc(OwnerClientId);
     }
@@ -194,9 +194,9 @@ public class Hull : NetworkBehaviour
         
         if (IsOwner)
         {
-            if (collision.transform.GetComponent<Resource>())
+            if (collision.transform.GetComponent<Rock>())
             {
-                collision.transform.GetComponent<Resource>().Mine(5*Time.deltaTime);
+                collision.transform.GetComponent<Rock>().Mine(5*Time.deltaTime);
             }
             else
             {

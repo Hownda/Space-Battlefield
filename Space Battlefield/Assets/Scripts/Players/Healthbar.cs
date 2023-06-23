@@ -42,16 +42,33 @@ public class Healthbar : NetworkBehaviour
         if (health.Value - damage <= 0)
         {
             Die();
-        }
+        }       
+    }
 
-        // Screen effect
-        Color color = damageIndicator.color;
-        color.a = 0.5f;
-        damageIndicator.color = color;
+    [ClientRpc] public void DisplayDamageIndicatorClientRpc()
+    {
+        if (IsOwner)
+        {
+            Color color = damageIndicator.color;
+            color.a = 0.5f;
+            damageIndicator.color = color;
+        }
     }
 
     private void Die()
     {
         Game.instance.TriggerVictoryServerRpc(OwnerClientId);     
+    }
+
+    public void Heal(int amount)
+    {
+        if (health.Value + amount > 100)
+        {
+            health.Value = 100;
+        }
+        else
+        {
+            health.Value += amount;
+        }
     }
 }

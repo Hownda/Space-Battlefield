@@ -89,9 +89,10 @@ public class Hammer : NetworkBehaviour
         if (Physics.Raycast(ray, out hit, range, interactableObjects))
         {
             //Mining
-            if (hit.transform.GetComponent<Resource>())
+            if (hit.transform.GetComponent<Rock>())
             {
-                hit.transform.GetComponent<Resource>().Mine(miningPower);
+                hit.transform.GetComponent<Rock>().Mine(miningPower);
+                MineServerRpc(ObjectDictionary.instance.GetIdOfObject(hit.transform.gameObject));
                 playerNetwork.AddObjectToInventoryServerRpc("Rock", 1, OwnerClientId);
                 audioManager.Play("stone-mining");
             }
@@ -107,11 +108,25 @@ public class Hammer : NetworkBehaviour
                         if (hit.transform.GetComponent<Hull>().integrity.Value < 100)
                         {
                             Game.instance.RepairDamageOnSpaceshipServerRpc(OwnerClientId, repairPower);
-                            playerNetwork.RemoveObjectFromInventoryServerRpc("Rock", 5);
+                            playerNetwork.RemoveObjectFromInventoryServerRpc("Rock", 5, OwnerClientId);
                         }
                     }                   
                 }
             }          
         }       
+    }
+
+    [ServerRpc] private void MineServerRpc(int objectId)
+    {
+        MineClientRpc(objectId);
+    }
+
+    [ClientRpc] private void MineClientRpc(int objectId)
+    {
+        if (!IsOwner) 
+        {
+            GameObject rock = ObjectDictionary.instance.GetObjectById(objectId);            
+            rock.GetComponent<Rock>().Mine(miningPower);
+        }
     }
 }

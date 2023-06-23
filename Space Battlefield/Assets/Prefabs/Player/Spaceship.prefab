@@ -381,6 +381,7 @@ GameObject:
   - component: {fileID: 8362088498404685245}
   - component: {fileID: 6719088366921857719}
   - component: {fileID: 656202453953485343}
+  - component: {fileID: 6416423242754563313}
   m_Layer: 10
   m_Name: Spaceship
   m_TagString: Spaceship
@@ -554,6 +555,18 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: dd918624-0db1-4a20-8dfb-1a05dcaba62e
     m_ActionName: Player/Down[/Keyboard/c]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: c666caf2-0da0-4b1c-a032-de8bbfe11cdf
+    m_ActionName: Player/Pickup[/Keyboard/e]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: ea7bc82d-b0a7-440e-9d94-5ff9942ca888
+    m_ActionName: Player/Eat[/Mouse/rightButton]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 49d7a4ff-49ba-424f-8dd6-12a8d2f949aa
+    m_ActionName: Spaceship/Boost[/Mouse/rightButton]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Spaceship
@@ -639,7 +652,6 @@ MonoBehaviour:
   velocityFactor: 15
   maxVelocity: 0
   maxAngularVelocity: 0.7
-  playerPrefab: {fileID: 5135206612962206665, guid: 107398602555352449ed4876916bd6d4, type: 3}
   audioManager: {fileID: 7435756190603082620}
   thrustSlider: {fileID: 2500013307839055843}
   spaceshipCanvas: {fileID: 7540671120235623670}
@@ -743,6 +755,20 @@ MonoBehaviour:
   - {fileID: 4518657456322417397}
   - {fileID: 3126739658667962254}
   - {fileID: 812195899157115372}
+--- !u!114 &6416423242754563313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925199570817960696}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac4d45677d2da1e4d8a0549aa02325d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 5135206612962206665, guid: 107398602555352449ed4876916bd6d4, type: 3}
+  boostDuration: 0
 --- !u!1 &1780327699387379898
 GameObject:
   m_ObjectHideFlags: 0
