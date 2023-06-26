@@ -1,213 +1,295 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
-using Photon.Realtime;
 using UnityEngine.UI;
+using Unity.Services.Core;
+using Unity.Services.Authentication;
+using Unity.Services.Lobbies;
+using Unity.Services.Lobbies.Models;
+using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-public class LobbyManager : MonoBehaviourPunCallbacks
+#if UNITY_EDITOR
+using ParrelSync;
+#endif
+
+public class LobbyManager : MonoBehaviour
 {
-    public static LobbyManager instance;
-
-    public InputField roomNameField;
-
-    public GameObject lobbyPanel;
+    public InputField roomNameInput;
+    public GameObject roomItemPrefab;
+    public GameObject playerItemPrefab;
+    public Transform roomsParent;
+    public Transform playerParent;
     public GameObject roomPanel;
-    public GameObject ipPanel;
-    public Text roomName;
+    public Text roomNameText;
 
-    public RoomItem roomItemPrefab;
-    List<RoomItem> roomItemsList = new List<RoomItem>();
-    public Transform contentObject;
+    private List<GameObject> roomsList = new List<GameObject>();
+    private List<GameObject> playerList = new List<GameObject>();
+    private Lobby currentLobby;
+    private Lobby hostedLobby;
+    private float heartbeatTimer;
+    private float refreshTimer;
 
-    public float timeBetweenUpdates = 1.5f;
-    float nextUpdateTime;
-
-    public List<PlayerItem> playerItemsList = new List<PlayerItem>();
-
-    public PlayerItem playerItemPrefab;
-    public Transform content;
-
-    [Header("Room Panel UI")]
-    public GameObject playButton;
-
-    [Header("IP Menu UI")]
-    private string ipAddress;
-    private string portAddress;
+    public GameObject errorWindow;
+    public GameObject startButton;
 
     private void Start()
     {
-        instance = this;
-        PhotonNetwork.JoinLobby();
-    }
-
-    public void OnClickCreate()
-    {
-        if (roomNameField.text.Length >= 1)
-        {
-            ipPanel.SetActive(true);
-        }
-    }
-
-    public void OnClickConfirmCreate()
-    {
-        ipAddress = "142.93.100.187";
-        portAddress = 7777.ToString();
-        RoomOptions roomOptions =
-        new RoomOptions()
-        {
-            MaxPlayers = 4,
-            BroadcastPropsChangeToAll = true
-        };
-
-        Hashtable roomCustomProps = new Hashtable();
-
-        roomCustomProps.Add("ip", ipAddress);
-        roomCustomProps.Add("port", portAddress);
-
-        roomOptions.CustomRoomProperties = roomCustomProps;
-
-        PhotonNetwork.CreateRoom(roomNameField.text, roomOptions);        
-    }
-
-    public void OnClickLocal()
-    {
-        ipAddress = "127.0.0.1";
-        portAddress = "7777";
-        RoomOptions roomOptions =
-        new RoomOptions()
-        {
-            MaxPlayers = 4,
-            BroadcastPropsChangeToAll = true
-        };
-
-        Hashtable roomCustomProps = new Hashtable();
-
-        roomCustomProps.Add("ip", ipAddress);
-        roomCustomProps.Add("port", portAddress);
-
-        roomOptions.CustomRoomProperties = roomCustomProps;
-
-        PhotonNetwork.CreateRoom(roomNameField.text, roomOptions);
-    }
-
-    public override void OnJoinedRoom()
-    {
-        lobbyPanel.SetActive(false);
-        ipPanel.SetActive(false);
-        roomPanel.SetActive(true);
-        roomName.text = PhotonNetwork.CurrentRoom.Name;
-        UpdatePlayerList();
-    }
-
-    public override void OnRoomListUpdate(List<RoomInfo> roomList)
-    {
-        if (Time.time >= nextUpdateTime)
-        {
-            UpdateRoomList(roomList);
-            nextUpdateTime = Time.time + timeBetweenUpdates;
-        }
-    }
-
-    void UpdateRoomList(List<RoomInfo> list)
-    {
-        foreach (RoomItem item in roomItemsList)
-        {
-            Destroy(item.gameObject);
-        }
-        roomItemsList.Clear();
-
-        foreach (RoomInfo room in list)
-        {
-            RoomItem newRoom = Instantiate(roomItemPrefab, contentObject);
-            newRoom.SetRoomName(room.Name);
-            roomItemsList.Add(newRoom);
-        }
-    }
-
-    public void JoinRoom(string roomName)
-    {
-        PhotonNetwork.JoinRoom(roomName);
-    }
-
-    public void OnClickLeaveRoom()
-    {
-        PhotonNetwork.LeaveRoom();
-    }
-
-    public override void OnLeftRoom()
-    {
-        roomPanel.SetActive(false);
-        lobbyPanel.SetActive(true);
-    }
-
-    public override void OnConnectedToMaster()
-    {
-        PhotonNetwork.JoinLobby();
-    }
-
-    public void UpdatePlayerList()
-    {
-        foreach (PlayerItem item in playerItemsList)
-        {
-            Destroy(item.gameObject);
-        }
-        playerItemsList.Clear();
-
-        if (PhotonNetwork.CurrentRoom == null)
-        {
-            return;
-        }
-
-        foreach (KeyValuePair<int, Player> player in PhotonNetwork.CurrentRoom.Players)
-        {
-            PlayerItem newPlayerItem = Instantiate(playerItemPrefab, content);
-            newPlayerItem.SetPlayerInfo(player.Value);           
-            playerItemsList.Add(newPlayerItem);
-        }
-    }
-
-    public void OnTeamValueChanged()
-    {
-        UpdatePlayerList();
-    }
-
-    public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        UpdatePlayerList();
-    }
-
-    public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
-        UpdatePlayerList();
+        CreateOrJoinLobby();
     }
 
     private void Update()
     {
-        if (PhotonNetwork.MasterClient != null)
-        {
-            if (PhotonNetwork.CurrentRoom.PlayerCount == 2 && PhotonNetwork.IsMasterClient)
-            {
-                playButton.SetActive(true);
-            }
+        LobbyHeartbeat();
+        Refresh();
+        RefreshPlayers();
+    }
 
-            else
+    private async void LobbyHeartbeat()
+    {
+        if (hostedLobby != null)
+        {
+            startButton.SetActive(true);
+            heartbeatTimer -= Time.deltaTime;
+            if (heartbeatTimer <= 0)
             {
-                playButton.SetActive(false);
+                heartbeatTimer = 15;
+
+                await LobbyService.Instance.SendHeartbeatPingAsync(currentLobby.Id);
+            }
+        }
+        else
+        {
+            startButton.SetActive(false);
+        }
+    }
+
+    private void Refresh()
+    {
+        if (currentLobby == null && AuthenticationService.Instance.IsSignedIn)
+        {
+            refreshTimer -= Time.deltaTime;
+            if (refreshTimer <= 0)
+            {
+                refreshTimer = 1.1f;
+                ListLobbies();
             }
         }
     }
 
-    public void OnClickStartGame()
+    private void RefreshPlayers()
     {
-        PhotonNetwork.LoadLevel("Game");
+        if (currentLobby != null)
+        {
+            refreshTimer -= Time.deltaTime;
+            if (refreshTimer <= 0)
+            {
+                refreshTimer = 1.1f;
+                ListPlayers();
+            }
+        }
     }
 
-    public void MainMenu()
+    public async void CreateOrJoinLobby()
     {
-        SceneManager.LoadScene("MainMenu");
-        PhotonNetwork.Disconnect();
+        await Authenticate();
+
+        AuthenticationService.Instance.SignedIn += () =>
+        {
+            Debug.Log("Signed in as player id: " + AuthenticationService.Instance.PlayerId);
+        };
+
+        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+    }
+
+    private async Task Authenticate()
+    {
+        var options = new InitializationOptions();
+
+#if UNITY_EDITOR
+        options.SetProfile(ClonesManager.IsClone() ? ClonesManager.GetArgument() : "Primary");
+#endif
+
+        await UnityServices.InitializeAsync(options);
+    }
+
+    public async void CreateLobby()
+    {
+        try
+        {
+            string lobbyName = roomNameInput.text;
+            int maxPlayers = 2;
+
+            CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
+            {
+                Player = new Player
+                {
+                    Data = new Dictionary<string, PlayerDataObject>
+                    {
+                        { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, PlayerData.instance.GetUsername()) }
+                    }
+                }
+            };
+
+            Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxPlayers, createLobbyOptions);
+            hostedLobby = lobby;
+            currentLobby = hostedLobby;
+
+            Debug.Log("Created Lobby with name: " + lobbyName + " and player count: " + maxPlayers.ToString());
+
+            OnJoinedLobby(currentLobby.Name);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    public async void JoinLobby(string roomId)
+    {
+        try
+        {
+            JoinLobbyByIdOptions joinLobbyByIdOptions = new JoinLobbyByIdOptions
+            {
+                Player = new Player
+                {
+                    Data = new Dictionary<string, PlayerDataObject>
+                    {
+                        { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, PlayerData.instance.GetUsername()) }
+                    }
+                }
+            };
+
+            await Lobbies.Instance.JoinLobbyByIdAsync(roomId, joinLobbyByIdOptions);
+            currentLobby = await Lobbies.Instance.GetLobbyAsync(roomId);
+            OnJoinedLobby(currentLobby.Name);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    public async void LeaveLobby()
+    {
+        try
+        {
+            await LobbyService.Instance.RemovePlayerAsync(currentLobby.Id, AuthenticationService.Instance.PlayerId);
+            roomPanel.SetActive(false);
+            currentLobby = null;
+            hostedLobby = null;
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    public async void KickPlayer(string id)
+    {
+        try
+        {
+            await LobbyService.Instance.RemovePlayerAsync(currentLobby.Id, id);
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    private async void ListLobbies()
+    {
+        try
+        {
+            QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
+
+            Debug.Log("Lobbies found: " + queryResponse.Results.Count);
+            foreach (GameObject room in roomsList)
+            {
+                Destroy(room);
+            }
+            roomsList.Clear();
+
+            foreach (Lobby lobby in queryResponse.Results)
+            {
+                GameObject roomItem = Instantiate(roomItemPrefab, roomsParent);
+                roomItem.GetComponentInChildren<RoomItem>().SetRoomName(lobby.Name);
+                roomItem.GetComponentInChildren<RoomItem>().SetRoomId(lobby.Id);
+                roomsList.Add(roomItem);
+            }
+        }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    private void OnJoinedLobby(string name)
+    {
+        roomPanel.SetActive(true);
+        roomNameText.text = name;
+    }
+
+    private async void ListPlayers()
+    {
+        try
+        {
+            Lobby joinedLobby = await Lobbies.Instance.GetLobbyAsync(currentLobby.Id);
+
+            ClearList(playerList);
+
+            foreach (Player player in joinedLobby.Players)
+            {
+                if (player.Data == null)
+                {
+                    ClearList(playerList);
+                    currentLobby = null;
+                    roomPanel.SetActive(false);
+                    errorWindow.SetActive(true);
+                    break;
+                }
+
+                GameObject playerItem = Instantiate(playerItemPrefab, playerParent);                
+                playerItem.GetComponent<PlayerItem>().SetPlayerData(player.Data["PlayerName"].Value, player.Id);                    
+                playerList.Add(playerItem);
+
+                if (joinedLobby.HostId == AuthenticationService.Instance.PlayerId)
+                {
+                    hostedLobby = currentLobby;
+                    if (player.Id != AuthenticationService.Instance.PlayerId)
+                    {
+                        playerItem.GetComponent<PlayerItem>().EnableKick();
+                    }
+                }
+            }
+        } catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    private void ClearList(List<GameObject> list)
+    {
+        foreach (GameObject go in list)
+        {
+            Destroy(go);
+        }
+        playerList.Clear();
+    }
+
+    public async void OnClickMainMenu()
+    {
+        try
+        {
+            if (currentLobby != null)
+            {
+                await LobbyService.Instance.RemovePlayerAsync(currentLobby.Id, AuthenticationService.Instance.PlayerId);
+            }
+            AuthenticationService.Instance.SignOut();
+            SceneManager.LoadScene("MainMenu");
+        } 
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+        }
     }
 }

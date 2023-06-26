@@ -2,36 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Pun;
-using Photon.Realtime;
 
-public class PlayerItem : MonoBehaviourPunCallbacks
+public class PlayerItem : MonoBehaviour
 {
-    Player player;
-    public Text playerName;
-    public static PlayerItem instance;
-    public int currentParentIndex;
-    private PhotonView PV;
+    public Text nameField;
+    public string id;
+    public GameObject kickButton;
 
-    public string ipAddress;
-    public string portAddress;
+    private LobbyManager lobbyManager;
 
-    public ExitGames.Client.Photon.Hashtable playerProperties = new ExitGames.Client.Photon.Hashtable();
-
-    private void Awake()
+    private void Start()
     {
-        instance = this;
+        lobbyManager = FindObjectOfType<LobbyManager>();
     }
 
-    void Start()
+    public void SetPlayerData(string name, string newId)
     {
-        PV = GetComponent<PhotonView>();
+        nameField.text = name;
+        id = newId;
     }
 
-    public void SetPlayerInfo(Player _player)
+    public void EnableKick()
     {
-        playerName.text = _player.NickName;
-        player = _player;
+        kickButton.SetActive(true);
+    }
+
+    public void OnClickKick()
+    {
+        lobbyManager.KickPlayer(id);
     }
 
 }

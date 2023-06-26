@@ -13,6 +13,7 @@ public class NetworkCommandLine : MonoBehaviour
     private void Start()
     {
         networkManager = GetComponentInParent<NetworkManager>();
+        Application.targetFrameRate = 60;
 
         if (Application.isEditor)
         {
