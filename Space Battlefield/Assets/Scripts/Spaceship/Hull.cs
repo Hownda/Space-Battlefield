@@ -1,13 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.UI;
 using Unity.Netcode;
 using UnityEngine;
 
 public class Hull : NetworkBehaviour
 {
-    private PlayerNetwork playerNetwork;
-
     public NetworkVariable<float> integrity = new NetworkVariable<float>(100, writePerm: NetworkVariableWritePermission.Server);
     public Slider integritySlider;
 
@@ -29,7 +26,7 @@ public class Hull : NetworkBehaviour
     public LayerMask ground;
     public float distanceFromGround;
 
-    public Material red;
+    public GameObject warning;
 
     void Start()
     {
@@ -49,16 +46,6 @@ public class Hull : NetworkBehaviour
                     cam = player.GetComponentInChildren<Camera>();
                 }
             }
-
-            GameObject[] playerRoots = GameObject.FindGameObjectsWithTag("Root");
-            foreach (GameObject playerRoot in playerRoots)
-            {
-                if (playerRoot.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
-                {
-                    playerNetwork = playerRoot.GetComponent<PlayerNetwork>();
-                }
-            }
-
             IgnoreCollisions();
        }
        else
@@ -92,6 +79,7 @@ public class Hull : NetworkBehaviour
             {
                 Debug.DrawLine(transform.position, hit.point);
             }
+            CheckBounds();
         }
     }
 
@@ -222,4 +210,20 @@ public class Hull : NetworkBehaviour
         colliding = false;
         GetComponent<SpaceshipMovement>().upDown1D = 0;
     }
+
+    private void CheckBounds()
+    {
+        if (transform.position.y < -550 || transform.position.y > 550
+            || transform.position.z < -800 || transform.position.z > 800
+            || transform.position.x < -750 || transform.position.x > 750)
+        {
+            Game.instance.DealDamageToSpaceshipServerRpc(OwnerClientId, 0.025f);
+            warning.SetActive(true);
+        }
+        else
+        {
+            warning.SetActive(false);
+        }
+    }
+
 }

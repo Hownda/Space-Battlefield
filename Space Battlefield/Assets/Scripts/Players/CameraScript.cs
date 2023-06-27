@@ -27,20 +27,14 @@ public class CameraScript : NetworkBehaviour
             playerCanvas.SetActive(false);
             DisableBodyParts();
         }
-        if (PlayerPrefs.HasKey("Sensitivity"))
-        {
-            mouseSensitivity = PlayerPrefs.GetFloat("Sensitivity");
-        }
-        else
-        {
-            mouseSensitivity = 200;
-        }
     }
 
     void Update()
     {
-        if (IsOwner && Options.instance.disableCameraMovement == false)
+        if (IsOwner && PlayerData.instance.disableCameraMovement == false)
         {
+            mouseSensitivity = PlayerData.instance.mouseSensitivity;
+
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 

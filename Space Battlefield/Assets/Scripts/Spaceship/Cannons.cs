@@ -43,7 +43,7 @@ public class Cannons : NetworkBehaviour
                 alpha -= 0.005f;
                 crosshairArea.color = new Color(crosshairArea.color.r, crosshairArea.color.g, crosshairArea.color.b, alpha);
             }
-            if (Input.GetKey(KeyCode.Mouse0) && Options.instance.disableCameraMovement == false)
+            if (Input.GetKey(KeyCode.Mouse0) && PlayerData.instance.disableCameraMovement == false)
             {                
                 Shoot();
             }

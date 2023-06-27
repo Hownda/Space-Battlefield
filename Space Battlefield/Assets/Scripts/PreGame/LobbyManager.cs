@@ -7,6 +7,8 @@ using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
 
 #if UNITY_EDITOR
 using ParrelSync;
@@ -119,13 +121,26 @@ public class LobbyManager : MonoBehaviour
             string lobbyName = roomNameInput.text;
             int maxPlayers = 2;
 
-            CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
+            CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions() 
             {
+                Data = new Dictionary<string, DataObject> {
+                { "Start", new DataObject(
+                    visibility: DataObject.VisibilityOptions.Member,
+                    value: "0",
+                    index: DataObject.IndexOptions.N1) },
+
+                    { "ConnectionKey", new DataObject(
+                    visibility: DataObject.VisibilityOptions.Member,
+                    value: "null",
+                    index: DataObject.IndexOptions.S1) }
+
+                },
+
                 Player = new Player
                 {
                     Data = new Dictionary<string, PlayerDataObject>
                     {
-                        { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, PlayerData.instance.GetUsername()) }
+                        { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, PlayerData.instance.username) }
                     }
                 }
             };
@@ -135,7 +150,6 @@ public class LobbyManager : MonoBehaviour
             currentLobby = hostedLobby;
 
             Debug.Log("Created Lobby with name: " + lobbyName + " and player count: " + maxPlayers.ToString());
-
             OnJoinedLobby(currentLobby.Name);
         }
         catch (LobbyServiceException e)
@@ -154,13 +168,14 @@ public class LobbyManager : MonoBehaviour
                 {
                     Data = new Dictionary<string, PlayerDataObject>
                     {
-                        { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, PlayerData.instance.GetUsername()) }
+                        { "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, PlayerData.instance.username) }
                     }
                 }
             };
 
             await Lobbies.Instance.JoinLobbyByIdAsync(roomId, joinLobbyByIdOptions);
             currentLobby = await Lobbies.Instance.GetLobbyAsync(roomId);
+            
             OnJoinedLobby(currentLobby.Name);
         }
         catch (LobbyServiceException e)
@@ -234,6 +249,11 @@ public class LobbyManager : MonoBehaviour
         try
         {
             Lobby joinedLobby = await Lobbies.Instance.GetLobbyAsync(currentLobby.Id);
+            if (joinedLobby.Data["Start"].Value == "1" && joinedLobby.Data["ConnectionKey"].Value != "null")
+            {
+                SceneManager.LoadScene("Game");
+                PlayerData.instance.key = joinedLobby.Data["ConnectionKey"].Value;
+            }
 
             ClearList(playerList);
 
@@ -286,10 +306,35 @@ public class LobbyManager : MonoBehaviour
             }
             AuthenticationService.Instance.SignOut();
             SceneManager.LoadScene("MainMenu");
+            Destroy(PlayerData.instance.gameObject);
         } 
         catch (LobbyServiceException e)
         {
             Debug.Log(e);
         }
+    }
+
+    public async void OnClickStart()
+    {
+        Allocation allocation = await RelayService.Instance.CreateAllocationAsync(2);
+        PlayerData.instance.allocation = allocation;
+        PlayerData.instance.isHost = true;
+
+        UpdateLobbyOptions updateOptions = new UpdateLobbyOptions();
+        updateOptions.Data = new Dictionary<string, DataObject>()
+        {
+            { "Start", new DataObject(
+                visibility: DataObject.VisibilityOptions.Member,
+                value: "1",
+                index: DataObject.IndexOptions.N1) },
+
+            { "ConnectionKey", new DataObject(
+                visibility: DataObject.VisibilityOptions.Member,
+                value: await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId),
+                index: DataObject.IndexOptions.S1) }
+        };      
+        await LobbyService.Instance.UpdateLobbyAsync(currentLobby.Id, updateOptions);
+        
+        SceneManager.LoadScene("Game");
     }
 }

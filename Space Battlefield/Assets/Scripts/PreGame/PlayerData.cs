@@ -1,25 +1,139 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
 
 public class PlayerData : MonoBehaviour
 {
     public static PlayerData instance;
-    private string username;
+
+    // Networking
+    public bool isHost = false;
+    public string username;
+    private bool inGame = false;
+    public Allocation allocation;
+    public string key;
+
+    // Settings
+    public GameObject settingsCanvas;
+    public GameObject settingsPanel;
+    public GameObject options;
+    public float mouseSensitivity = 200;
+    public bool disableCameraMovement;
 
     private void Awake()
     {
         instance = this;
+        username = null;
         DontDestroyOnLoad(gameObject);
     }
 
-    public string GetUsername()
+    private void Update()
     {
-        return username;
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ToggleSettings();
+        }
+
+        ManageRelay();        
     }
 
-    public void SetUsername(string newUsername)
+    private void ManageRelay()
     {
-        username = newUsername;
-    }    
+        if (SceneManager.GetActiveScene().name == "Game" && inGame == false)
+        {
+            if (isHost && allocation != null)
+            {
+                CreateRelay();
+            }
+            if (isHost == false)
+            {
+                JoinRelay();
+            }
+            inGame = true;
+        }
+    }
+
+    private void CreateRelay()
+    {
+        try
+        {
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetHostRelayData(
+                allocation.RelayServer.IpV4,
+                (ushort)allocation.RelayServer.Port,
+                allocation.AllocationIdBytes,
+                allocation.Key,
+                allocation.ConnectionData
+                );
+
+            NetworkManager.Singleton.StartHost();
+        }
+        catch (RelayServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    private async void JoinRelay()
+    {
+        try
+        {
+            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(key);
+
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetClientRelayData(
+                joinAllocation.RelayServer.IpV4,
+                (ushort)joinAllocation.RelayServer.Port,
+                joinAllocation.AllocationIdBytes,
+                joinAllocation.Key,
+                joinAllocation.ConnectionData,
+                joinAllocation.HostConnectionData
+                );
+
+            NetworkManager.Singleton.StartClient();
+        }
+        catch (RelayServiceException e)
+        {
+            Debug.Log(e);
+        }
+    }
+
+    public void ToggleSettings()
+    {
+        // Deactivate
+        if (settingsCanvas.activeInHierarchy)
+        {            
+            if (SceneManager.GetActiveScene().name == "Game")
+            {
+                settingsPanel.SetActive(false);
+                disableCameraMovement = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+            else
+            {                
+                Cursor.lockState = CursorLockMode.None;
+            }
+            options.SetActive(false);
+            settingsCanvas.SetActive(false);
+        }
+        // Activate
+        else
+        {
+            if (SceneManager.GetActiveScene().name == "Game")
+            {
+                options.SetActive(true);
+                settingsPanel.SetActive(false);
+                disableCameraMovement = true;
+            }
+            else
+            {
+                options.SetActive(false);
+                Cursor.lockState = CursorLockMode.None;
+            }
+            settingsCanvas.SetActive(true);
+        }
+    } 
 }

@@ -2334,7 +2334,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 146631328}
         m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
-        m_MethodName: OnClickStartGame
+        m_MethodName: OnClickStart
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

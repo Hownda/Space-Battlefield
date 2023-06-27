@@ -9,7 +9,6 @@ public class MenuManager : MonoBehaviour
 {
     [Header("Main Menu")]
     public GameObject settingsPanel;
-    public GameObject mainPanel;
 
     // Main Menu 
     public void OnClickPlay()
@@ -25,7 +24,6 @@ public class MenuManager : MonoBehaviour
     public void OnClickSettings()
     {
         settingsPanel.SetActive(true);
-        mainPanel.SetActive(false);
     }
 
     public void OnClickQuit()

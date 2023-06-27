@@ -33,14 +33,17 @@ public class Weapon : NetworkBehaviour
     {
         if (IsOwner)
         {
-            if (Input.GetKey(KeyCode.Mouse0) && Options.instance.disableCameraMovement == false)
+            if (PlayerData.instance.disableCameraMovement == false)
             {
-                Shoot();
-                handAnimator.SetBool("Shoot", true);
-            }
-            if (Input.GetKeyUp(KeyCode.Mouse0) && Options.instance.disableCameraMovement == false)
-            {
-                handAnimator.SetBool("Shoot", false);
+                if (Input.GetKey(KeyCode.Mouse0))
+                {
+                    Shoot();
+                    handAnimator.SetBool("Shoot", true);
+                }
+                if (Input.GetKeyUp(KeyCode.Mouse0))
+                {
+                    handAnimator.SetBool("Shoot", false);
+                }
             }
         }
     }

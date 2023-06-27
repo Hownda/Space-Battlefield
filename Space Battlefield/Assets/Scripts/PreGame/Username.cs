@@ -13,9 +13,9 @@ public class Username : MonoBehaviour
 
     private void Start()
     {
-        if (PlayerData.instance.GetUsername() != null)
+        if (PlayerData.instance.username != null)
         {
-            usernameText.text = PlayerData.instance.GetUsername();
+            usernameText.text = PlayerData.instance.username;
             connectButton.gameObject.SetActive(true);
             changeNameButton.gameObject.SetActive(true);
             usernameInput.gameObject.SetActive(false);
@@ -50,7 +50,7 @@ public class Username : MonoBehaviour
     {        
         if (usernameInput.text.Length > 3)
         {
-            PlayerData.instance.SetUsername(usernameInput.text);
+            PlayerData.instance.username = usernameInput.text;
         }
         SceneManager.LoadScene("Lobby");
     }
@@ -58,5 +58,6 @@ public class Username : MonoBehaviour
     public void OnClickBack()
     {
         SceneManager.LoadScene("MainMenu");
+        Destroy(PlayerData.instance.gameObject);
     }
 }

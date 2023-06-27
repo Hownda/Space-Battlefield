@@ -6,23 +6,29 @@ using UnityEngine.Audio;
 
 public class SettingsManager : MonoBehaviour
 {
-    public static SettingsManager instance;
+    public int resolutionIndex;
+    public float volume;
+    public float sensitivity;
+    public int fullscreen;
 
-    public Toggle isFullscreen;
-    public Slider volumeSlider;
-    public AudioMixer audioMixer;
-
+    public Slider volumeSlider;    
     public Dropdown resolutionDropdown;
-
+    public Toggle isFullscreen;
     public Slider sensitivitySlider;
+
+    public AudioMixer audioMixer;
 
     Resolution[] resolutions;
 
-    private void Awake()
-    {
-        instance = this;
-    }
     private void Start()
+    {
+        LoadResolutions();
+        LoadGraphicsSettings();
+        LoadControlsSettings();
+        LoadSoundSettings();
+    } 
+
+    private void LoadResolutions()
     {
         resolutions = Screen.resolutions;
 
@@ -43,25 +49,6 @@ public class SettingsManager : MonoBehaviour
         resolutionDropdown.AddOptions(options);
         resolutionDropdown.value = currentResolutionIndex;
         resolutionDropdown.RefreshShownValue();
-
-        // Volume Settings
-        if (PlayerPrefs.HasKey("MasterVolume"))
-        {
-            LoadVolume();
-        }
-        else
-        {
-            SetMusicVolume();
-        }
-
-        if (PlayerPrefs.HasKey("Sensitivity"))
-        {
-            return;
-        }
-        else
-        {
-            SetSensitivity();
-        }
     }
 
     public void SetResolution()
@@ -75,41 +62,80 @@ public class SettingsManager : MonoBehaviour
         if (screenModeIndex == 0)
         {
             Screen.fullScreen = true;
+            fullscreen = 0;
+            
         }
         else
         {
             Screen.fullScreen = false;
+            fullscreen = 1;
         }
-    }
-
-    public void SetFullscreen()
-    {
-        Screen.fullScreen = isFullscreen.isOn;
-        Debug.Log(isFullscreen.isOn);
-    }
-
-    public void SetMusicVolume()
-    {
-        float volume = volumeSlider.value;
-        audioMixer.SetFloat("MasterVolume", Mathf.Log10(volume)*20);
-        PlayerPrefs.SetFloat("MasterVolume", volume);
-    }
-
-    private void LoadVolume()
-    {
-        volumeSlider.value = PlayerPrefs.GetFloat("MasterVolume");
+        PlayerPrefs.SetInt("Fullscreen", fullscreen);
     }
 
     public void SetSensitivity()
     {
-        float sensitivity = sensitivitySlider.value;
-        PlayerPrefs.SetFloat("Sensitivity", sensitivity);
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject player in players)
+        PlayerData.instance.mouseSensitivity = sensitivitySlider.value;
+        PlayerPrefs.SetFloat("Sensitivity", sensitivitySlider.value);
+    }
+
+    public void SetVolume()
+    {
+        audioMixer.SetFloat("MasterVolume", Mathf.Log10(volumeSlider.value) * 20);
+        PlayerPrefs.SetFloat("Volume", Mathf.Log10(volumeSlider.value) * 20);
+    }
+
+    public void OnClickGraphics()
+    {
+        LoadGraphicsSettings();
+    }
+
+    public void OnClickControls()
+    {
+        LoadControlsSettings();
+    }
+
+    public void OnClickSound()
+    {
+        LoadSoundSettings();
+    }
+
+    private void LoadGraphicsSettings()
+    {
+        if (PlayerPrefs.HasKey("ResolutionIndex"))
         {
-            if (player.GetComponentInChildren<CameraScript>() != null) {
-                player.GetComponentInChildren<CameraScript>().mouseSensitivity = sensitivity;
-            }            
+            resolutionDropdown.value = PlayerPrefs.GetInt("ResolutionIndex");
+            SetResolution();
+        }
+        else
+        {
+            SetResolution();
+        }
+    }
+
+    private void LoadControlsSettings()
+    {
+        if (PlayerPrefs.HasKey("Sensitivity"))
+        {
+            sensitivitySlider.value = PlayerPrefs.GetFloat("Sensitivity");
+            SetSensitivity();
+        }
+        else
+        {
+            SetSensitivity();
+        }
+    }
+
+    private void LoadSoundSettings()
+    {
+        if (PlayerPrefs.HasKey("Volume"))
+        {
+            volumeSlider.value = Mathf.Pow(10, PlayerPrefs.GetFloat("Volume")/20);
+            SetVolume();
+        }
+        else
+        {
+            SetVolume();
         }
     }
 }

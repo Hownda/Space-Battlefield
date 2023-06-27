@@ -30,7 +30,6 @@ public class TerrainMovement : MonoBehaviour
     private float lateral;
     private float longitudinal;
     private float speedMultiplyer = 1f;
-    private float inversion = -1f;
     private float fovGain;
 
 
@@ -40,9 +39,6 @@ public class TerrainMovement : MonoBehaviour
 
     void Start()
     {
-        if (InvertedY) inversion = 1f;
-        else inversion = -1f;
-
         if (TransformDummy == null) TransformDummy = new GameObject("TransformDummy");
         TransformDummy.transform.rotation = this.transform.rotation;
 
