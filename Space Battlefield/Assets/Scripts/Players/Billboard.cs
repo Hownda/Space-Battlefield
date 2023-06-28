@@ -5,42 +5,33 @@ using Unity.Netcode;
 
 public class Billboard : NetworkBehaviour
 {
-    private Camera cam;
+    public Camera ownCamera;
+    private Camera otherCamera;
     public GameObject billBoardText;
+    private PlayerNetwork otherPlayer;
 
     private void Start()
     {
-        UpdateCameraServerRpc();
         if (IsOwner)
         {
             billBoardText.SetActive(false);
+            
+            otherPlayer = PlayerDictionary.instance.GetOtherPlayer(OwnerClientId).GetComponent<PlayerNetwork>();
         }
     }
 
     void Update()
     {
-        if (!IsOwner)
+        if (otherPlayer != null)
         {
-            transform.LookAt(cam.transform);
-        }
-    }
-
-    [ServerRpc] public void UpdateCameraServerRpc()
-    {
-        UpdateCameraClientRpc();
-    }   
-
-    [ClientRpc] public void UpdateCameraClientRpc()
-    {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject player in players)
-        {
-            if (player.GetComponent<NetworkObject>().OwnerClientId != OwnerClientId)
+            if (otherPlayer.playerObject != null)
             {
-                player.GetComponentInChildren<Billboard>().cam = transform.parent.GetComponentInChildren<Camera>();
+                otherPlayer.playerObject.GetComponentInChildren<Billboard>().otherCamera = ownCamera;
             }
         }
-    }
-
-    
+        if (otherCamera != null)
+        {
+            transform.LookAt(otherCamera.transform);
+        }
+    }    
 }

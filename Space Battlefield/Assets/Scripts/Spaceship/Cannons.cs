@@ -10,12 +10,9 @@ public class Cannons : NetworkBehaviour
     private Camera spaceshipCamera;
 
     public RectTransform crosshair;
-    public Image crosshairArea;
     public Vector2 screenCenter;
     public float crosshairSensitivity = 10;
     public float crosshairAreaRadius = 100;
-    public float fadeDuration = 2;
-    private float fadeTime;
 
     public GameObject missilePrefab;
     public GameObject cannons;
@@ -37,12 +34,6 @@ public class Cannons : NetworkBehaviour
         if (IsOwner)
         {
             CrosshairMovement();
-            if (crosshairArea.color.a > 0 && Time.time - fadeTime >= fadeDuration)
-            {
-                float alpha = crosshairArea.color.a;
-                alpha -= 0.005f;
-                crosshairArea.color = new Color(crosshairArea.color.r, crosshairArea.color.g, crosshairArea.color.b, alpha);
-            }
             if (Input.GetKey(KeyCode.Mouse0) && PlayerData.instance.disableCameraMovement == false)
             {                
                 Shoot();
@@ -58,12 +49,6 @@ public class Cannons : NetworkBehaviour
         Vector2 moveVector = new Vector2(mouseX * Time.deltaTime * crosshairSensitivity, mouseY * Time.deltaTime * crosshairSensitivity);
         crosshair.anchoredPosition = crosshair.anchoredPosition + moveVector;
         crosshair.anchoredPosition = Vector2.ClampMagnitude(crosshair.anchoredPosition - screenCenter, crosshairAreaRadius) + screenCenter;
-
-        if (moveVector != Vector2.zero)
-        {
-            crosshairArea.color = new Color(crosshairArea.color.r, crosshairArea.color.g, crosshairArea.color.b, .4f);
-            fadeTime = Time.time;
-        }
     }
 
     private void Shoot()

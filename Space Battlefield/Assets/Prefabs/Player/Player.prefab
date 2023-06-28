@@ -14543,11 +14543,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a674a3390e7ad90489139bcacb280b44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mouseSensitivity: 0
   playerBody: {fileID: 4393300945675349806}
   spaceshipCamera: {fileID: 0}
   weapon: {fileID: 9136816949128730172}
   playerCanvas: {fileID: 7771535539040609672}
+  mouseSensitivity: 0
 --- !u!114 &3035104564826919310
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16398,7 +16398,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5135206612962206665}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
@@ -23560,6 +23560,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b4425e8af199744f8af000013c16a21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ownCamera: {fileID: 5542613293660399233}
   billBoardText: {fileID: 3683475572111655500}
 --- !u!1 &8712476001125981668
 GameObject:

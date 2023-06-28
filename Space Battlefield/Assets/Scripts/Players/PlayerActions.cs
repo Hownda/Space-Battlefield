@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
@@ -14,24 +12,20 @@ public class PlayerActions : NetworkBehaviour
     public LayerMask interactableObjects;
     public Text keybindText;
 
-    private void Awake()
-    {
-        gameActions = KeybindManager.inputActions;
-        gameActions.Player.Enter.started += Enter;
-        gameActions.Player.Pickup.started += PickUp;
-        gameActions.Player.Eat.started += Eat;
-    }
-
     private void Start()
     {
-        GameObject[] playerRoots = GameObject.FindGameObjectsWithTag("Root");
-        foreach (GameObject playerRoot in playerRoots)
+        if (IsOwner)
         {
-            if (playerRoot.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
-            {
-                playerNetwork = playerRoot.GetComponent<PlayerNetwork>();
-            }
+            gameActions = KeybindManager.inputActions;
+            gameActions.Player.Enter.started += Enter;
+            gameActions.Player.Pickup.started += PickUp;
+            gameActions.Player.Eat.started += Eat;
+            gameActions.Player.Enable();
         }
+
+        GameObject player = PlayerDictionary.instance.playerDictionary[OwnerClientId];
+        playerNetwork = player.GetComponent<PlayerNetwork>();
+        playerNetwork.playerObject = gameObject;
     }
 
     private void Update()
@@ -43,27 +37,23 @@ public class PlayerActions : NetworkBehaviour
     {
         if (IsOwner)
         {
-            GameObject[] spaceships = GameObject.FindGameObjectsWithTag("Spaceship");
-            foreach (GameObject spaceship in spaceships)
+            GameObject spaceship = playerNetwork.spaceshipObject;
+            if (spaceship != null)
             {
-                if (spaceship.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
-                {
-                    // Camera components
-                    spaceship.GetComponentInChildren<Camera>().enabled = true;
-                    spaceship.GetComponentInChildren<SpaceshipCamera>().enabled = true;
-                    spaceship.GetComponentInChildren<AudioListener>().enabled = true;
+                // Camera components
+                spaceship.GetComponentInChildren<Camera>().enabled = true;
+                spaceship.GetComponentInChildren<AudioListener>().enabled = true;
 
-                    // Interaction components
-                    spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
-                    spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
-                    spaceship.GetComponentInChildren<SpaceshipMovement>().spaceshipCanvas.SetActive(true);
-                    spaceship.GetComponent<SpaceshipActions>().enabled = true;
-                    spaceship.GetComponent<Cannons>().enabled = true;
-                    spaceship.GetComponent<Hull>().integrityBillboard.SetActive(false);
-                    gameActions.Player.Disable();
+                // Interaction components
+                spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
+                spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
+                spaceship.GetComponentInChildren<SpaceshipMovement>().spaceshipCanvas.SetActive(true);
+                spaceship.GetComponent<Cannons>().enabled = true;
+                spaceship.GetComponent<Hull>().integrityBillboard.SetActive(false);
+                gameActions.Player.Disable();
+                spaceship.GetComponent<SpaceshipActions>().enabled = true;
 
-                    DespawnPlayerServerRpc();
-                }
+                DespawnPlayerServerRpc();
             }
         }
     }

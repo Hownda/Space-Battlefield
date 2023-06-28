@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.InputSystem;
@@ -13,30 +11,31 @@ public class SpaceshipActions : NetworkBehaviour
     public float boostDuration = 5;
     private float boostTime;
 
-    private void Awake()
+    private void OnEnable()
     {
-        gameActions = KeybindManager.inputActions;
-        gameActions.Spaceship.Exit.started += ExitInput;
-        gameActions.Spaceship.Boost.started += Boost;
+        if (IsOwner)
+        {
+            gameActions = KeybindManager.inputActions;
+            gameActions.Spaceship.Exit.started += ExitInput;
+            gameActions.Spaceship.Boost.started += Boost;
+            gameActions.Spaceship.Enable();
+        }
     }
 
     private void Start()
     {
-        GameObject[] playerRoots = GameObject.FindGameObjectsWithTag("Root");
-        foreach (GameObject playerRoot in playerRoots)
-        {
-            if (playerRoot.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
-            {
-                playerNetwork = playerRoot.GetComponent<PlayerNetwork>();
-            }
-        }
+        GameObject player = PlayerDictionary.instance.playerDictionary[OwnerClientId];
+        playerNetwork = player.GetComponent<PlayerNetwork>();       
     }
 
     private void Update()
     {
-        if (boostTime + boostDuration <= Time.time)
+        if (IsOwner)
         {
-            GetComponent<SpaceshipMovement>().thrust = 5;
+            if (boostTime + boostDuration <= Time.time)
+            {
+                GetComponent<SpaceshipMovement>().thrust = 5;
+            }
         }
     }
 
@@ -52,7 +51,6 @@ public class SpaceshipActions : NetworkBehaviour
     {
         GetComponent<Hull>().integrityBillboard.SetActive(true);
         GetComponentInChildren<Camera>().enabled = false;
-        GetComponentInChildren<SpaceshipCamera>().enabled = false;
         GetComponentInChildren<SpaceshipMovement>().enabled = false;
         GetComponentInChildren<AudioListener>().enabled = false;
         GetComponent<Cannons>().enabled = false;
@@ -61,7 +59,7 @@ public class SpaceshipActions : NetworkBehaviour
     }
 
     
-    [ServerRpc(RequireOwnership = false)] private void SpawnPlayerServerRpc()
+    [ServerRpc] private void SpawnPlayerServerRpc()
     {
         Vector3 spawnPosition;
         if (GetComponent<PlayerGravity>().gravityOrbit != null)
@@ -72,10 +70,12 @@ public class SpaceshipActions : NetworkBehaviour
         {
             spawnPosition = transform.position + 3 * transform.up;
         }
+
         GameObject player = Instantiate(playerPrefab, new Vector3(spawnPosition.x, spawnPosition.y, spawnPosition.z), Quaternion.Euler(Vector3.zero));
         player.GetComponent<NetworkObject>().Spawn();
         player.GetComponent<NetworkObject>().ChangeOwnership(OwnerClientId);
 
+        // Make UI look at player
         GetComponent<Hull>().cam = player.GetComponentInChildren<Camera>();
     }
 

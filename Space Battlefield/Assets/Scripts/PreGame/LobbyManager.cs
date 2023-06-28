@@ -217,7 +217,6 @@ public class LobbyManager : MonoBehaviour
         {
             QueryResponse queryResponse = await Lobbies.Instance.QueryLobbiesAsync();
 
-            Debug.Log("Lobbies found: " + queryResponse.Results.Count);
             foreach (GameObject room in roomsList)
             {
                 Destroy(room);

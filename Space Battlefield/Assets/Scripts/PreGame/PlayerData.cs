@@ -6,6 +6,7 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
+using System.Linq;
 
 public class PlayerData : MonoBehaviour
 {
@@ -24,6 +25,9 @@ public class PlayerData : MonoBehaviour
     public GameObject options;
     public float mouseSensitivity = 200;
     public bool disableCameraMovement;
+
+    //Temporary until Netcode 1.4.1
+    [SerializeField] private NetworkPrefabsList _networkPrefabsList;
 
     private void Awake()
     {
@@ -48,10 +52,12 @@ public class PlayerData : MonoBehaviour
         {
             if (isHost && allocation != null)
             {
+                TemporaryNetworkFix();
                 CreateRelay();
             }
             if (isHost == false)
             {
+                TemporaryNetworkFix();
                 JoinRelay();
             }
             inGame = true;
@@ -136,4 +142,13 @@ public class PlayerData : MonoBehaviour
             settingsCanvas.SetActive(true);
         }
     } 
+
+    private void TemporaryNetworkFix()
+    {
+        var prefabs = _networkPrefabsList.PrefabList.Select(x => x.Prefab);
+        foreach (var prefab in prefabs)
+        {
+            NetworkManager.Singleton.AddNetworkPrefab(prefab);
+        }
+    }
 }

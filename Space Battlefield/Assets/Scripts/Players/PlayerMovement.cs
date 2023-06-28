@@ -10,6 +10,7 @@ using Unity.Netcode;
 public class PlayerMovement : NetworkBehaviour
 {
     private Rigidbody rb;
+    private PlayerGravity playerGravity;
     public Animator animator;
     public Animator handAnimator;
 
@@ -27,29 +28,23 @@ public class PlayerMovement : NetworkBehaviour
     public float jumpCooldown = 0.3f;
     private float jumpTime;
 
-    private PlayerGravity playerGravity;
-
     private MovementControls gameActions;
-
-    private void Awake()
-    {
-        gameActions = KeybindManager.inputActions;
-        gameActions.Player.Jump.started += Jump;
-
-        gameActions.Player.Jump.started += _ => swimVertical = 1;
-        gameActions.Player.Jump.canceled += _ => swimVertical = 0;
-        gameActions.Player.Down.started += _ => swimVertical = -1;
-        gameActions.Player.Down.canceled += _ => swimVertical = 0;
-        
-        gameActions.Spaceship.Disable();
-        gameActions.Player.Enable();
-    }
 
     private void Start()
     {
+        if (IsOwner)
+        {
+            gameActions = KeybindManager.inputActions;
+            gameActions.Player.Jump.started += Jump;
+
+            gameActions.Player.Jump.started += _ => swimVertical = 1;
+            gameActions.Player.Jump.canceled += _ => swimVertical = 0;
+            gameActions.Player.Down.started += _ => swimVertical = -1;
+            gameActions.Player.Down.canceled += _ => swimVertical = 0;
+        }
+
         playerGravity = GetComponent<PlayerGravity>();
-        rb = GetComponent<Rigidbody>();
-        
+        rb = GetComponent<Rigidbody>();        
     }
 
     private void FixedUpdate()
@@ -57,7 +52,6 @@ public class PlayerMovement : NetworkBehaviour
         if (IsOwner)
         {
             rb.maxLinearVelocity = maxForce;
-            // Get input
             Vector2 horizontalInput = gameActions.Player.Movement.ReadValue<Vector2>();
 
             if (playerGravity.gravityOrbit == null)
@@ -70,6 +64,18 @@ public class PlayerMovement : NetworkBehaviour
             }
             
         }
+    }
+
+    private void SpaceMovement(Vector2 horizontalInput)
+    {
+        Vector3 horizontalVelocity = swimSpeed * (transform.right * horizontalInput.x + transform.forward * horizontalInput.y);
+        Vector3 verticalVelocity = swimSpeed * transform.up * swimVertical;
+        Vector3 currentVelocity = rb.velocity;
+        Vector3 velocityChange = horizontalVelocity + verticalVelocity - currentVelocity;
+        rb.AddForce(velocityChange);
+
+        animator.SetBool("Swim", true);
+        handAnimator.SetBool("Swim", true);
     }
 
     private void GroundMovement(Vector2 horizontalInput)
@@ -93,18 +99,6 @@ public class PlayerMovement : NetworkBehaviour
             }
             jump = false;
         }
-    }
-
-    private void SpaceMovement(Vector2 horizontalInput)
-    {
-        Vector3 horizontalVelocity = swimSpeed * (transform.right * horizontalInput.x + transform.forward * horizontalInput.y);
-        Vector3 verticalVelocity = swimSpeed * transform.up * swimVertical;
-        Vector3 currentVelocity = rb.velocity;
-        Vector3 velocityChange = horizontalVelocity + verticalVelocity - currentVelocity;
-        rb.AddForce(velocityChange);
-
-        animator.SetBool("Swim", true);
-        handAnimator.SetBool("Swim", true);
     }
 
     private void Jump(InputAction.CallbackContext obj)

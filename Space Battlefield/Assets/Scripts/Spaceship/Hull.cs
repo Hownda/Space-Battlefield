@@ -5,47 +5,43 @@ using UnityEngine;
 
 public class Hull : NetworkBehaviour
 {
+    private PlayerNetwork playerNetwork;
+    public Camera cam;
+
     public NetworkVariable<float> integrity = new NetworkVariable<float>(100, writePerm: NetworkVariableWritePermission.Server);
     public Slider integritySlider;
-
     public GameObject integrityBillboard;
     public Slider integrityBillboardSlider;
-    public Camera cam;
+
+
 
     // Collisions
     public GameObject explosionPrefab;
-    private Rigidbody rb;
     public bool colliding;
     public float damageFactor = 1;
     public ParticleSystem contactParticles;
     public AudioManager audioManager;
     private float soundStart = 0f;
     private float soundCooldown = 2.5f;
+    public GameObject warning;
 
     public bool isGrounded;
     public LayerMask ground;
-    public float distanceFromGround;
-
-    public GameObject warning;
+    public float distanceFromGround;   
 
     void Start()
     {
        if (IsOwner)
        {
-            rb = GetComponent<Rigidbody>();
+            GameObject player = PlayerDictionary.instance.playerDictionary[OwnerClientId];
+            playerNetwork = player.GetComponent<PlayerNetwork>();
+            playerNetwork.spaceshipObject = gameObject;
 
             integrityBillboard.SetActive(true);
             integritySlider.value = integrity.Value;
             integrityBillboardSlider.value = integrity.Value;
 
-            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-            foreach (GameObject player in players)
-            {
-                if (player.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
-                {
-                    cam = player.GetComponentInChildren<Camera>();
-                }
-            }
+            cam = playerNetwork.playerObject.GetComponentInChildren<Camera>();
             IgnoreCollisions();
        }
        else

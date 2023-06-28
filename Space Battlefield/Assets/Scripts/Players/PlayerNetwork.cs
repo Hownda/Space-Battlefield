@@ -9,14 +9,11 @@ using UnityEngine.UI;
 /// </summary>
 public class PlayerNetwork : NetworkBehaviour
 {
-    private PlayerDictionary dictionary;
-
-    public GameObject victoryOverlay;
-    public GameObject defeatOverlay;
-    public Camera endCamera;
-
     public GameObject inventoryCanvas;
     public Transform collectionUI;
+
+    public GameObject playerObject;
+    public GameObject spaceshipObject;
 
     public NetworkVariable<int> rockCount = new NetworkVariable<int>(0, writePerm: NetworkVariableWritePermission.Server);
     public Text rockCounter;
@@ -26,21 +23,16 @@ public class PlayerNetwork : NetworkBehaviour
     public Text flowerCounter;
     public GameObject flowerItem;
 
+    public GameObject victoryOverlay;
+    public GameObject defeatOverlay;
+    public Camera endCamera;
+
     void Start()
     {
         if (IsOwner)
         {
             inventoryCanvas.SetActive(true);
-            dictionary = GameObject.FindGameObjectWithTag("GameManager").GetComponent<PlayerDictionary>();
-            if (dictionary == null)
-            {
-                Debug.Log("No dictionary found!");
-            }
-            else
-            {
-                dictionary.NewPlayerToDictServerRpc();
-                Debug.Log("Adding Player to " + dictionary);
-            }
+            PlayerDictionary.instance.UpdatePlayerDictionaryServerRpc();
         }
     }
 
@@ -133,6 +125,7 @@ public class PlayerNetwork : NetworkBehaviour
             }
         }
     }
+
     public void Lose()
     {
         if (IsOwner)

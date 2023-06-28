@@ -1475,7 +1475,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settingsPanel: {fileID: 7254166988810187919}
-  mainPanel: {fileID: 224355019}
 --- !u!1 &2070722395
 GameObject:
   m_ObjectHideFlags: 0
@@ -5221,6 +5220,7 @@ MonoBehaviour:
   options: {fileID: 7146696575951780273}
   mouseSensitivity: 0
   disableCameraMovement: 0
+  _networkPrefabsList: {fileID: 11400000, guid: 437a90da7f0b27d49992e40d5b0d3318, type: 2}
 --- !u!114 &4778023767091062877
 MonoBehaviour:
   m_ObjectHideFlags: 0

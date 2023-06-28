@@ -740,11 +740,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioManager: {fileID: 7435756190603082620}
   crosshair: {fileID: 1117844381180320800}
-  crosshairArea: {fileID: 0}
   screenCenter: {x: 0, y: 80}
   crosshairSensitivity: 200
   crosshairAreaRadius: 40
-  fadeDuration: 2
   missilePrefab: {fileID: 5994368593006850447, guid: 0ba436032887a704f8ef18838eab0568, type: 3}
   cannons: {fileID: 273047901219411546}
   layer:
@@ -5749,7 +5747,6 @@ GameObject:
   - component: {fileID: 2305033606662039936}
   - component: {fileID: 732483553848266459}
   - component: {fileID: 2511894758715210348}
-  - component: {fileID: 5680189162194608762}
   m_Layer: 10
   m_Name: MainCamera
   m_TagString: Untagged
@@ -5875,19 +5872,6 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
---- !u!114 &5680189162194608762
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1967200820357489160}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5082d52e4d2f6a742b8b24f68b0482f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  overlay: {fileID: 0}
 --- !u!1 &2609646220473370500
 GameObject:
   m_ObjectHideFlags: 0

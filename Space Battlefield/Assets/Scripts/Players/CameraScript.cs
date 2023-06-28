@@ -1,12 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
 public class CameraScript : NetworkBehaviour
 {
-    public float mouseSensitivity;
-
     public Transform playerBody;
     public Camera spaceshipCamera;
     private Camera playerCamera;
@@ -14,6 +10,7 @@ public class CameraScript : NetworkBehaviour
     public GameObject playerCanvas;
 
     private float xRotation = 0f;
+    public float mouseSensitivity;
 
     void Start()
     {
@@ -25,7 +22,6 @@ public class CameraScript : NetworkBehaviour
             playerCamera.enabled = false;
             playerCamera.GetComponent<AudioListener>().enabled = false;
             playerCanvas.SetActive(false);
-            DisableBodyParts();
         }
     }
 
