@@ -35,14 +35,14 @@ public class Cannons : NetworkBehaviour
         {
             CrosshairMovement();
             if (Input.GetKey(KeyCode.Mouse0) && PlayerData.instance.disableCameraMovement == false)
-            {                
+            {
                 Shoot();
             }
         }
     }
 
     private void CrosshairMovement()
-    {        
+    {
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
@@ -67,9 +67,29 @@ public class Cannons : NetworkBehaviour
                 missile.GetComponent<Bullet>().IgnoreCollisions(colliders);
                 missile.GetComponent<Rigidbody>().AddForce(missileForce * missile.transform.forward, ForceMode.Impulse);
                 Destroy(missile, 2.5f);
-                
+
                 audioManager.Play("blaster-sound");
-            }            
+                ShootServerRpc(ray.direction);
+            }
+        }
+    }
+
+    [ServerRpc]
+    private void ShootServerRpc(Vector3 shootDirection)
+    {
+        ShootClientRpc(shootDirection);
+    }
+
+    [ClientRpc]
+    private void ShootClientRpc(Vector3 shootDirection)
+    {
+        if (!IsOwner)
+        {
+            GameObject missile = Instantiate(missilePrefab, cannons.transform.position, Quaternion.LookRotation(shootDirection));
+            missile.GetComponent<Bullet>().parentClient = OwnerClientId;
+            missile.GetComponent<Bullet>().IgnoreCollisions(colliders);
+            missile.GetComponent<Rigidbody>().AddForce(missileForce * missile.transform.forward, ForceMode.Impulse);
+            Destroy(missile, 2.5f);
         }
     }
 }

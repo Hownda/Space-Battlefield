@@ -51,7 +51,7 @@ public class Game : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void DisableBodyPartsClientRpc()
+    public void DisableBodyPartsClientRpc()
     {
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject player in players)

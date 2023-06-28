@@ -47,8 +47,8 @@ public class CameraScript : NetworkBehaviour
         if (!IsOwner)
         {
             // Makes other player visible
-            playerCamera.transform.parent.gameObject.layer = 0;
-            Renderer[] renderers = playerCamera.transform.parent.gameObject.GetComponentsInChildren<Renderer>();
+            transform.parent.gameObject.layer = 0;
+            Renderer[] renderers = transform.parent.GetComponentsInChildren<Renderer>();
             foreach (Renderer renderer in renderers)
             {
                 renderer.gameObject.layer = 0;

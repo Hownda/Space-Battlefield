@@ -13,6 +13,7 @@ public class Weapon : NetworkBehaviour
     public ParticleSystem muzzleFlash;
     public Camera fpsCamera;
 
+    public Animator animator;
     public Animator handAnimator;
 
     public GameObject bulletPrefab;
@@ -39,10 +40,13 @@ public class Weapon : NetworkBehaviour
                 {
                     Shoot();
                     handAnimator.SetBool("Shoot", true);
+                    AnimateServerRpc(true);
+
                 }
                 if (Input.GetKeyUp(KeyCode.Mouse0))
                 {
                     handAnimator.SetBool("Shoot", false);
+                    AnimateServerRpc(false);
                 }
             }
         }
@@ -64,6 +68,46 @@ public class Weapon : NetworkBehaviour
 
                 audioManager.Play("blaster-sound");
                 muzzleFlash.Play();
+
+                ShootServerRpc();
+            }
+        }
+    }
+
+    [ServerRpc] private void ShootServerRpc()
+    {
+        ShootClientRpc();
+    }
+
+    [ClientRpc] private void ShootClientRpc()
+    {
+        if (!IsOwner)
+        {
+            GameObject bullet = Instantiate(bulletPrefab, fpsCamera.transform.position, Quaternion.Euler(Vector3.zero));
+            bullet.GetComponent<Bullet>().parentClient = OwnerClientId;
+            bullet.GetComponent<Bullet>().IgnoreCollisions(colliders);
+            bullet.transform.rotation = Quaternion.LookRotation(fpsCamera.transform.forward);
+            bullet.GetComponent<Rigidbody>().AddForce(bulletForce * bullet.transform.forward, ForceMode.Impulse);
+            Destroy(bullet, 2.5f);
+        }
+    }
+
+    [ServerRpc] private void AnimateServerRpc(bool shoot)
+    {
+        AnimateClientRpc(shoot);
+    }
+
+    [ClientRpc] private void AnimateClientRpc(bool shoot)
+    {
+        if (!IsOwner)
+        {
+            if (shoot)
+            {
+                animator.SetBool("Shoot", true);
+            }
+            else
+            {
+                animator.SetBool("Shoot", false);
             }
         }
     }

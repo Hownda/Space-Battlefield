@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
+using Unity.Netcode.Components;
 
 /// <summary>
 /// The class <c>Player Movement</c> contains variables and functions that contribute to the movement of the player. While the player is not inside the spaceship, this class will be active.
@@ -76,6 +77,7 @@ public class PlayerMovement : NetworkBehaviour
 
         animator.SetBool("Swim", true);
         handAnimator.SetBool("Swim", true);
+        AnimateServerRpc(horizontalInput, true);
     }
 
     private void GroundMovement(Vector2 horizontalInput)
@@ -114,32 +116,36 @@ public class PlayerMovement : NetworkBehaviour
     {
         animator.SetBool("Swim", false);
         handAnimator.SetBool("Swim", false);
-        if (input.y > 0 || input.y > 0 && input.x != 0 || input.y > 0 && input.x == 0)
+
+        // Player animator
+        animator.SetInteger("Horizontal", Mathf.RoundToInt(input.x));
+        animator.SetInteger("Vertical", Mathf.RoundToInt(input.y));
+        AnimateServerRpc(input, false);
+
+        // Hand animator
+        handAnimator.SetInteger("Horizontal", Mathf.RoundToInt(input.x));
+        handAnimator.SetInteger("Vertical", Mathf.RoundToInt(input.y));
+    }
+
+    [ServerRpc] private void AnimateServerRpc(Vector2 input, bool swim)
+    {
+        AnimateClientRpc(input, swim);
+    }
+
+    [ClientRpc] private void AnimateClientRpc(Vector2 input, bool swim)
+    {
+        if (!IsOwner)
         {
-            animator.SetInteger("Vertical", 1);
-            handAnimator.SetInteger("Vertical", 1);
-        }
-        else if (input.y < 0 || input.y < 0 && input.x != 0 || input.y > 0 && input.x == 0)
-        {
-            animator.SetInteger("Vertical", -1);
-            handAnimator.SetInteger("Vertical", -1);
-        }
-        else if (input.y == 0 && input.x == 0)
-        {
-            animator.SetInteger("Vertical", 0);
-            animator.SetInteger("Horizontal", 0);
-            handAnimator.SetInteger("Vertical", 0);
-            handAnimator.SetInteger("Horizontal", 0);
-        }
-        else if (input.x > 0 && input.y == 0)
-        {
-            animator.SetInteger("Horizontal", 1);
-            handAnimator.SetInteger("Horizontal", 1);
-        }
-        else if (input.x < 0 && input.y == 0)
-        {
-            animator.SetInteger("Horizontal", -1);
-            handAnimator.SetInteger("Horizontal", -1);
+            if (swim)
+            {
+                animator.SetBool("Swim", true);
+            }
+            else
+            {
+                animator.SetBool("Swim", false);
+                animator.SetInteger("Horizontal", Mathf.RoundToInt(input.x));
+                animator.SetInteger("Vertical", Mathf.RoundToInt(input.y));
+            }
         }
     }
 }

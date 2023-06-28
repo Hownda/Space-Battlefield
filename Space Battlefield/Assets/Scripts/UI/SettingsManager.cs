@@ -6,11 +6,6 @@ using UnityEngine.Audio;
 
 public class SettingsManager : MonoBehaviour
 {
-    public int resolutionIndex;
-    public float volume;
-    public float sensitivity;
-    public int fullscreen;
-
     public Slider volumeSlider;    
     public Dropdown resolutionDropdown;
     public Toggle isFullscreen;
@@ -57,20 +52,25 @@ public class SettingsManager : MonoBehaviour
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
     }
 
-    public void SetScreenMode(int screenModeIndex)
+    public void SetScreenMode()
     {
-        if (screenModeIndex == 0)
+        if (Screen.fullScreen == true)
+        {
+            Screen.fullScreen = false;
+        }  
+        else
         {
             Screen.fullScreen = true;
-            fullscreen = 0;
-            
+        }
+
+        if (Screen.fullScreen == true)
+        {
+            PlayerPrefs.SetInt("Fullscreen", 1);
         }
         else
         {
-            Screen.fullScreen = false;
-            fullscreen = 1;
+            PlayerPrefs.SetInt("Fullscreen", 0);
         }
-        PlayerPrefs.SetInt("Fullscreen", fullscreen);
     }
 
     public void SetSensitivity()
@@ -110,6 +110,18 @@ public class SettingsManager : MonoBehaviour
         else
         {
             SetResolution();
+        }
+
+        if (PlayerPrefs.HasKey("Fullscreen"))
+        {
+            if (PlayerPrefs.GetInt("Fullscreen") == 1)
+            {
+                Screen.fullScreen = true;
+            }    
+            else
+            {
+                Screen.fullScreen = false;
+            }
         }
     }
 

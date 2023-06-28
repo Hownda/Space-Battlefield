@@ -104,9 +104,9 @@ public class SpaceshipMovement : NetworkBehaviour
             GetComponent<PlayerGravity>().enabled = false;
             rb.AddRelativeTorque(-upDown1D * upDownForce * Time.deltaTime, 0, 0, ForceMode.Force);
         }
-        else if (GetComponent<Hull>().isGrounded && upDown1D >= 0)
+        else if (GetComponent<Hull>().isGrounded && upDown1D >= 0 && thrustPercent >= 10)
         {
-            rb.AddRelativeTorque(-upDown1D * upDownForce * Time.deltaTime, 0, 0, ForceMode.Force);
+            GetComponent<PlayerGravity>().enabled = false;
         }
         else if (GetComponent<Hull>().isGrounded && upDown1D < 0 || GetComponent<Hull>().isGrounded && thrustPercent < 10)
         {

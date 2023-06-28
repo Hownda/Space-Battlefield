@@ -10548,10 +10548,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe81e42024292da4cb5aabccee97c49f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolutionIndex: 0
-  volume: 0
-  sensitivity: 0
-  fullscreen: 0
   volumeSlider: {fileID: 6160643947406387662}
   resolutionDropdown: {fileID: 7418675198731231969}
   isFullscreen: {fileID: 7418675200416378419}
@@ -13330,14 +13326,14 @@ MonoBehaviour:
       - m_Target: {fileID: 6869766296089415783}
         m_TargetAssemblyTypeName: SettingsManager, Assembly-CSharp
         m_MethodName: SetScreenMode
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
   m_IsOn: 1
 --- !u!1 &7418675200416378429

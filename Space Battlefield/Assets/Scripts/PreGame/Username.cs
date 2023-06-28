@@ -30,7 +30,7 @@ public class Username : MonoBehaviour
 
     private void Update()
     {
-        if (usernameInput.text.Length > 3)
+        if (usernameInput.text.Length > 3 && usernameInput.text.Length < 18)
         {
             connectButton.gameObject.SetActive(true);
         }

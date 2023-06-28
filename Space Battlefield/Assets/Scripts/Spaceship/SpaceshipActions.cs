@@ -8,7 +8,7 @@ public class SpaceshipActions : NetworkBehaviour
     private PlayerNetwork playerNetwork;
     public GameObject playerPrefab;
 
-    public float boostDuration = 5;
+    private float boostDuration = 3;
     private float boostTime;
 
     private void OnEnable()
@@ -49,6 +49,7 @@ public class SpaceshipActions : NetworkBehaviour
 
     public void Exit()
     {
+        gameActions.Player.Disable();
         GetComponent<Hull>().integrityBillboard.SetActive(true);
         GetComponentInChildren<Camera>().enabled = false;
         GetComponentInChildren<SpaceshipMovement>().enabled = false;
@@ -77,6 +78,7 @@ public class SpaceshipActions : NetworkBehaviour
 
         // Make UI look at player
         GetComponent<Hull>().cam = player.GetComponentInChildren<Camera>();
+        Game.instance.DisableBodyPartsClientRpc();
     }
 
     private void Boost(InputAction.CallbackContext obj)
