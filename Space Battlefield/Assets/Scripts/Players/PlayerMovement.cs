@@ -39,8 +39,8 @@ public class PlayerMovement : NetworkBehaviour
 
             gameActions.Player.Jump.started += _ => swimVertical = 1;
             gameActions.Player.Jump.canceled += _ => swimVertical = 0;
-            gameActions.Player.Down.started += _ => swimVertical = -1;
-            gameActions.Player.Down.canceled += _ => swimVertical = 0;
+            gameActions.Player.SwimDown.started += _ => swimVertical = -1;
+            gameActions.Player.SwimDown.canceled += _ => swimVertical = 0;
         }
 
         playerGravity = GetComponent<PlayerGravity>();
