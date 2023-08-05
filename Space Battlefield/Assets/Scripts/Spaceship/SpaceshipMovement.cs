@@ -8,13 +8,15 @@ using UnityEngine.UI;
 public class SpaceshipMovement : NetworkBehaviour
 {
     // Movement Factors
-    public float rollTorque = 5;
     public float thrust = 5;
-    public float upDownForce = 6000f;
-    public float strafeForce = 4000f;
-    public float velocityFactor = 15f;
-    public float maxVelocity;
-    public float maxAngularVelocity;
+    public float upDownInput;
+
+    private float rollTorque = 10000;   
+    private float upDownForce = 6000;   
+    public float strafeForce = 10000;
+    public float velocityFactor = 15;
+    private float maxVelocity = 0;
+    private float maxAngularVelocity = 8;
 
     Rigidbody rb;
 
@@ -22,12 +24,6 @@ public class SpaceshipMovement : NetworkBehaviour
     private MovementControls gameActions;
     public Slider thrustSlider;
     public GameObject spaceshipCanvas;
-
-    // Inputs
-    private float thrust1D;
-    private float strafe1D;
-    public float upDown1D;
-    private float roll1D;
 
     public float thrustPercent = 0;
     private float flySoundStart = 0f;
@@ -72,17 +68,19 @@ public class SpaceshipMovement : NetworkBehaviour
 
     private void Roll()
     { 
+        float rollInput = gameActions.Spaceship.Roll.ReadValue<float>();
         rb.maxAngularVelocity = maxAngularVelocity;
-        rb.AddRelativeTorque(0, 0, roll1D * rollTorque * Time.deltaTime, ForceMode.Force);        
+        rb.AddRelativeTorque(0, 0, rollInput * rollTorque * Time.deltaTime, ForceMode.Force);        
     }
 
     private void Thrust()
     {
-        if (thrust1D > 0)
+        float thrustInput = gameActions.Spaceship.Thrust.ReadValue<float>();
+        if (thrustInput > 0)
         {
             thrustSlider.value += velocityFactor * Time.deltaTime;
         }
-        if (thrust1D < 0)
+        if (thrustInput < 0)
         {
             thrustSlider.value -= velocityFactor * Time.deltaTime;
         }
@@ -99,16 +97,17 @@ public class SpaceshipMovement : NetworkBehaviour
 
     private void UpDown()
     {
+        upDownInput = gameActions.Spaceship.UpDown.ReadValue<float>();
         if (!GetComponent<Hull>().isGrounded)
         {
             GetComponent<PlayerGravity>().enabled = false;
-            rb.AddRelativeTorque(-upDown1D * upDownForce * Time.deltaTime, 0, 0, ForceMode.Force);
+            rb.AddRelativeTorque(-upDownInput * upDownForce * Time.deltaTime, 0, 0, ForceMode.Force);
         }
-        else if (GetComponent<Hull>().isGrounded && upDown1D >= 0 && thrustPercent >= 10)
+        else if (GetComponent<Hull>().isGrounded && upDownInput > 0 && thrustPercent >= 10)
         {
             GetComponent<PlayerGravity>().enabled = false;
         }
-        else if (GetComponent<Hull>().isGrounded && upDown1D < 0 || GetComponent<Hull>().isGrounded && thrustPercent < 10)
+        else if (GetComponent<Hull>().isGrounded && upDownInput < 0 || GetComponent<Hull>().isGrounded && thrustPercent < 10)
         {
             GetComponent<PlayerGravity>().enabled = true;
         }
@@ -116,7 +115,8 @@ public class SpaceshipMovement : NetworkBehaviour
 
     private void Strafe()
     {    
-        rb.AddRelativeTorque(0, strafe1D * strafeForce * Time.deltaTime, 0, ForceMode.Force);
+        float strafeInput = gameActions.Spaceship.Strafe.ReadValue<float>();
+        rb.AddRelativeTorque(0, strafeInput * strafeForce * Time.deltaTime, 0, ForceMode.Force);
     }
 
     private void FlightSound()
@@ -126,38 +126,6 @@ public class SpaceshipMovement : NetworkBehaviour
         {
             audioManager.Play("spaceship-sound");
             flySoundStart = Time.time;
-        }
-    }
-
-    public void OnThrust(InputAction.CallbackContext context)
-    { 
-        if (IsOwner)
-        {
-            thrust1D = context.ReadValue<float>();
-        }
-    }
-
-    public void OnStrafe(InputAction.CallbackContext context)
-    {
-        if (IsOwner)
-        {
-            strafe1D = context.ReadValue<float>();
-        }
-    }
-
-    public void OnUpDown(InputAction.CallbackContext context)
-    {
-        if (IsOwner)
-        {
-            upDown1D = context.ReadValue<float>();
-        }      
-    }
-
-    public void OnRoll(InputAction.CallbackContext context)
-    {
-        if (IsOwner)
-        {
-            roll1D = context.ReadValue<float>();
         }
     }
 }

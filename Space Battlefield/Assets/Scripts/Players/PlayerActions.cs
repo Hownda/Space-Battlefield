@@ -53,6 +53,7 @@ public class PlayerActions : NetworkBehaviour
                 gameActions.Player.Disable();
                 spaceship.GetComponent<SpaceshipActions>().enabled = true;
 
+                playerNetwork.tempHealth.Value = GetComponent<Healthbar>().health.Value;
                 DespawnPlayerServerRpc();
             }
         }

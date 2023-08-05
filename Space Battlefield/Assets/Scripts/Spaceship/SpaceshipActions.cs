@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class SpaceshipActions : NetworkBehaviour
 {
@@ -8,8 +9,13 @@ public class SpaceshipActions : NetworkBehaviour
     private PlayerNetwork playerNetwork;
     public GameObject playerPrefab;
 
-    private float boostDuration = 3;
+    private float boostDuration = 5;
     private float boostTime;
+    private bool boostActive;
+    public Text keybindText;
+    public Image thrustIcon;
+    public Image thrustSliderFill;
+
 
     private void OnEnable()
     {
@@ -32,9 +38,13 @@ public class SpaceshipActions : NetworkBehaviour
     {
         if (IsOwner)
         {
-            if (boostTime + boostDuration <= Time.time)
-            {
+            keybindText.text = "Boost: " + KeybindManager.inputActions.Spaceship.Boost.GetBindingDisplayString();
+            if (boostTime + boostDuration <= Time.time && boostActive)
+            {               
                 GetComponent<SpaceshipMovement>().thrust = 5;
+                thrustSliderFill.color = new Color(1, 0.8f, 0, 1);
+                thrustIcon.color = new Color(1, 1, 1, 1);
+                boostActive = false;
             }
         }
     }
@@ -78,6 +88,7 @@ public class SpaceshipActions : NetworkBehaviour
 
         // Make UI look at player
         GetComponent<Hull>().cam = player.GetComponentInChildren<Camera>();
+        player.GetComponent<Healthbar>().health.Value = playerNetwork.tempHealth.Value;
         Game.instance.DisableBodyPartsClientRpc();
     }
 
@@ -88,7 +99,10 @@ public class SpaceshipActions : NetworkBehaviour
             if (playerNetwork.flowerCount.Value >= 3)
             {
                 boostTime = Time.time;
-                GetComponent<SpaceshipMovement>().thrust = 12;
+                boostActive = true;
+                GetComponent<SpaceshipMovement>().thrust = 10;
+                thrustSliderFill.color = new Color(0, 0.9f, 1, 1);
+                thrustIcon.color = new Color(0, 0.15f, 1, 1);
                 playerNetwork.RemoveObjectFromInventoryServerRpc("Flower", 3, OwnerClientId);
             }
         }

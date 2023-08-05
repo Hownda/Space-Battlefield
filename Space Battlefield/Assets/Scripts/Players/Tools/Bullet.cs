@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
@@ -7,31 +5,41 @@ public class Bullet : MonoBehaviour
 {
     public GameObject impactParticles;
     public ulong parentClient;
+    public bool damage = false;
+    private float explosionRadius = 2;
 
     private void OnCollisionEnter(Collision other)
-    {   
-        if (other.gameObject.CompareTag("Player"))
+    {
+        Impact();
+        Collider[] collisions = Physics.OverlapSphere(transform.position, explosionRadius);
+        if (collisions.Length > 0)
         {
-            if (other.gameObject.GetComponent<NetworkObject>().OwnerClientId != parentClient)
+            foreach (Collider collision in collisions)
             {
-                Game.instance.DealDamageToPlayerServerRpc(other.gameObject.GetComponent<NetworkObject>().OwnerClientId, 13);
-                Impact();
+                if (collision.gameObject.CompareTag("Player"))
+                {
+                    if (damage == true)
+                    {
+                        if (collision.gameObject.GetComponent<NetworkObject>().OwnerClientId != parentClient)
+                        {
+                            Game.instance.DealDamageToPlayerServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 13);                            
+                        }
+                    }
+                }
+                if (collision.gameObject.CompareTag("Spaceship"))
+                {
+                    if (damage == true)
+                    {
+                        if (collision.gameObject.GetComponent<NetworkObject>().OwnerClientId != parentClient)
+                        {
+                            Game.instance.DealDamageToSpaceshipServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 2);
+
+                        }
+                    }
+                }
             }
-        } 
-        else if (other.gameObject.CompareTag("Spaceship"))
-        {
-            if (other.gameObject.GetComponent<NetworkObject>().OwnerClientId != parentClient)
-            {
-                Game.instance.DealDamageToSpaceshipServerRpc(other.gameObject.GetComponent<NetworkObject>().OwnerClientId, 2);
-                
-            }            
-            Impact();
         }
-        else
-        {
-            Impact();
-        }
-    }  
+    }
     
     private void Impact()
     {

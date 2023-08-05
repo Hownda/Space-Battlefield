@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.Netcode;
@@ -7,6 +5,7 @@ using Unity.Netcode.Transports.UTP;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using System.Linq;
+using Unity.Services.Lobbies.Models;
 
 public class PlayerData : MonoBehaviour
 {
@@ -18,22 +17,30 @@ public class PlayerData : MonoBehaviour
     private bool inGame = false;
     public Allocation allocation;
     public string key;
+    public string currentLobbyId;
+    public int playerCount;
 
     // Settings
     public GameObject settingsCanvas;
-    public GameObject settingsPanel;
     public GameObject options;
+    public bool disableCameraMovement = false;
     public float mouseSensitivity = 200;
-    public bool disableCameraMovement;
 
-    //Temporary until Netcode 1.4.1
-    [SerializeField] private NetworkPrefabsList _networkPrefabsList;
+    public GameObject crashPanel;
 
     private void Awake()
     {
         instance = this;
-        username = null;
         DontDestroyOnLoad(gameObject);
+
+        if (PlayerPrefs.HasKey("Username"))
+        {
+            username = PlayerPrefs.GetString("Username");
+        }
+        else
+        {
+            username = null;
+        }
     }
 
     private void Update()
@@ -43,7 +50,7 @@ public class PlayerData : MonoBehaviour
             ToggleSettings();
         }
 
-        ManageRelay();        
+        ManageRelay();
     }
 
     private void ManageRelay()
@@ -52,12 +59,10 @@ public class PlayerData : MonoBehaviour
         {
             if (isHost && allocation != null)
             {
-                TemporaryNetworkFix();
                 CreateRelay();
             }
             if (isHost == false)
             {
-                TemporaryNetworkFix();
                 JoinRelay();
             }
             inGame = true;
@@ -110,45 +115,41 @@ public class PlayerData : MonoBehaviour
     public void ToggleSettings()
     {
         // Deactivate
-        if (settingsCanvas.activeInHierarchy)
-        {            
-            if (SceneManager.GetActiveScene().name == "Game")
+        if (settingsCanvas.activeInHierarchy || options.activeInHierarchy)
+        {
+            if (SceneManager.GetActiveScene().name == "Menu" || SceneManager.GetActiveScene().name == "Lobby")
             {
-                settingsPanel.SetActive(false);
-                disableCameraMovement = false;
-                Cursor.lockState = CursorLockMode.Locked;
+                settingsCanvas.SetActive(false);
             }
             else
-            {                
-                Cursor.lockState = CursorLockMode.None;
+            {
+                settingsCanvas.SetActive(false);
+                options.SetActive(false);
             }
-            options.SetActive(false);
-            settingsCanvas.SetActive(false);
+            disableCameraMovement = false;
         }
         // Activate
         else
         {
-            if (SceneManager.GetActiveScene().name == "Game")
+            if (SceneManager.GetActiveScene().name == "Menu" || SceneManager.GetActiveScene().name == "Lobby")
             {
-                options.SetActive(true);
-                settingsPanel.SetActive(false);
-                disableCameraMovement = true;
+                settingsCanvas.SetActive(true);
             }
             else
             {
-                options.SetActive(false);
-                Cursor.lockState = CursorLockMode.None;
+                options.SetActive(true);
             }
-            settingsCanvas.SetActive(true);
+            disableCameraMovement = true;
         }
-    } 
+    }
 
-    private void TemporaryNetworkFix()
+    public void ShowCrash()
     {
-        var prefabs = _networkPrefabsList.PrefabList.Select(x => x.Prefab);
-        foreach (var prefab in prefabs)
-        {
-            NetworkManager.Singleton.AddNetworkPrefab(prefab);
-        }
+        crashPanel.SetActive(true);
+    }
+
+    public void OnClickClose()
+    {
+        crashPanel.SetActive(false);
     }
 }

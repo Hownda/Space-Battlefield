@@ -9,6 +9,8 @@ TagManager:
   - Spaceship
   - Root
   - DestructibleObjects
+  - Weapon
+  - Hammer
   layers:
   - Default
   - TransparentFX
@@ -23,8 +25,8 @@ TagManager:
   - RenderAbove
   - Arms
   - Ground
-  - 
-  - 
+  - Background
+  - Body
   - 
   - 
   - 

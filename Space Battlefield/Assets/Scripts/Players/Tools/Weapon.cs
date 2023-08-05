@@ -61,6 +61,7 @@ public class Weapon : NetworkBehaviour
                 lastShot = Time.time;
                 GameObject bullet = Instantiate(bulletPrefab, fpsCamera.transform.position, Quaternion.Euler(Vector3.zero));
                 bullet.GetComponent<Bullet>().parentClient = OwnerClientId;
+                bullet.GetComponent<Bullet>().damage = true;
                 bullet.GetComponent<Bullet>().IgnoreCollisions(colliders);
                 bullet.transform.rotation = Quaternion.LookRotation(fpsCamera.transform.forward);
                 bullet.GetComponent<Rigidbody>().AddForce(bulletForce * bullet.transform.forward, ForceMode.Impulse);
@@ -69,24 +70,24 @@ public class Weapon : NetworkBehaviour
                 audioManager.Play("blaster-sound");
                 muzzleFlash.Play();
 
-                ShootServerRpc();
+                ShootServerRpc(fpsCamera.transform.forward);
             }
         }
     }
 
-    [ServerRpc] private void ShootServerRpc()
+    [ServerRpc] private void ShootServerRpc(Vector3 shootDirection)
     {
-        ShootClientRpc();
+        ShootClientRpc(shootDirection);
     }
 
-    [ClientRpc] private void ShootClientRpc()
+    [ClientRpc] private void ShootClientRpc(Vector3 shootDirection)
     {
         if (!IsOwner)
         {
             GameObject bullet = Instantiate(bulletPrefab, fpsCamera.transform.position, Quaternion.Euler(Vector3.zero));
             bullet.GetComponent<Bullet>().parentClient = OwnerClientId;
             bullet.GetComponent<Bullet>().IgnoreCollisions(colliders);
-            bullet.transform.rotation = Quaternion.LookRotation(fpsCamera.transform.forward);
+            bullet.transform.rotation = Quaternion.LookRotation(shootDirection);
             bullet.GetComponent<Rigidbody>().AddForce(bulletForce * bullet.transform.forward, ForceMode.Impulse);
             Destroy(bullet, 2.5f);
         }
@@ -101,14 +102,7 @@ public class Weapon : NetworkBehaviour
     {
         if (!IsOwner)
         {
-            if (shoot)
-            {
-                animator.SetBool("Shoot", true);
-            }
-            else
-            {
-                animator.SetBool("Shoot", false);
-            }
+            animator.SetBool("Shoot", shoot);
         }
     }
 }

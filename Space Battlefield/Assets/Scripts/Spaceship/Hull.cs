@@ -10,10 +10,10 @@ public class Hull : NetworkBehaviour
 
     public NetworkVariable<float> integrity = new NetworkVariable<float>(100, writePerm: NetworkVariableWritePermission.Server);
     public Slider integritySlider;
+    public Text integrityText;
     public GameObject integrityBillboard;
     public Slider integrityBillboardSlider;
-
-
+    public Text integrityBillboardText;
 
     // Collisions
     public GameObject explosionPrefab;
@@ -38,8 +38,6 @@ public class Hull : NetworkBehaviour
             playerNetwork.spaceshipObject = gameObject;
 
             integrityBillboard.SetActive(true);
-            integritySlider.value = integrity.Value;
-            integrityBillboardSlider.value = integrity.Value;
 
             cam = playerNetwork.playerObject.GetComponentInChildren<Camera>();
             IgnoreCollisions();
@@ -83,20 +81,23 @@ public class Hull : NetworkBehaviour
     {       
         integritySlider.value = integrity.Value;
         integrityBillboardSlider.value = integrity.Value;
+        integrityText.text = integrity.Value.ToString() + "%";
+        integrityBillboardText.text = integrity.Value.ToString() + "%";
 
         if (cam != null)
         {
             integrityBillboard.transform.LookAt(cam.transform);            
         }
+
+        if (integrity.Value <= 0)
+        {
+            SelfDestruct();
+        }
     }
 
     public void TakeDamage(float damage)
     {
-        integrity.Value -= damage;
-        if (integrity.Value - damage <= 0)
-        {
-            SelfDestruct();
-        }
+        integrity.Value -= damage;        
     }
 
     public void Repair(int amount)
@@ -187,7 +188,7 @@ public class Hull : NetworkBehaviour
                 if (!isGrounded)
                 {
                     colliding = true;
-                    GetComponent<SpaceshipMovement>().upDown1D = 1;
+                    GetComponent<SpaceshipMovement>().upDownInput = 1;
                 }
             }
         }
@@ -204,7 +205,7 @@ public class Hull : NetworkBehaviour
     {
         yield return new WaitForSeconds(.5f);
         colliding = false;
-        GetComponent<SpaceshipMovement>().upDown1D = 0;
+        GetComponent<SpaceshipMovement>().upDownInput = 0;
     }
 
     private void CheckBounds()

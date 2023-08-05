@@ -1,14 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.UI;
+using Unity.Collections;
+using System;
 
 /// <summary>
 /// The class <c>Player Network</c> executes functions on player spawn.
 /// </summary>
 public class PlayerNetwork : NetworkBehaviour
 {
+    public NetworkVariable<FixedString64Bytes> username = new NetworkVariable<FixedString64Bytes>(writePerm: NetworkVariableWritePermission.Owner);
+    public NetworkVariable<bool> spectator = new(false);
+
     public GameObject inventoryCanvas;
     public Transform collectionUI;
 
@@ -27,12 +30,14 @@ public class PlayerNetwork : NetworkBehaviour
     public GameObject defeatOverlay;
     public Camera endCamera;
 
+    public NetworkVariable<int> tempHealth = new NetworkVariable<int>(writePerm: NetworkVariableWritePermission.Owner);
+
     void Start()
     {
         if (IsOwner)
         {
             inventoryCanvas.SetActive(true);
-            PlayerDictionary.instance.UpdatePlayerDictionaryServerRpc();
+            username.Value = PlayerData.instance.username;
         }
     }
 

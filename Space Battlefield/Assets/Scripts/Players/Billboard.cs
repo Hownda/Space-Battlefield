@@ -1,20 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.UI;
 
 public class Billboard : NetworkBehaviour
 {
     public Camera ownCamera;
     private Camera otherCamera;
-    public GameObject billBoardText;
+    public Text billBoardText;
     private PlayerNetwork otherPlayer;
 
     private void Start()
     {
         if (IsOwner)
         {
-            billBoardText.SetActive(false);
+            billBoardText.gameObject.SetActive(false);
             
             otherPlayer = PlayerDictionary.instance.GetOtherPlayer(OwnerClientId).GetComponent<PlayerNetwork>();
         }
@@ -27,6 +26,7 @@ public class Billboard : NetworkBehaviour
             if (otherPlayer.playerObject != null)
             {
                 otherPlayer.playerObject.GetComponentInChildren<Billboard>().otherCamera = ownCamera;
+                otherPlayer.playerObject.GetComponentInChildren<Billboard>().billBoardText.text = otherPlayer.username.Value.ToString();
             }
         }
         if (otherCamera != null)

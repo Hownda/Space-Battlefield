@@ -76,6 +76,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   impactParticles: {fileID: 3400911551365250781, guid: b1cdaa3862ca9064b80e020cd600aa85, type: 3}
   parentClient: 0
+  damage: 0
+  explosionRadius: 4
 --- !u!135 &-5136749220475799913
 SphereCollider:
   m_ObjectHideFlags: 0

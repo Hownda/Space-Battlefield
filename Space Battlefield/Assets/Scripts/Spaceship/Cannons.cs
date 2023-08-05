@@ -64,6 +64,7 @@ public class Cannons : NetworkBehaviour
             {
                 GameObject missile = Instantiate(missilePrefab, cannons.transform.position, Quaternion.LookRotation(ray.direction));
                 missile.GetComponent<Bullet>().parentClient = OwnerClientId;
+                missile.GetComponent<Bullet>().damage = true;
                 missile.GetComponent<Bullet>().IgnoreCollisions(colliders);
                 missile.GetComponent<Rigidbody>().AddForce(missileForce * missile.transform.forward, ForceMode.Impulse);
                 Destroy(missile, 2.5f);

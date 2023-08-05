@@ -11,6 +11,7 @@ using System;
 public class Game : NetworkBehaviour
 {
     public static Game instance;
+    private List<PlayerInformation> playerInformationList = new();
 
     public GameObject spaceshipPrefab;
     public GameObject playerPrefab;
@@ -29,21 +30,14 @@ public class Game : NetworkBehaviour
 
     public void StartGame()
     {
-        if (IsServer)
-        {
-            SpawnPlayers();    
-        }
-    }
-
-    private void SpawnPlayers()
-    {
+        GameObject[] playerRoots = GameObject.FindGameObjectsWithTag("Root");
         int i = 0;
-        foreach (KeyValuePair<ulong, GameObject> player in PlayerDictionary.instance.playerDictionary)
+        foreach (GameObject playerRoot in playerRoots)
         {
             GameObject spawnedPlayer = Instantiate(playerPrefab, spawnLocations[i], Quaternion.Euler(spawnRotations[i]));
             spawnedPlayer.GetComponent<NetworkObject>().Spawn();
-            spawnedPlayer.GetComponent<NetworkObject>().ChangeOwnership(player.Value.GetComponent<NetworkObject>().OwnerClientId);
-            player.Value.GetComponent<PlayerNetwork>().playerObject = spawnedPlayer;
+            spawnedPlayer.GetComponent<NetworkObject>().ChangeOwnership(playerRoot.GetComponent<NetworkObject>().OwnerClientId);
+            playerRoot.GetComponent<PlayerNetwork>().playerObject = spawnedPlayer;
             i++;
         }
         // Wait for players to reach their spawn points before spawning spaceships
