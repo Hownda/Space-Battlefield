@@ -1613,7 +1613,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 117.7, y: 0}
+  m_AnchoredPosition: {x: 117.7, y: 64.71}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &588698897
@@ -4038,7 +4038,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4608210693019632100, guid: 039e6099843bbb8488eda64a65469127, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -135.6
+      value: -185
       objectReference: {fileID: 0}
     - target: {fileID: 4608210693019632100, guid: 039e6099843bbb8488eda64a65469127, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -10203,6 +10203,7 @@ MonoBehaviour:
   username: 
   key: 
   currentLobbyId: 
+  playerCount: 0
   settingsCanvas: {fileID: 7254166988810187919}
   options: {fileID: 7146696575951780273}
   disableCameraMovement: 0

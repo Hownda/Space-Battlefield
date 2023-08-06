@@ -23,6 +23,7 @@ public class GameManager : NetworkBehaviour
         {           
             if (allPlayersConnected == false)
             {
+                Debug.Log("Spawning in player");
                 connectedPlayers++;
                 GameObject playerRoot = Instantiate(playerRootPrefab);
                 playerRoot.GetComponent<NetworkObject>().Spawn();
@@ -30,6 +31,7 @@ public class GameManager : NetworkBehaviour
 
                 if (connectedPlayers == playerCount)
                 {
+                    Debug.Log("Requesting Start...");
                     allPlayersConnected = true;
                     GetComponent<Game>().StartGame();
                 }

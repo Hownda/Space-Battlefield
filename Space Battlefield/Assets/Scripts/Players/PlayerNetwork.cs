@@ -15,9 +15,6 @@ public class PlayerNetwork : NetworkBehaviour
     public GameObject inventoryCanvas;
     public Transform collectionUI;
 
-    public GameObject playerObject;
-    public GameObject spaceshipObject;
-
     public NetworkVariable<int> rockCount = new NetworkVariable<int>(0, writePerm: NetworkVariableWritePermission.Server);
     public Text rockCounter;
     public GameObject rockItem;

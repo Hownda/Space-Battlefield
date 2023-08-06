@@ -26,7 +26,7 @@ public class Cannons : NetworkBehaviour
     private void Start()
     {
         lastShot = Time.time;
-        spaceshipCamera = GetComponentInChildren<Camera>();
+        spaceshipCamera = Camera.main;
     }
 
     void Update()

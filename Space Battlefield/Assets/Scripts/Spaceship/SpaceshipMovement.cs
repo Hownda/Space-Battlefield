@@ -10,6 +10,7 @@ public class SpaceshipMovement : NetworkBehaviour
     // Movement Factors
     public float thrust = 5;
     public float upDownInput;
+    private float speed = 0;
 
     private float rollTorque = 10000;   
     private float upDownForce = 6000;   
@@ -27,6 +28,8 @@ public class SpaceshipMovement : NetworkBehaviour
 
     public float thrustPercent = 0;
     private float flySoundStart = 0f;
+
+    public GameObject shipLookTarget;
 
     private void OnEnable()
     {
@@ -75,8 +78,17 @@ public class SpaceshipMovement : NetworkBehaviour
 
     private void Thrust()
     {
-        float thrustInput = gameActions.Spaceship.Thrust.ReadValue<float>();
-        if (thrustInput > 0)
+        bool thrustInput = gameActions.Spaceship.Thrust.ReadValue<float>() > 0;
+        if (thrustInput)
+        {
+            speed = Mathf.Lerp(speed, thrust, Time.deltaTime * 3);
+        }
+        else
+        {
+            speed = Mathf.Lerp(speed, 0, Time.deltaTime * 3);
+        }
+        rb.velocity = transform.forward * speed;
+        /*if (thrustInput > 0)
         {
             thrustSlider.value += velocityFactor * Time.deltaTime;
         }
@@ -92,7 +104,9 @@ public class SpaceshipMovement : NetworkBehaviour
             {
                 rb.velocity = Vector3.ClampMagnitude(rb.velocity, maxVelocity);
             }
-        }
+        }*/
+
+
     }
 
     private void UpDown()

@@ -33,13 +33,7 @@ public class Hull : NetworkBehaviour
     {
        if (IsOwner)
        {
-            GameObject player = PlayerDictionary.instance.playerDictionary[OwnerClientId];
-            playerNetwork = player.GetComponent<PlayerNetwork>();
-            playerNetwork.spaceshipObject = gameObject;
-
             integrityBillboard.SetActive(true);
-
-            cam = playerNetwork.playerObject.GetComponentInChildren<Camera>();
             IgnoreCollisions();
        }
        else

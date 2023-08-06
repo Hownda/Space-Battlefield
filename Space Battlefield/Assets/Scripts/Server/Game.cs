@@ -12,6 +12,8 @@ public class Game : NetworkBehaviour
 {
     public static Game instance;
     private List<PlayerInformation> playerInformationList = new();
+    private Dictionary<ulong, PlayerInformation> playerInformationDict = new();
+    public NetworkVariable<bool> started = new(false);
 
     public GameObject spaceshipPrefab;
     public GameObject playerPrefab;
@@ -30,28 +32,19 @@ public class Game : NetworkBehaviour
 
     public void StartGame()
     {
-        GameObject[] playerRoots = GameObject.FindGameObjectsWithTag("Root");
+        Debug.Log("Starting Game...");
         int i = 0;
-        foreach (GameObject playerRoot in playerRoots)
+        foreach (GameObject playerRoot in GameObject.FindGameObjectsWithTag("Root"))
         {
             GameObject spawnedPlayer = Instantiate(playerPrefab, spawnLocations[i], Quaternion.Euler(spawnRotations[i]));
             spawnedPlayer.GetComponent<NetworkObject>().Spawn();
             spawnedPlayer.GetComponent<NetworkObject>().ChangeOwnership(playerRoot.GetComponent<NetworkObject>().OwnerClientId);
-            playerRoot.GetComponent<PlayerNetwork>().playerObject = spawnedPlayer;
+            playerInformationList.Add(new PlayerInformation(playerRoot.GetComponent<NetworkObject>().OwnerClientId, playerRoot, spawnedPlayer, null));
+            playerInformationDict.Add(playerRoot.GetComponent<NetworkObject>().OwnerClientId, playerInformationList[i]);
             i++;
         }
         // Wait for players to reach their spawn points before spawning spaceships
         StartCoroutine(spawnDelay());
-    }
-
-    [ClientRpc]
-    public void DisableBodyPartsClientRpc()
-    {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject player in players)
-        {
-            player.GetComponentInChildren<CameraScript>().DisableBodyParts();
-        }
     }
 
     private IEnumerator spawnDelay()
@@ -60,51 +53,58 @@ public class Game : NetworkBehaviour
 
         // Disable body parts marked as self
         DisableBodyPartsClientRpc();
-
         SpawnSpaceships();
+        started.Value = true;
     }
 
     private void SpawnSpaceships()
     {
-        foreach (KeyValuePair<ulong, GameObject> player in PlayerDictionary.instance.playerDictionary)
+        for (int i = 0; i < playerInformationList.Count; i++)
         {
-            GameObject playerObject = player.Value.GetComponent<PlayerNetwork>().playerObject;
-
-            GameObject spaceship = Instantiate(spaceshipPrefab, new Vector3(playerObject.transform.position.x + spaceshipSpawnOffset, playerObject.transform.position.y, playerObject.transform.position.z + spaceshipSpawnOffset), Quaternion.Euler(Vector3.zero));
+            GameObject spaceship = Instantiate(spaceshipPrefab, new Vector3(playerInformationList[i].player.transform.position.x + spaceshipSpawnOffset, playerInformationList[i].player.transform.position.y, playerInformationList[i].player.transform.position.z + spaceshipSpawnOffset), Quaternion.Euler(Vector3.zero));
             spaceship.GetComponent<NetworkObject>().Spawn();
-            spaceship.GetComponent<NetworkObject>().ChangeOwnership(player.Key);
-            player.Value.GetComponent<PlayerNetwork>().spaceshipObject = spaceship;
+            spaceship.GetComponent<NetworkObject>().ChangeOwnership(playerInformationList[i].clientId);
+            playerInformationList[i].spaceship = spaceship;
+        }
+    }
+
+    [ClientRpc] public void DisableBodyPartsClientRpc()
+    {
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject player in players)
+        {
+            player.GetComponentInChildren<CameraScript>().DisableBodyParts();
         }
     }
 
     [ServerRpc(RequireOwnership = false)] public void DealDamageToPlayerServerRpc(ulong clientId, int damage)
     {
-        GameObject player = PlayerDictionary.instance.playerDictionary[clientId].GetComponent<PlayerNetwork>().playerObject;
+        GameObject player = playerInformationDict[clientId].player;
         player.GetComponent<Healthbar>().TakeDamage(damage);
         player.GetComponent<Healthbar>().DisplayDamageIndicatorClientRpc();
     }
 
     [ServerRpc(RequireOwnership = false)] public void DealDamageToSpaceshipServerRpc(ulong clientId, float damage)
     {
-        GameObject spaceship = PlayerDictionary.instance.playerDictionary[clientId].GetComponent<PlayerNetwork>().spaceshipObject;
+        GameObject spaceship = playerInformationDict[clientId].spaceship;
         spaceship.GetComponent<Hull>().TakeDamage(damage);
     }
 
     [ServerRpc(RequireOwnership = false)] public void HealDamageOnPlayerServerRpc(ulong clientId, int amount)
     {
-        GameObject player = PlayerDictionary.instance.playerDictionary[clientId].GetComponent<PlayerNetwork>().playerObject;
+        GameObject player = playerInformationDict[clientId].player;
         player.GetComponent<Healthbar>().Heal(amount);
     }
 
     [ServerRpc(RequireOwnership = false)] public void RepairDamageOnSpaceshipServerRpc(ulong clientId, int amount)
     {
-        GameObject spaceship = PlayerDictionary.instance.playerDictionary[clientId].GetComponent<PlayerNetwork>().spaceshipObject;
+        GameObject spaceship = playerInformationDict[clientId].spaceship;
         spaceship.GetComponent<Hull>().Repair(amount);
     }
     
     [ServerRpc(RequireOwnership = false)] public void RemoveSpaceshipServerRpc(ulong clientId)
     {
-        GameObject spaceship = PlayerDictionary.instance.playerDictionary[clientId].GetComponent<PlayerNetwork>().spaceshipObject;
+        GameObject spaceship = playerInformationDict[clientId].spaceship;
         spaceship.GetComponent<NetworkObject>().Despawn();                
     }
 
@@ -115,16 +115,16 @@ public class Game : NetworkBehaviour
 
     [ClientRpc] private void TriggerVictoryClientRpc(ulong loserClientId)
     {
-        foreach (KeyValuePair<ulong, GameObject> player in PlayerDictionary.instance.playerDictionary)
-        {
-            if (player.Key == loserClientId)
-            {
-                player.Value.GetComponent<PlayerNetwork>().Lose();
-            }
-            else
-            {
-                player.Value.GetComponent<PlayerNetwork>().Win();
-            }
-        }
+        // To do: Add losing;
+    }
+
+    [ServerRpc(RequireOwnership = false)] public void SetTempHealthServerRpc(ulong clientId, int health)
+    {
+        playerInformationDict[clientId].root.GetComponent<PlayerNetwork>().tempHealth.Value = health;
+    }
+
+    public void SetHealth(GameObject player)
+    {
+        player.GetComponent<Healthbar>().health.Value = playerInformationDict[player.GetComponent<NetworkObject>().OwnerClientId].root.GetComponent<PlayerNetwork>().tempHealth.Value;
     }
 }

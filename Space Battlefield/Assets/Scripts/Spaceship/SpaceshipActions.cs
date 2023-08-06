@@ -28,12 +28,6 @@ public class SpaceshipActions : NetworkBehaviour
         }
     }
 
-    private void Start()
-    {
-        GameObject player = PlayerDictionary.instance.playerDictionary[OwnerClientId];
-        playerNetwork = player.GetComponent<PlayerNetwork>();       
-    }
-
     private void Update()
     {
         if (IsOwner)
@@ -59,11 +53,14 @@ public class SpaceshipActions : NetworkBehaviour
 
     public void Exit()
     {
-        gameActions.Player.Disable();
+        Debug.Log("Exiting...");
+        gameActions.Spaceship.Exit.started -= ExitInput;
+        gameActions.Spaceship.Boost.started -= Boost;
+        gameActions.Spaceship.Disable();
         GetComponent<Hull>().integrityBillboard.SetActive(true);
-        GetComponentInChildren<Camera>().enabled = false;
-        GetComponentInChildren<SpaceshipMovement>().enabled = false;
-        GetComponentInChildren<AudioListener>().enabled = false;
+        Camera.main.GetComponent<AudioListener>().enabled = false;
+        Camera.main.enabled = false;       
+        GetComponentInChildren<SpaceshipMovement>().enabled = false;        
         GetComponent<Cannons>().enabled = false;
         SpawnPlayerServerRpc();
         this.enabled = false;
@@ -88,7 +85,7 @@ public class SpaceshipActions : NetworkBehaviour
 
         // Make UI look at player
         GetComponent<Hull>().cam = player.GetComponentInChildren<Camera>();
-        player.GetComponent<Healthbar>().health.Value = playerNetwork.tempHealth.Value;
+        Game.instance.SetHealth(player);
         Game.instance.DisableBodyPartsClientRpc();
     }
 

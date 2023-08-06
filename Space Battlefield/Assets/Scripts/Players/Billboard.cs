@@ -4,32 +4,28 @@ using UnityEngine.UI;
 
 public class Billboard : NetworkBehaviour
 {
-    public Camera ownCamera;
-    private Camera otherCamera;
-    public Text billBoardText;
-    private PlayerNetwork otherPlayer;
-
-    private void Start()
-    {
-        if (IsOwner)
-        {
-            billBoardText.gameObject.SetActive(false);
-            
-            otherPlayer = PlayerDictionary.instance.GetOtherPlayer(OwnerClientId).GetComponent<PlayerNetwork>();
-        }
-    }
+    [HideInInspector] public Camera otherCamera;
+    private bool allPlayersFound = false;
+    private GameObject[] players;
 
     void Update()
     {
-        if (otherPlayer != null)
+        if (allPlayersFound == false)
         {
-            if (otherPlayer.playerObject != null)
+            if (Game.instance.started.Value == true)
             {
-                otherPlayer.playerObject.GetComponentInChildren<Billboard>().otherCamera = ownCamera;
-                otherPlayer.playerObject.GetComponentInChildren<Billboard>().billBoardText.text = otherPlayer.username.Value.ToString();
+                players = GameObject.FindGameObjectsWithTag("Player");
+                foreach (GameObject player in players)
+                {
+                    if (player.GetComponent<NetworkObject>().OwnerClientId != OwnerClientId)
+                    {
+                        player.GetComponentInChildren<Billboard>().otherCamera = GetComponentInChildren<Camera>();
+                    }
+                }
+                allPlayersFound = true;
             }
         }
-        if (otherCamera != null)
+        if (!IsOwner)
         {
             transform.LookAt(otherCamera.transform);
         }

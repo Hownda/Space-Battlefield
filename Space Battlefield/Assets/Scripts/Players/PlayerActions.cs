@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Netcode;
 using UnityEngine.UI;
+using Cinemachine;
 
 public class PlayerActions : NetworkBehaviour
 {
@@ -22,10 +23,6 @@ public class PlayerActions : NetworkBehaviour
             gameActions.Player.Eat.started += Eat;
             gameActions.Player.Enable();
         }
-
-        GameObject player = PlayerDictionary.instance.playerDictionary[OwnerClientId];
-        playerNetwork = player.GetComponent<PlayerNetwork>();
-        playerNetwork.playerObject = gameObject;
     }
 
     private void Update()
@@ -37,24 +34,33 @@ public class PlayerActions : NetworkBehaviour
     {
         if (IsOwner)
         {
-            GameObject spaceship = playerNetwork.spaceshipObject;
-            if (spaceship != null)
+            Debug.Log("Entering");
+            foreach (GameObject spaceship in GameObject.FindGameObjectsWithTag("Spaceship"))
             {
-                // Camera components
-                spaceship.GetComponentInChildren<Camera>().enabled = true;
-                spaceship.GetComponentInChildren<AudioListener>().enabled = true;
+                if (spaceship.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
+                {                    
+                    // Interaction components
+                    spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
+                    spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
+                    spaceship.GetComponentInChildren<SpaceshipMovement>().spaceshipCanvas.SetActive(true);
+                    spaceship.GetComponent<Cannons>().enabled = true;
+                    spaceship.GetComponent<Hull>().integrityBillboard.SetActive(false);
+                    spaceship.GetComponent<SpaceshipActions>().enabled = true;
 
-                // Interaction components
-                spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
-                spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
-                spaceship.GetComponentInChildren<SpaceshipMovement>().spaceshipCanvas.SetActive(true);
-                spaceship.GetComponent<Cannons>().enabled = true;
-                spaceship.GetComponent<Hull>().integrityBillboard.SetActive(false);
-                gameActions.Player.Disable();
-                spaceship.GetComponent<SpaceshipActions>().enabled = true;
+                    CinemachineVirtualCamera camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CinemachineVirtualCamera>();
+                    camera.LookAt = spaceship.GetComponent<SpaceshipMovement>().shipLookTarget.transform;
+                    camera.Follow = spaceship.GetComponent<SpaceshipMovement>().shipLookTarget.transform;
+                    camera.GetComponent<AudioListener>().enabled = true;
+                    camera.GetComponent<Camera>().enabled = true;
 
-                playerNetwork.tempHealth.Value = GetComponent<Healthbar>().health.Value;
-                DespawnPlayerServerRpc();
+                    gameActions.Player.Enter.started -= Enter;
+                    gameActions.Player.Pickup.started -= PickUp;
+                    gameActions.Player.Eat.started -= Eat;
+                    gameActions.Player.Disable();
+
+                    Game.instance.SetTempHealthServerRpc(OwnerClientId, GetComponent<Healthbar>().health.Value);
+                    DespawnPlayerServerRpc();
+                }
             }
         }
     }
