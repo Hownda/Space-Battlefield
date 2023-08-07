@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine.UI;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class Hull : NetworkBehaviour
 {
@@ -9,7 +10,7 @@ public class Hull : NetworkBehaviour
 
     // Integrity
     public NetworkVariable<float> integrity = new NetworkVariable<float>(100, writePerm: NetworkVariableWritePermission.Server);
-    public Slider integritySlider;
+    public Image integritySlider;
     public Text integrityText;
     public GameObject integrityBillboard;
     public Slider integrityBillboardSlider;
@@ -17,11 +18,13 @@ public class Hull : NetworkBehaviour
 
     // Collisions
     public AudioSource crashSound;
+    public AudioMixer audioMixer;
+    public AudioMixerGroup audioMixerGroup;
+    public AudioMixerGroup otherAudioMixerGroup;
     public GameObject explosionPrefab;
     public bool colliding;
     public float damageFactor = 1;
     public ParticleSystem contactParticles;
-    public AudioManager audioManager;
     public GameObject warning;
 
     public bool isGrounded;
@@ -32,11 +35,14 @@ public class Hull : NetworkBehaviour
     {
        if (IsOwner)
        {
+            crashSound.outputAudioMixerGroup = audioMixerGroup;
+
             integrityBillboard.SetActive(true);
             IgnoreCollisions();
        }
        else
        {
+            crashSound.outputAudioMixerGroup = otherAudioMixerGroup;
             integritySlider.gameObject.SetActive(false);
        }
     }
@@ -72,7 +78,7 @@ public class Hull : NetworkBehaviour
 
     void Update()
     {       
-        integritySlider.value = integrity.Value;
+        integritySlider.fillAmount = integrity.Value / 100;
         integrityBillboardSlider.value = integrity.Value;
         integrityText.text = integrity.Value.ToString() + "%";
         integrityBillboardText.text = integrity.Value.ToString() + "%";
@@ -111,7 +117,6 @@ public class Hull : NetworkBehaviour
         GameObject explosion = Instantiate(explosionPrefab, transform.position, Quaternion.Euler(Vector3.zero));
         explosion.GetComponentInChildren<ParticleSystem>().Play();
         Destroy(explosion, 2f);
-        audioManager.Play("crash-sound");
 
         if (PlayerSpawned() == false)
         {
@@ -146,12 +151,12 @@ public class Hull : NetworkBehaviour
                 float volume = relativeVelocity * 0.1f;
 
                 crashSound.pitch = Random.Range(0.95f, 1.05f);
-                crashSound.volume = volume;
+                audioMixer.SetFloat("CrashVolume", volume);
 
                 if (!crashSound.isPlaying)
                 {
                     crashSound.Play();
-                    PlayCrashSoundEffectServerRpc(crashSound.pitch, crashSound.volume);
+                    PlayCrashSoundEffectServerRpc(crashSound.pitch, volume);
                 }
             }
         }
@@ -166,7 +171,7 @@ public class Hull : NetworkBehaviour
     {
         if (!crashSound.isPlaying)
         {
-            crashSound.volume = volume;
+            audioMixer.SetFloat("OtherCrashVolume", volume);
             crashSound.pitch = pitch;
             crashSound.Play();
         }

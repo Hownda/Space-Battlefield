@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace PathCreation
 {
-    //[CreateAssetMenu()]
+    [CreateAssetMenu()]
     public class GlobalDisplaySettings : ScriptableObject
     {
 

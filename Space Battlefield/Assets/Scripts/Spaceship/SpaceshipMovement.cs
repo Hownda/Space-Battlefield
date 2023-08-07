@@ -20,10 +20,8 @@ public class SpaceshipMovement : NetworkBehaviour
     private float maxAngularVelocity = 8;
 
     Rigidbody rb;
-
-    public AudioManager audioManager;
     private MovementControls gameActions;
-    public Slider thrustSlider;
+    public Image thrustSlider;
     public GameObject spaceshipCanvas;
 
     public float thrustPercent = 0;
@@ -44,7 +42,7 @@ public class SpaceshipMovement : NetworkBehaviour
     private void OnDisable()
     {
         thrustPercent = 0;
-        thrustSlider.value = 0;
+        thrustSlider.fillAmount = 0;
         spaceshipCanvas.SetActive(false);
         GetComponentInChildren<PlayerInput>().enabled = false;
         gameActions.Spaceship.Disable();
@@ -71,6 +69,15 @@ public class SpaceshipMovement : NetworkBehaviour
             Thrust();
             UpDown();
             Strafe();
+
+            if (PlayerData.instance.disableCameraMovement)
+            {
+                Cursor.lockState = CursorLockMode.None;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+            }
         }
     }    
 
@@ -102,7 +109,7 @@ public class SpaceshipMovement : NetworkBehaviour
             thrustPercent = Mathf.Clamp(thrustPercent, 0, 100);
             speed = Mathf.Lerp(speed, thrust / 100 * thrustPercent, 0.5f);
         }
-        thrustSlider.value = thrustPercent;
+        thrustSlider.fillAmount = thrustPercent / 100;
         rb.velocity = transform.forward * speed;
 
         // Play Sounds

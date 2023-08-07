@@ -79,7 +79,7 @@ public class WorldGrid : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.DrawWireCube(transform.position, new Vector3(GridWidth, GridHeight, GridLength) * PointDistance);
+        //Gizmos.DrawWireCube(transform.position, new Vector3(GridWidth, GridHeight, GridLength) * PointDistance);
     }
 
     public GridPoint GetClosestPointWorldSpace(Vector3 position)

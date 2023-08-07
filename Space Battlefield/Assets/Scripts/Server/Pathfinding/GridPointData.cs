@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridPointData : MonoBehaviour
+public class GridPointData
 {
     public float GScore;
     public float FScore;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class GridPoint : MonoBehaviour
+public class GridPoint
 {
     public Vector3Int Coords;
     public Vector3 WorldPosition;

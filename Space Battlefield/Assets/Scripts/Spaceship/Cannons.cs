@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class Cannons : NetworkBehaviour
 {
-    public AudioManager audioManager;
     private Camera spaceshipCamera;
 
     public RectTransform crosshair;
@@ -22,6 +21,7 @@ public class Cannons : NetworkBehaviour
     private float lastShot;
 
     public Collider[] colliders;
+    public AudioSource shootSound;
 
     private void Start()
     {
@@ -68,8 +68,8 @@ public class Cannons : NetworkBehaviour
                 missile.GetComponent<Bullet>().IgnoreCollisions(colliders);
                 missile.GetComponent<Rigidbody>().AddForce(missileForce * missile.transform.forward, ForceMode.Impulse);
                 Destroy(missile, 2.5f);
-
-                audioManager.Play("blaster-sound");
+                shootSound.Play();
+                
                 ShootServerRpc(ray.direction);
             }
         }

@@ -300,49 +300,6 @@ public class AStarAgent : MonoBehaviour
         }
     }
 
-    public void CreateBezierPath()
-    {
-        if (PathCreator == null)
-        {
-            PathCreator = Instantiate(_PathCreatorPrefab, Vector3.zero, Quaternion.identity);
-        }
-
-        List<Vector3> points = new List<Vector3>();
-
-
-        points.Add(CornerPoints[CornerPoints.Count - 1].WorldPosition);
-        for (int i = CornerPoints.Count - 2; i >= 0; i--)
-        {
-            //Vector3 centerPos = CornerPoints[i + 1].WorldPosition + (CornerPoints[i].WorldPosition - CornerPoints[i + 1].WorldPosition) / 2f;
-            points.Add(CornerPoints[i].WorldPosition);
-        }
-        points.Add(CornerPoints[0].WorldPosition);
-
-
-        BezierPath bezierPath = new BezierPath(points, false, PathSpace.xyz);
-        bezierPath.ControlPointMode = BezierPath.ControlMode.Free;
-        int cornerIndex = CornerPoints.Count - 1;
-
-
-        bezierPath.SetPoint(1, CornerPoints[cornerIndex].WorldPosition, true);
-        for (int i = 2; i < bezierPath.NumPoints - 2; i += 3)
-        {
-            Vector3 position = bezierPath.GetPoint(i + 1) + (CornerPoints[cornerIndex].WorldPosition - bezierPath.GetPoint(i + 1)) * _CornerSmooth;
-            bezierPath.SetPoint(i, position, true);
-            if (cornerIndex > 0)
-            {
-                position = bezierPath.GetPoint(i + 2) + (CornerPoints[cornerIndex - 1].WorldPosition - bezierPath.GetPoint(i + 2)) * _CornerSmooth;
-                bezierPath.SetPoint(i + 2, position, true);
-            }
-            cornerIndex--;
-        }
-        bezierPath.SetPoint(bezierPath.NumPoints - 2, CornerPoints[0].WorldPosition, true);
-
-
-        bezierPath.NotifyPathModified();
-        PathCreator.bezierPath = bezierPath;
-    }
-
     private void StartMoving()
     {
         StopAllCoroutines();
@@ -375,29 +332,6 @@ public class AStarAgent : MonoBehaviour
                 yield return new WaitForFixedUpdate();
             }
         }
-        SetStationaryPoint();
-        Status = AStarAgentStatus.Finished;
-    }
-
-    IEnumerator Coroutine_CharacterFollowPathCurve()
-    {
-        Status = AStarAgentStatus.InProgress;
-        CreateBezierPath();
-
-        float length = PathCreator.path.length;
-        float l = 0;
-
-        while (l < length)
-        {
-            SetPathColor();
-            transform.position += transform.forward * Time.deltaTime * Speed;
-            Vector3 forwardDirection = (PathCreator.path.GetPointAtDistance(l, EndOfPathInstruction.Stop) - transform.position).normalized;
-            transform.forward = Vector3.Slerp(transform.forward, forwardDirection, Time.deltaTime * TurnSpeed);
-            l += Time.deltaTime * Speed;
-            yield return new WaitForFixedUpdate();
-        }
-
-
         SetStationaryPoint();
         Status = AStarAgentStatus.Finished;
     }

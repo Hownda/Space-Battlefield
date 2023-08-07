@@ -1514,11 +1514,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7213db305ee5bf4ab078da30e61733b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _GridPointPrefab: {fileID: 0}
-  GridWidth: 0
-  GridHeight: 0
-  GridLength: 0
-  PointDistance: 0
+  _GridPointPrefab: {fileID: 290581813581882863, guid: 1d662050ead255849af0945114071827, type: 3}
+  GridWidth: 50
+  GridHeight: 40
+  GridLength: 50
+  PointDistance: 30
   PointSize: 0
   InvalidPointSize: 0
 --- !u!1 &1745264034
