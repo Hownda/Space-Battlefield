@@ -78,7 +78,7 @@ public class PlayerActions : NetworkBehaviour
                 if (hit.transform.GetComponentInParent<Flower>())
                 {
                     hit.transform.GetComponentInParent<Flower>().PickUp();
-                    playerNetwork.AddObjectToInventoryServerRpc("Flower", 5, OwnerClientId);
+                    Game.instance.GiveObjectToPlayerServerRpc(OwnerClientId, Item.Flower, 5);
                     //audioManager.Play("pick-up");
                 }
             }
@@ -93,7 +93,7 @@ public class PlayerActions : NetworkBehaviour
             if (playerNetwork.flowerCount.Value > 0)
             {
                 Game.instance.HealDamageOnPlayerServerRpc(OwnerClientId, 5);
-                playerNetwork.RemoveObjectFromInventoryServerRpc("Flower", 1, OwnerClientId);
+                Game.instance.RemoveObjectFromInventoryServerRpc(OwnerClientId, Item.Flower, 5);
             }
         }
     }

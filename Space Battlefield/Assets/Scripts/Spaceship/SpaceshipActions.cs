@@ -70,9 +70,9 @@ public class SpaceshipActions : NetworkBehaviour
     [ServerRpc] private void SpawnPlayerServerRpc()
     {
         Vector3 spawnPosition;
-        if (GetComponent<PlayerGravity>().gravityOrbit != null)
+        if (GetComponent<SpaceshipGravity>().gravityOrbit != null)
         {
-            spawnPosition = transform.position + 3 * ((transform.position - GetComponent<PlayerGravity>().gravityOrbit.transform.position).normalized);
+            spawnPosition = transform.position + 3 * ((transform.position - GetComponent<SpaceshipGravity>().gravityOrbit.transform.position).normalized);
         }
         else
         {
@@ -100,7 +100,7 @@ public class SpaceshipActions : NetworkBehaviour
                 GetComponent<SpaceshipMovement>().thrust = 10;
                 thrustSliderFill.color = new Color(0, 0.9f, 1, 1);
                 thrustIcon.color = new Color(0, 0.15f, 1, 1);
-                playerNetwork.RemoveObjectFromInventoryServerRpc("Flower", 3, OwnerClientId);
+                Game.instance.RemoveObjectFromInventoryServerRpc(OwnerClientId, Item.Flower, 3);
             }
         }
     }

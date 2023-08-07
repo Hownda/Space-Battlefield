@@ -301,7 +301,7 @@ public class LobbyManager : MonoBehaviour
                 await LobbyService.Instance.RemovePlayerAsync(currentLobby.Id, AuthenticationService.Instance.PlayerId);
             }
             AuthenticationService.Instance.SignOut();
-            SceneManager.LoadScene("Menu");
+            SceneManager.LoadScene("MainMenu");
             Destroy(PlayerData.instance.gameObject);
         }
         catch (LobbyServiceException e)
@@ -331,7 +331,6 @@ public class LobbyManager : MonoBehaviour
         };
         await LobbyService.Instance.UpdateLobbyAsync(currentLobby.Id, updateOptions);
         PlayerData.instance.currentLobbyId = currentLobby.Id;
-        PlayerData.instance.playerCount = currentLobby.Players.Count;
 
         SceneManager.LoadScene("Game");
     }

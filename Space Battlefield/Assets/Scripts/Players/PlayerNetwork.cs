@@ -47,83 +47,63 @@ public class PlayerNetwork : NetworkBehaviour
         }
     }
 
-    [ServerRpc] public void AddObjectToInventoryServerRpc(string item, int amount, ulong clientId)
-    {
-        if (item == "Rock")
-        {
-            rockCount.Value += amount;                      
-        }
-
-        if (item == "Flower")
-        {
-            flowerCount.Value += amount;            
-        }
-
-        AddObjectToInventoryClientRpc(item, amount, clientId);
-    }
-
-    [ClientRpc] private void AddObjectToInventoryClientRpc(string item, int amount, ulong clientId)
+    [ClientRpc] public void AddObjectToInventoryClientRpc(Item item, int amount, ulong clientId)
     {
         if (OwnerClientId == clientId)
         {
-            if (item == "Rock")
+            switch (item)
             {
-                for (int i = 0; i < amount; i++)
-                {
-                    GameObject rockAdditionUI = Instantiate(rockItem, collectionUI);
-                    Destroy(rockAdditionUI, 2f);
-                }
-            }
+                case Item.Rock:
+                    for (int i = 0; i < amount; i++)
+                    {
+                        GameObject rockAdditionUI = Instantiate(rockItem, collectionUI);
+                        Destroy(rockAdditionUI, 2f);
+                    }
+                    break;
 
-            if (item == "Flower")
-            {
-                for (int i = 0; i < amount; i++)
-                {
-                    GameObject flowerAdditionUI = Instantiate(flowerItem, collectionUI);
-                    Destroy(flowerAdditionUI, 2f);
-                }                
+                case Item.Flower:
+                    for (int i = 0; i < amount; i++)
+                    {
+                        GameObject flowerAdditionUI = Instantiate(flowerItem, collectionUI);
+                        Destroy(flowerAdditionUI, 2f);
+                    }
+                    break;
+
+                default:
+                    break;
             }    
         }
     }
 
-    [ServerRpc] public void RemoveObjectFromInventoryServerRpc(string item, int amount, ulong clientId)
-    {
-        if (item == "Rock")
-        {
-            rockCount.Value -= amount;            
-        }
-        if (item == "Flower")
-        {
-            flowerCount.Value -= amount;
-        }
-
-        RemoveObjectFromInventoryClientRpc(item, amount, clientId);
-    }
-
     [ClientRpc]
-    private void RemoveObjectFromInventoryClientRpc(string item, int amount, ulong clientId)
+    public void RemoveObjectFromInventoryClientRpc(Item item, int amount, ulong clientId)
     {
         if (OwnerClientId == clientId)
         {
-            if (item == "Rock")
+            switch (item)
             {
-                for (int i = 0; i < amount; i++)
-                {
-                    GameObject rockAdditionUI = Instantiate(rockItem, collectionUI);
-                    rockAdditionUI.GetComponentInChildren<Text>().text = (-1).ToString();
-                    rockAdditionUI.GetComponentInChildren<Text>().color = new Color(255, 0, 0);
-                    Destroy(rockAdditionUI, 2f);
-                }
-            }
-            if (item == "Flower")
-            {
-                for (int i = 0; i < amount; i++)
-                {
-                    GameObject flowerAdditionUI = Instantiate(flowerItem, collectionUI);
-                    flowerAdditionUI.GetComponentInChildren<Text>().text = (-1).ToString();
-                    flowerAdditionUI.GetComponentInChildren<Text>().color = new Color(255, 0, 0);
-                    Destroy(flowerAdditionUI, 2f);
-                }
+                case Item.Rock:
+                    for (int i = 0; i < amount; i++)
+                    {
+                        GameObject rockAdditionUI = Instantiate(rockItem, collectionUI);
+                        rockAdditionUI.GetComponentInChildren<Text>().text = (-1).ToString();
+                        rockAdditionUI.GetComponentInChildren<Text>().color = new Color(255, 0, 0);
+                        Destroy(rockAdditionUI, 2f);
+                    }
+                    break;
+
+                case Item.Flower:
+                    for (int i = 0; i < amount; i++)
+                    {
+                        GameObject flowerAdditionUI = Instantiate(flowerItem, collectionUI);
+                        flowerAdditionUI.GetComponentInChildren<Text>().text = (-1).ToString();
+                        flowerAdditionUI.GetComponentInChildren<Text>().color = new Color(255, 0, 0);
+                        Destroy(flowerAdditionUI, 2f);
+                    }
+                    break;
+
+                default:
+                    break;
             }
         }
     }

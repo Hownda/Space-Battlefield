@@ -1,5 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
+using Unity.Services.Lobbies;
+using Unity.Services.Lobbies.Models;
 
 public class GameManager : NetworkBehaviour
 {
@@ -28,13 +30,7 @@ public class GameManager : NetworkBehaviour
                 GameObject playerRoot = Instantiate(playerRootPrefab);
                 playerRoot.GetComponent<NetworkObject>().Spawn();
                 playerRoot.GetComponent<NetworkObject>().ChangeOwnership(clientId);
-
-                if (connectedPlayers == playerCount)
-                {
-                    Debug.Log("Requesting Start...");
-                    allPlayersConnected = true;
-                    GetComponent<Game>().StartGame();
-                }
+                CheckPlayerCount();
             }
             else
             {
@@ -43,6 +39,19 @@ public class GameManager : NetworkBehaviour
                 spectator.GetComponent<NetworkObject>().Spawn();
                 spectator.GetComponent<NetworkObject>().ChangeOwnership(clientId);
             }
+        }
+    }
+
+    private async void CheckPlayerCount()
+    {
+        Lobby lobby = await LobbyService.Instance.GetLobbyAsync(PlayerData.instance.currentLobbyId);
+        playerCount = lobby.Players.Count;
+
+        if (connectedPlayers == playerCount)
+        {
+            Debug.Log("Requesting Start...");
+            allPlayersConnected = true;
+            GetComponent<Game>().StartGame();
         }
     }
 }

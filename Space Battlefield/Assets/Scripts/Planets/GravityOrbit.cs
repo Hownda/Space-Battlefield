@@ -10,9 +10,9 @@ public class GravityOrbit : MonoBehaviour
         {
             other.GetComponent<PlayerGravity>().gravityOrbit = this.GetComponent<GravityOrbit>();
         }  
-        if (other.GetComponentInParent<PlayerGravity>())
+        if (other.GetComponentInParent<SpaceshipGravity>())
         {
-            other.GetComponentInParent<PlayerGravity>().gravityOrbit = this.GetComponent<GravityOrbit>();
+            other.GetComponentInParent<SpaceshipGravity>().gravityOrbit = this.GetComponent<GravityOrbit>();
         }
     }
 
@@ -22,9 +22,9 @@ public class GravityOrbit : MonoBehaviour
         {
             other.GetComponent<PlayerGravity>().gravityOrbit = null;
         }
-        if (other.GetComponentInParent<PlayerGravity>())
+        if (other.GetComponentInParent<SpaceshipGravity>())
         {
-            other.GetComponentInParent<PlayerGravity>().gravityOrbit = null;
+            other.GetComponentInParent<SpaceshipGravity>().gravityOrbit = null;
         }
     }
 }

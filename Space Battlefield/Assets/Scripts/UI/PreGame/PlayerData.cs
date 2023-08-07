@@ -117,7 +117,7 @@ public class PlayerData : MonoBehaviour
         // Deactivate
         if (settingsCanvas.activeInHierarchy || options.activeInHierarchy)
         {
-            if (SceneManager.GetActiveScene().name == "Menu" || SceneManager.GetActiveScene().name == "Lobby")
+            if (SceneManager.GetActiveScene().name == "MainMenu" || SceneManager.GetActiveScene().name == "Lobby")
             {
                 settingsCanvas.SetActive(false);
             }
@@ -131,7 +131,7 @@ public class PlayerData : MonoBehaviour
         // Activate
         else
         {
-            if (SceneManager.GetActiveScene().name == "Menu" || SceneManager.GetActiveScene().name == "Lobby")
+            if (SceneManager.GetActiveScene().name == "MainMenu" || SceneManager.GetActiveScene().name == "Lobby")
             {
                 settingsCanvas.SetActive(true);
             }

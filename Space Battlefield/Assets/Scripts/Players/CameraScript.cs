@@ -14,7 +14,6 @@ public class CameraScript : NetworkBehaviour
 
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
         playerCamera = GetComponent<Camera>();
 
         if (!IsOwner)
@@ -27,18 +26,26 @@ public class CameraScript : NetworkBehaviour
 
     void Update()
     {
-        if (IsOwner && PlayerData.instance.disableCameraMovement == false)
+        if (IsOwner)
         {
-            mouseSensitivity = PlayerData.instance.mouseSensitivity;
+            if (PlayerData.instance.disableCameraMovement == false)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                mouseSensitivity = PlayerData.instance.mouseSensitivity;
 
-            float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-            float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+                float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
+                float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
-            xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+                xRotation -= mouseY;
+                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-            transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-            playerBody.Rotate(Vector3.up * mouseX);
+                transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+                playerBody.Rotate(Vector3.up * mouseX);
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.None;
+            }
         }
     }
 

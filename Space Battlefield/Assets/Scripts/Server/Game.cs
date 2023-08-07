@@ -123,6 +123,42 @@ public class Game : NetworkBehaviour
         playerInformationDict[clientId].root.GetComponent<PlayerNetwork>().tempHealth.Value = health;
     }
 
+    [ServerRpc(RequireOwnership = false)] public void GiveObjectToPlayerServerRpc(ulong clientId, Item item, int amount)
+    {
+        switch (item)
+        {
+            case Item.Rock:
+                playerInformationDict[clientId].root.GetComponent<PlayerNetwork>().rockCount.Value += amount;
+                break;
+
+            case Item.Flower:
+                playerInformationDict[clientId].root.GetComponent<PlayerNetwork>().flowerCount.Value += amount;
+                break;
+
+            default:
+                break;
+        }
+        playerInformationDict[clientId].root.GetComponent<PlayerNetwork>().AddObjectToInventoryClientRpc(item, amount, clientId);
+    }
+
+    [ServerRpc(RequireOwnership = false)] public void RemoveObjectFromInventoryServerRpc(ulong clientId, Item item, int amount)
+    {
+        switch (item)
+        {
+            case Item.Rock:
+                playerInformationDict[clientId].root.GetComponent<PlayerNetwork>().rockCount.Value -= amount;
+                break;
+
+            case Item.Flower:
+                playerInformationDict[clientId].root.GetComponent<PlayerNetwork>().flowerCount.Value -= amount;
+                break;
+
+            default:
+                break;
+        }
+        playerInformationDict[clientId].root.GetComponent<PlayerNetwork>().RemoveObjectFromInventoryClientRpc(item, amount, clientId);
+    }
+
     public void SetHealth(GameObject player)
     {
         player.GetComponent<Healthbar>().health.Value = playerInformationDict[player.GetComponent<NetworkObject>().OwnerClientId].root.GetComponent<PlayerNetwork>().tempHealth.Value;

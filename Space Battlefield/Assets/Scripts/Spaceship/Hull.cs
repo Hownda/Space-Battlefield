@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class Hull : NetworkBehaviour
 {
-    private PlayerNetwork playerNetwork;
     public Camera cam;
 
+    // Integrity
     public NetworkVariable<float> integrity = new NetworkVariable<float>(100, writePerm: NetworkVariableWritePermission.Server);
     public Slider integritySlider;
     public Text integrityText;
@@ -16,13 +16,12 @@ public class Hull : NetworkBehaviour
     public Text integrityBillboardText;
 
     // Collisions
+    public AudioSource crashSound;
     public GameObject explosionPrefab;
     public bool colliding;
     public float damageFactor = 1;
     public ParticleSystem contactParticles;
     public AudioManager audioManager;
-    private float soundStart = 0f;
-    private float soundCooldown = 2.5f;
     public GameObject warning;
 
     public bool isGrounded;
@@ -142,16 +141,34 @@ public class Hull : NetworkBehaviour
             // Check if player is landing
             if (!isGrounded)
             {
-                if (Time.time > soundStart + soundCooldown)
+                float relativeVelocity = collision.relativeVelocity.magnitude;
+
+                float volume = relativeVelocity * 0.1f;
+
+                crashSound.pitch = Random.Range(0.95f, 1.05f);
+                crashSound.volume = volume;
+
+                if (!crashSound.isPlaying)
                 {
-                    if (collision.gameObject.GetComponent<Bullet>() == null)
-                    {
-                        Impact(collision);
-                        audioManager.Play("crash-sound");
-                        soundStart = Time.time;                                               
-                    }
+                    crashSound.Play();
+                    PlayCrashSoundEffectServerRpc(crashSound.pitch, crashSound.volume);
                 }
             }
+        }
+    }
+
+    [ServerRpc] private void PlayCrashSoundEffectServerRpc(float pitch, float volume)
+    {
+        PlayCrashSoundEffectClientRpc(pitch, volume);
+    }
+
+    [ClientRpc] private void PlayCrashSoundEffectClientRpc(float pitch, float volume)
+    {
+        if (!crashSound.isPlaying)
+        {
+            crashSound.volume = volume;
+            crashSound.pitch = pitch;
+            crashSound.Play();
         }
     }
 
