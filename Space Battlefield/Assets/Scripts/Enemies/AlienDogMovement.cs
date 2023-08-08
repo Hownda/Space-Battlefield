@@ -1,9 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
 public class AlienDogMovement : MonoBehaviour
 {
+    private enum State
+    {
+        Aggressive, Passive
+    }
+
+    private State state;
+
     public GameObject player;
     public float speed = 20;
     private Animator animator;
@@ -19,6 +27,7 @@ public class AlienDogMovement : MonoBehaviour
     public float groundOffset = 0.5f;
     public float jumpStrength = 10;
     public LayerMask groundMask;
+    public LayerMask playerMask;
 
     // Patrol
     private float targetZRotation;
@@ -29,9 +38,17 @@ public class AlienDogMovement : MonoBehaviour
     private float changeBehaviourTime;
 
     // Attack
+    public float alertRange = 15;
     private float attackTime;
-    private float attackCooldown = 1.2f;
+    private float attackCooldown = 2f;
     private float attackRange = 5;
+
+    // Sound
+    public float normalStepInterval = 1;
+    public float fastStepInterval = 0.5f;
+    private float stepTime;
+    public AudioSource stepSound;
+    public AudioSource punchSound;
 
     private void Start()
     {
@@ -41,20 +58,37 @@ public class AlienDogMovement : MonoBehaviour
 
         changeBehaviourTime = Time.time;
         attackTime = Time.time;
+        stepTime = Time.time;
     }
 
     private void FixedUpdate()
     {
         if (gravityOrbit)
         {
+            DetectPlayer();
             HandleMovement();
+            HandleSound();
 
             Vector3 gravityUp = GetGravityUp();
 
             rb.AddForce(gravityUp * gravity);
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, gravityUp) * transform.rotation;
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10);
+            transform.rotation = targetRotation;
         }
+    }
+
+    private void DetectPlayer()
+    {
+        if (Physics.CheckSphere(transform.position, alertRange, playerMask)) 
+        {
+            Collider[] colliders = Physics.OverlapSphere(transform.position, alertRange, playerMask);
+            player = colliders[0].gameObject;
+        }
+        else
+        {
+            player = null;
+        }
+
     }
 
     private void HandleMovement()
@@ -62,10 +96,12 @@ public class AlienDogMovement : MonoBehaviour
         if (player == null)
         {
             Patrol();
+            state = State.Passive;
         }
         else
         {
-            Attack();          
+            Attack();
+            state = State.Aggressive;
         }
     }
 
@@ -97,7 +133,7 @@ public class AlienDogMovement : MonoBehaviour
 
     private void Attack()
     {
-        Quaternion lookRotation = Quaternion.LookRotation(player.transform.position - transform.position);
+        Quaternion lookRotation = Quaternion.LookRotation(player.transform.position - transform.position, transform.up);
         transform.rotation = Quaternion.Euler(new Vector3(transform.rotation.eulerAngles.x, lookRotation.eulerAngles.y, transform.rotation.eulerAngles.z));
         Vector3 currentVelocity = rb.velocity;
         Vector3 velocityChange = transform.forward * speed - currentVelocity;
@@ -108,18 +144,42 @@ public class AlienDogMovement : MonoBehaviour
         if (attackTime + attackCooldown < Time.time)
         {
             if (Vector3.Distance(transform.position, player.transform.position) <= attackRange)
-            {
-                Debug.Log("Attack");
+            {                
                 animator.SetTrigger("Attack");
                 attackTime = Time.time;
+                StartCoroutine(DamageDelay());
             }
         }
     }
-    private void OnTriggerEnter(Collider other)
+
+    private IEnumerator DamageDelay()
     {
-        if (other.CompareTag("Player"))
+        yield return new WaitForSeconds(.5f);
+        Debug.Log("Attack");
+        if (Vector3.Distance(transform.position, player.transform.position) <= attackRange)
         {
-            player = other.gameObject;
+            Game.instance.DealDamageToPlayerServerRpc(player.GetComponent<NetworkObject>().OwnerClientId, 15);
+            punchSound.Play();
+        }
+    }
+
+    private void HandleSound()
+    {
+        if (state == State.Passive)
+        {
+            if (stepTime + normalStepInterval < Time.time)
+            {
+                stepTime = Time.time;
+                stepSound.Play();
+            }
+        }
+        else
+        {
+            if (stepTime + fastStepInterval < Time.time)
+            {
+                stepTime = Time.time;
+                stepSound.Play();
+            }
         }
     }
 

@@ -54,11 +54,11 @@ public class CameraScript : NetworkBehaviour
         if (!IsOwner)
         {
             // Makes other player visible
-            transform.parent.gameObject.layer = 0;
+            transform.parent.gameObject.layer = 14;
             Renderer[] renderers = transform.parent.GetComponentsInChildren<Renderer>();
             foreach (Renderer renderer in renderers)
             {
-                renderer.gameObject.layer = 0;
+                renderer.gameObject.layer = 14;
             }
 
             // Makes floating weapon invisible
