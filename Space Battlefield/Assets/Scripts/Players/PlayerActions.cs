@@ -27,7 +27,7 @@ public class PlayerActions : NetworkBehaviour
 
     private void Update()
     {
-        keybindText.text = "Heal: " + KeybindManager.inputActions.Player.Eat.GetBindingDisplayString();
+        //keybindText.text = "Heal: " + KeybindManager.inputActions.Player.Eat.GetBindingDisplayString();
     }
 
     private void Enter(InputAction.CallbackContext obj)

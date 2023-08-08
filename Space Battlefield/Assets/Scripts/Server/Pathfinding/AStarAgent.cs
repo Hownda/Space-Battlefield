@@ -1,4 +1,3 @@
-using PathCreation;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,20 +15,14 @@ public class AStarAgent : MonoBehaviour
     public float Speed;
     public float TurnSpeed;
     [HideInInspector] public int Priority { get; private set; }
-    GridPoint _start;
-    GridPoint _end;
+    Point _start;
+    Point _end;
     Vector3 _startPosition;
     Vector3 _endPosition;
-    [HideInInspector] public List<GridPoint> TotalPath;
-    [HideInInspector] public List<GridPoint> CornerPoints;
-
-    [SerializeField] bool _DebugPath;
-    [SerializeField] Color _DebugPathColor;
+    [HideInInspector] public List<Point> TotalPath;
+    [HideInInspector] public List<Point> CornerPoints;
 
     public bool CurvePath;
-    [HideInInspector] public PathCreator PathCreator;
-    [SerializeField] PathCreator _PathCreatorPrefab;
-    [SerializeField] float _CornerSmooth;
 
     [HideInInspector] public AStarAgentStatus Status = AStarAgentStatus.Finished;
 
@@ -72,18 +65,18 @@ public class AStarAgent : MonoBehaviour
         return (p2 - p1).sqrMagnitude;
     }
 
-    private List<GridPoint> ReconstructPath(GridPointData start, GridPointData current, GridPointData[][][] dataSet)
+    private List<Point> ReconstructPath(PointData start, PointData current, PointData[][][] dataSet)
     {
-        CornerPoints = new List<GridPoint>();
-        List<GridPoint> totalPath = new List<GridPoint>();
+        CornerPoints = new List<Point>();
+        List<Point> totalPath = new List<Point>();
 
-        GridPointData currentPointData = dataSet[current.Coords.x][current.Coords.y][current.Coords.z];
-        GridPoint currentPoint = WorldGrid.Instance.Grid[current.Coords.x][current.Coords.y][current.Coords.z];
+        PointData currentPointData = dataSet[current.Coords.x][current.Coords.y][current.Coords.z];
+        Point currentPoint = WorldManager.Instance.Grid[current.Coords.x][current.Coords.y][current.Coords.z];
 
         currentPoint.AddMovingData(this, currentPointData.TimeToReach);
         totalPath.Add(currentPoint);
 
-        GridPoint cameFromPoint = WorldGrid.Instance.Grid[current.CameFrom.x][current.CameFrom.y][current.CameFrom.z];
+        Point cameFromPoint = WorldManager.Instance.Grid[current.CameFrom.x][current.CameFrom.y][current.CameFrom.z];
 
         Vector3 direction = (currentPoint.Coords - cameFromPoint.Coords);
         direction = direction.normalized;
@@ -94,9 +87,9 @@ public class AStarAgent : MonoBehaviour
         while (current.CameFrom.x != -1 && count < 10000)
         {
 
-            currentPoint = WorldGrid.Instance.Grid[current.Coords.x][current.Coords.y][current.Coords.z];
-            GridPointData cameFromPointData = dataSet[current.CameFrom.x][current.CameFrom.y][current.CameFrom.z];
-            cameFromPoint = WorldGrid.Instance.Grid[current.CameFrom.x][current.CameFrom.y][current.CameFrom.z];
+            currentPoint = WorldManager.Instance.Grid[current.Coords.x][current.Coords.y][current.Coords.z];
+            PointData cameFromPointData = dataSet[current.CameFrom.x][current.CameFrom.y][current.CameFrom.z];
+            cameFromPoint = WorldManager.Instance.Grid[current.CameFrom.x][current.CameFrom.y][current.CameFrom.z];
 
             Vector3 dir = (currentPoint.Coords - cameFromPoint.Coords);
             if (dir != direction)
@@ -110,7 +103,7 @@ public class AStarAgent : MonoBehaviour
             current = dataSet[current.CameFrom.x][current.CameFrom.y][current.CameFrom.z];
         }
 
-        currentPoint = WorldGrid.Instance.Grid[current.Coords.x][current.Coords.y][current.Coords.z];
+        currentPoint = WorldManager.Instance.Grid[current.Coords.x][current.Coords.y][current.Coords.z];
         CornerPoints.Add(currentPoint);
 
         for (int i = 0; i < totalPath.Count; i++)
@@ -121,14 +114,14 @@ public class AStarAgent : MonoBehaviour
         return totalPath;
     }
 
-    private void Heapify(List<GridPointData> list, int i)
+    private void Heapify(List<PointData> list, int i)
     {
         int parent = (i - 1) / 2;
         if (parent > -1)
         {
             if (list[i].FScore < list[parent].FScore)
             {
-                GridPointData pom = list[i];
+                PointData pom = list[i];
                 list[i] = list[parent];
                 list[parent] = pom;
                 Heapify(list, parent);
@@ -136,7 +129,7 @@ public class AStarAgent : MonoBehaviour
         }
     }
 
-    private void HeapifyDeletion(List<GridPointData> list, int i)
+    private void HeapifyDeletion(List<PointData> list, int i)
     {
         int smallest = i;
         int l = 2 * i + 1;
@@ -152,7 +145,7 @@ public class AStarAgent : MonoBehaviour
         }
         if (smallest != i)
         {
-            GridPointData pom = list[i];
+            PointData pom = list[i];
             list[i] = list[smallest];
             list[smallest] = pom;
 
@@ -165,8 +158,8 @@ public class AStarAgent : MonoBehaviour
     {
         _startPosition = transform.position;
         _endPosition = goal;
-        _start = WorldGrid.Instance.GetClosestPointWorldSpace(transform.position);
-        _end = WorldGrid.Instance.GetClosestPointWorldSpace(goal);
+        _start = WorldManager.Instance.GetClosestPointWorldSpace(transform.position);
+        _end = WorldManager.Instance.GetClosestPointWorldSpace(goal);
         if (_start == _end || _start.Invalid || _end.Invalid)
         {
             Status = AStarAgentStatus.Invalid;
@@ -181,19 +174,19 @@ public class AStarAgent : MonoBehaviour
             }
         }
 
-        GridPointData[][][] dataSet = new GridPointData[WorldGrid.Instance.Grid.Length][][];
+        PointData[][][] dataSet = new PointData[WorldManager.Instance.Grid.Length][][];
         for (int i = 0; i < dataSet.Length; i++)
         {
-            dataSet[i] = new GridPointData[WorldGrid.Instance.Grid[i].Length][];
+            dataSet[i] = new PointData[WorldManager.Instance.Grid[i].Length][];
             for (int j = 0; j < dataSet[i].Length; j++)
             {
-                dataSet[i][j] = new GridPointData[WorldGrid.Instance.Grid[i][j].Length];
+                dataSet[i][j] = new PointData[WorldManager.Instance.Grid[i][j].Length];
             }
         }
 
-        List<GridPointData> openSet = new List<GridPointData>();
+        List<PointData> openSet = new List<PointData>();
 
-        GridPointData startPoint = new GridPointData(_start);
+        PointData startPoint = new PointData(_start);
         dataSet[_start.Coords.x][_start.Coords.y][_start.Coords.z] = startPoint;
         startPoint.GScore = 0;
 
@@ -205,7 +198,7 @@ public class AStarAgent : MonoBehaviour
 
         while (openSet.Count > 0)
         {
-            GridPointData current = openSet[0];
+            PointData current = openSet[0];
 
 
             if (current.Coords == _end.Coords)
@@ -222,18 +215,18 @@ public class AStarAgent : MonoBehaviour
             openSet.RemoveAt(0);
             HeapifyDeletion(openSet, 0);
 
-            GridPoint currentPoint = WorldGrid.Instance.Grid[current.Coords.x][current.Coords.y][current.Coords.z];
+            Point currentPoint = WorldManager.Instance.Grid[current.Coords.x][current.Coords.y][current.Coords.z];
 
             for (int i = 0; i < currentPoint.Neighbours.Count; i++)
             {
                 Vector3Int indexes = currentPoint.Neighbours[i];
-                GridPoint neighbour = WorldGrid.Instance.Grid[indexes.x][indexes.y][indexes.z];
-                GridPointData neighbourData = dataSet[indexes.x][indexes.y][indexes.z];
+                Point neighbour = WorldManager.Instance.Grid[indexes.x][indexes.y][indexes.z];
+                PointData neighbourData = dataSet[indexes.x][indexes.y][indexes.z];
 
                 bool neighbourPassed = true;
                 if (neighbourData == null)
                 {
-                    neighbourData = new GridPointData(neighbour);
+                    neighbourData = new PointData(neighbour);
                     dataSet[indexes.x][indexes.y][indexes.z] = neighbourData;
                     neighbourPassed = false;
                 }
@@ -252,7 +245,7 @@ public class AStarAgent : MonoBehaviour
                 }
                 if (!neighbour.Invalid && neighbourAvailable)
                 {
-                    float tenativeScore = current.GScore + WorldGrid.Instance.PointDistance;
+                    float tenativeScore = current.GScore + WorldManager.Instance.PointDistance;
                     if (tenativeScore < neighbourData.GScore)
                     {
                         neighbourData.CameFrom = current.Coords;
@@ -286,7 +279,7 @@ public class AStarAgent : MonoBehaviour
     {
         Status = AStarAgentStatus.RePath;
 
-        GridPoint p = WorldGrid.Instance.GetClosestPointWorldSpace(transform.position);
+        Point p = WorldManager.Instance.GetClosestPointWorldSpace(transform.position);
         p.AddMovingData(this, 0,true);
 
         while (Status == AStarAgentStatus.RePath)
@@ -311,12 +304,10 @@ public class AStarAgent : MonoBehaviour
         Status = AStarAgentStatus.InProgress;
         for (int i = TotalPath.Count - 1; i >= 0; i--)
         {
-            SetPathColor();
             float length = (transform.position - TotalPath[i].WorldPosition).magnitude;
             float l = 0;
             while (l<length)
             {
-                SetPathColor();
                 Vector3 forwardDirection = (TotalPath[i].WorldPosition - transform.position).normalized;
                 if (CurvePath)
                 {
@@ -336,24 +327,11 @@ public class AStarAgent : MonoBehaviour
         Status = AStarAgentStatus.Finished;
     }
 
+
     private void SetStationaryPoint()
     {
-        GridPoint p = WorldGrid.Instance.GetClosestPointWorldSpace(transform.position);
+        Point p = WorldManager.Instance.GetClosestPointWorldSpace(transform.position);
         p.AddMovingData(this, 0, true);
         p.CheckForIntersections();
-    }
-
-    public void SetPathColor()
-    {
-        if (_DebugPath)
-        {
-            if (TotalPath != null)
-            {
-                for (int j = TotalPath.Count - 2; j >= 0; j--)
-                {
-                    Debug.DrawLine(TotalPath[j + 1].WorldPosition, TotalPath[j].WorldPosition, _DebugPathColor, 1);
-                }
-            }
-        }
     }
 }

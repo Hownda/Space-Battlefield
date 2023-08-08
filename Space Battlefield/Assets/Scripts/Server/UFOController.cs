@@ -16,11 +16,11 @@ public class UFOController : MonoBehaviour
 
     IEnumerator Coroutine_MoveRandom()
     {
-        List<GridPoint> freePoints = WorldGrid.Instance.GetFreePoints();
-        GridPoint start = freePoints[Random.Range(0, freePoints.Count)];
+        List<Point> freePoints = WorldManager.Instance.GetFreePoints();
+        Point start = freePoints[Random.Range(0, freePoints.Count)];
         while (true)
         {
-            GridPoint p = freePoints[Random.Range(0, freePoints.Count)];
+            Point p = freePoints[Random.Range(0, freePoints.Count)];
 
             _Agent.Pathfinding(p.WorldPosition);
             while (_Agent.Status != AStarAgentStatus.Finished)

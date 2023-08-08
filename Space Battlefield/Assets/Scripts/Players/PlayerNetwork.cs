@@ -10,6 +10,7 @@ using System;
 public class PlayerNetwork : NetworkBehaviour
 {
     public NetworkVariable<FixedString64Bytes> username = new NetworkVariable<FixedString64Bytes>(writePerm: NetworkVariableWritePermission.Owner);
+    public NetworkVariable<int> score = new(0);
     public NetworkVariable<bool> spectator = new(false);
 
     public GameObject inventoryCanvas;

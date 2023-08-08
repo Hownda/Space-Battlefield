@@ -11,6 +11,7 @@ TagManager:
   - DestructibleObjects
   - Weapon
   - Hammer
+  - Obstacle
   layers:
   - Default
   - TransparentFX

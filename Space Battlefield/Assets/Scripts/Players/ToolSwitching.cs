@@ -9,106 +9,85 @@ public class ToolSwitching : NetworkBehaviour
 {
     private MovementControls gameActions;
 
-    private Weapon[] weapons;
-    private Hammer[] hammers;
-
-    public Image toolbarHammerBackground;
-    public Image toolbarWeaponBackground;
-    public Text toolbarHammerText;
-    public Text toolbarWeaponText;
+    public GameObject[] fpsObjects;
+    public GameObject[] bodyObjects;
 
     private void Awake()
     {
         gameActions = KeybindManager.inputActions;
-        gameActions.Player.Hotbar1.started += SetWeaponActive;
-        gameActions.Player.Hotbar2.started += SetHammerActive;
+        gameActions.Player.Hotbar1.started += SetSlotActive;
+        gameActions.Player.Hotbar2.started += SetSlotActive;
         gameActions.Player.Enable();
+    }
+
+    public override void OnDestroy()
+    {
+        gameActions.Player.Hotbar1.started -= SetSlotActive;
+        gameActions.Player.Hotbar2.started -= SetSlotActive;
+        gameActions.Player.Disable();
     }
 
     private void Start()
     {
         if (IsOwner)
         {
-            toolbarHammerText.text = KeybindManager.inputActions.Player.Hotbar2.GetBindingDisplayString();
-            toolbarWeaponText.text = KeybindManager.inputActions.Player.Hotbar1.GetBindingDisplayString();
+            UpdateSlots(0);
         }
-        hammers = GetComponentsInChildren<Hammer>();
-        weapons = GetComponentsInChildren<Weapon>();
-        ActivateWeapon();
-        SetWeaponActiveServerRpc();
     }
 
-    public void SetWeaponActive(InputAction.CallbackContext obj)
+    public void SetSlotActive(InputAction.CallbackContext obj)
     {
         if (IsOwner)
-        {
-            ActivateWeapon();
-            //SetWeaponActiveServerRpc();
+        {            
+            int slot = int.Parse(obj.action.name[^1].ToString());
+
+            UpdateSlots(slot - 1);
+            
         }
     }
 
-    private void ActivateWeapon()
+    private void UpdateSlots(int activeObjectIndex)
     {
-        foreach (Hammer hammer in hammers)
+        for (int i = 0; i < fpsObjects.Length; i++)
         {
-            hammer.gameObject.SetActive(false);
-            toolbarHammerBackground.color = new Color(0, 0, 0, 0);
+            if (i == activeObjectIndex)
+            {
+                fpsObjects[i].SetActive(true);
+                bodyObjects[i].SetActive(true);
+            }
+            else
+            {
+                fpsObjects[i].SetActive(false);
+                bodyObjects[i].SetActive(false);
+            }
         }
-
-        foreach (Weapon weapon in weapons)
-        {
-            weapon.gameObject.SetActive(true);
-            toolbarWeaponBackground.color = new Color(.3f, .3f, .3f, .4f);
-        }
+        UpdateSlotsServerRpc(activeObjectIndex);
+        Debug.Log(activeObjectIndex + 1);
     }
 
-    public void SetHammerActive(InputAction.CallbackContext obj)
+    [ServerRpc] private void UpdateSlotsServerRpc(int activeObjectIndex)
     {
-        if (IsOwner)
-        {
-            ActivateHammer();
-            //SetHammerActiveServerRpc();
-        }
+        UpdateSlotsClientRpc(activeObjectIndex);
     }
 
-    private void ActivateHammer()
-    {
-        foreach (Hammer hammer in hammers)
-        {
-            hammer.gameObject.SetActive(true);
-            toolbarHammerBackground.color = new Color(.3f, .3f, .3f, .4f);
-        }
-
-        foreach (Weapon weapon in weapons)
-        {
-            weapon.gameObject.SetActive(false);
-            toolbarWeaponBackground.color = new Color(0, 0, 0, 0);
-        }
-    }
-
-    [ServerRpc] private void SetWeaponActiveServerRpc()
-    {
-        SetWeaponActiveClientRpc();
-    }
-
-    [ClientRpc] private void SetWeaponActiveClientRpc()
+    [ClientRpc] private void UpdateSlotsClientRpc(int activeObjectIndex)
     {
         if (!IsOwner)
         {
-            ActivateWeapon();
-        }
-    }
+            for (int i = 0; i < fpsObjects.Length; i++)
+            {
+                if (i == activeObjectIndex)
+                {
+                    fpsObjects[i].SetActive(true);
+                    bodyObjects[i].SetActive(true);
+                }
+                else
+                {
+                    fpsObjects[i].SetActive(false);
+                    bodyObjects[i].SetActive(false);
+                }
+            }
 
-    [ServerRpc] private void SetHammerActiveServerRpc()
-    {
-        SetHammerActiveClientRpc();
-    }
-
-    [ClientRpc] private void SetHammerActiveClientRpc()
-    {
-        if (!IsOwner)
-        {
-            ActivateHammer();
         }
     }
 }

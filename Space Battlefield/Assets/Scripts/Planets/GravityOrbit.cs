@@ -14,6 +14,11 @@ public class GravityOrbit : MonoBehaviour
         {
             other.GetComponentInParent<SpaceshipGravity>().gravityOrbit = this.GetComponent<GravityOrbit>();
         }
+
+        if (other.GetComponent<AlienDogMovement>())
+        {
+            other.GetComponent<AlienDogMovement>().gravityOrbit = this.GetComponent<GravityOrbit>();
+        }
     }
 
     private void OnTriggerExit(Collider other)
@@ -25,6 +30,10 @@ public class GravityOrbit : MonoBehaviour
         if (other.GetComponentInParent<SpaceshipGravity>())
         {
             other.GetComponentInParent<SpaceshipGravity>().gravityOrbit = null;
+        }
+        if (other.GetComponent<AlienDogMovement>())
+        {
+            other.GetComponent<AlienDogMovement>().gravityOrbit = null;
         }
     }
 }

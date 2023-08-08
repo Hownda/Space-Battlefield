@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using System;
 
@@ -20,6 +21,9 @@ public class Game : NetworkBehaviour
 
     public float enteringDistance = 20f;
     [SerializeField] private float spaceshipSpawnOffset;
+
+    public GameObject playerCardPrefab;
+    public Transform playerCardHolder;
 
     [Header("Spawning")]
     private Vector3[] spawnLocations = new[] { new Vector3(350, -60, 70), new Vector3(-350, -60, -70) };
@@ -53,8 +57,20 @@ public class Game : NetworkBehaviour
 
         // Disable body parts marked as self
         DisableBodyPartsClientRpc();
+        SpawnPlayerCardsClientRpc();
         SpawnSpaceships();
         started.Value = true;
+    }
+
+    [ClientRpc] private void SpawnPlayerCardsClientRpc()
+    {
+        foreach (GameObject playerRoot in GameObject.FindGameObjectsWithTag("Root"))
+        {
+            GameObject playerCard = Instantiate(playerCardPrefab, playerCardHolder);
+            Text[] texts = playerCard.GetComponentsInChildren<Text>();
+            texts[0].text = playerRoot.GetComponent<PlayerNetwork>().username.Value.ToString();
+            texts[1].text = playerRoot.GetComponent<PlayerNetwork>().score.Value.ToString();
+        }
     }
 
     private void SpawnSpaceships()
