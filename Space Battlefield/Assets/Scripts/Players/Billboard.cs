@@ -12,7 +12,7 @@ public class Billboard : NetworkBehaviour
     {
         if (allPlayersFound == false)
         {
-            if (Game.instance.started.Value == true)
+            if (Game.instance.GetComponent<GameEvents>().started.Value == true)
             {
                 players = GameObject.FindGameObjectsWithTag("Player");
                 foreach (GameObject player in players)

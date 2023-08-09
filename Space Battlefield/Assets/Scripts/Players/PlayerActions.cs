@@ -7,7 +7,6 @@ using Cinemachine;
 public class PlayerActions : NetworkBehaviour
 {
     private MovementControls gameActions;
-    private PlayerNetwork playerNetwork;
 
     public float pickUpRange = 2;
     public LayerMask interactableObjects;
@@ -87,15 +86,7 @@ public class PlayerActions : NetworkBehaviour
 
     private void Eat(InputAction.CallbackContext obj)
     {
-        Healthbar healthbar = GetComponent<Healthbar>();
-        if (healthbar.health.Value < 100) 
-        {
-            if (playerNetwork.flowerCount.Value > 0)
-            {
-                Game.instance.HealDamageOnPlayerServerRpc(OwnerClientId, 5);
-                Game.instance.RemoveObjectFromInventoryServerRpc(OwnerClientId, Item.Flower, 5);
-            }
-        }
+        Debug.Log("Eat");
     }
 
     [ServerRpc]

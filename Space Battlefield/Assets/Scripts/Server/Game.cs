@@ -14,7 +14,6 @@ public class Game : NetworkBehaviour
     public static Game instance;
     private List<PlayerInformation> playerInformationList = new();
     private Dictionary<ulong, PlayerInformation> playerInformationDict = new();
-    public NetworkVariable<bool> started = new(false);
 
     public GameObject spaceshipPrefab;
     public GameObject playerPrefab;
@@ -59,7 +58,7 @@ public class Game : NetworkBehaviour
         DisableBodyPartsClientRpc();
         SpawnPlayerCardsClientRpc();
         SpawnSpaceships();
-        started.Value = true;
+        GetComponent<GameEvents>().StartCountdownClientRpc();
     }
 
     [ClientRpc] private void SpawnPlayerCardsClientRpc()
@@ -91,6 +90,11 @@ public class Game : NetworkBehaviour
         {
             player.GetComponentInChildren<CameraScript>().DisableBodyParts();
         }
+    }
+
+    public void AddPlayerToDict(GameObject player)
+    {
+        playerInformationDict[player.GetComponent<NetworkObject>().OwnerClientId].player = player;
     }
 
     [ServerRpc(RequireOwnership = false)] public void DealDamageToPlayerServerRpc(ulong clientId, int damage)

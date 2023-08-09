@@ -7,13 +7,15 @@ public class AlienDogMovement : MonoBehaviour
 {
     private enum State
     {
-        Aggressive, Passive
+        Aggressive, Passive, Attacking
     }
 
     private State state;
 
     public GameObject player;
     public float speed = 20;
+    public float slowSpeed = 10;
+    public float fastSpeed = 20;
     private Animator animator;
 
     private Rigidbody rb;
@@ -101,7 +103,6 @@ public class AlienDogMovement : MonoBehaviour
         else
         {
             Attack();
-            state = State.Aggressive;
         }
     }
 
@@ -124,7 +125,7 @@ public class AlienDogMovement : MonoBehaviour
             }
         }
         Vector3 currentVelocity = rb.velocity;
-        Vector3 velocityChange = transform.forward * (speed) - currentVelocity;
+        Vector3 velocityChange = transform.forward * (20) - currentVelocity;
         rb.AddForce(velocityChange / 2);
         animator.SetBool("Run", false);
         animator.SetBool("Walk", true);
@@ -141,14 +142,22 @@ public class AlienDogMovement : MonoBehaviour
         animator.SetBool("Walk", false);
         animator.SetBool("Run", true);
 
-        if (attackTime + attackCooldown < Time.time)
+       
+        if (Vector3.Distance(transform.position, player.transform.position) <= attackRange)
         {
-            if (Vector3.Distance(transform.position, player.transform.position) <= attackRange)
-            {                
+            state = State.Attacking;
+            speed = slowSpeed;
+            if (attackTime + attackCooldown < Time.time)
+            {
                 animator.SetTrigger("Attack");
                 attackTime = Time.time;
                 StartCoroutine(DamageDelay());
             }
+        }
+        else
+        {
+            state = State.Aggressive;
+            speed = fastSpeed;
         }
     }
 
@@ -173,13 +182,17 @@ public class AlienDogMovement : MonoBehaviour
                 stepSound.Play();
             }
         }
-        else
+        else if (state == State.Aggressive)
         {
             if (stepTime + fastStepInterval < Time.time)
             {
                 stepTime = Time.time;
                 stepSound.Play();
             }
+        }
+        else
+        {
+            // Don't Play step sound;
         }
     }
 

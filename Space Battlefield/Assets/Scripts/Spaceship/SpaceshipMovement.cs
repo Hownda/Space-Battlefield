@@ -12,10 +12,11 @@ public class SpaceshipMovement : NetworkBehaviour
     public float thrust = 5;
     public float thrustFactor = 5;
     public float upDownInput;
-    private float speed = 0;
+    private bool applyForce = false;
+    private float maxVelocity = 19;
 
-    private float rollTorque = 10000;   
-    private float upDownForce = 6000;   
+    public float rollTorque = 10000;   
+    public float upDownForce = 6000;   
     public float strafeForce = 10000;
     private float maxAngularVelocity = 8;
 
@@ -24,7 +25,6 @@ public class SpaceshipMovement : NetworkBehaviour
     public Image thrustSlider;
     public GameObject spaceshipCanvas;
 
-    public float thrustPercent = 0;
     public float volumeFactor = 3;
 
     public GameObject shipLookTarget;
@@ -32,6 +32,7 @@ public class SpaceshipMovement : NetworkBehaviour
     public AudioMixer audioMixer;
     public AudioMixerGroup thrustGroup;
     public AudioMixerGroup otherThrustGroup;
+
 
     private void OnEnable()
     {
@@ -41,7 +42,6 @@ public class SpaceshipMovement : NetworkBehaviour
 
     private void OnDisable()
     {
-        thrustPercent = 0;
         thrustSlider.fillAmount = 0;
         spaceshipCanvas.SetActive(false);
         GetComponentInChildren<PlayerInput>().enabled = false;
@@ -93,24 +93,23 @@ public class SpaceshipMovement : NetworkBehaviour
         float thrustInput = gameActions.Spaceship.Thrust.ReadValue<float>();
         if (thrustInput > 0)
         {
-            thrustPercent += Time.deltaTime * thrustFactor;
-            thrustPercent = Mathf.Clamp(thrustPercent, 0, 100);
-            speed = Mathf.Lerp(speed, thrust / 100 * thrustPercent, 0.5f);
+            applyForce = true;
         }
         else if (thrustInput == 0)
         {
-            thrustPercent -= Time.deltaTime * thrustFactor / 3;
-            thrustPercent = Mathf.Clamp(thrustPercent, 0, 100);
-            speed = Mathf.Lerp(speed, thrust / 100 * thrustPercent, 0.5f);
+            applyForce = false;
         }
         else
         {
-            thrustPercent -= Time.deltaTime * thrustFactor;
-            thrustPercent = Mathf.Clamp(thrustPercent, 0, 100);
-            speed = Mathf.Lerp(speed, thrust / 100 * thrustPercent, 0.5f);
+            applyForce = false;
         }
-        thrustSlider.fillAmount = thrustPercent / 100;
-        rb.velocity = transform.forward * speed;
+
+        if (applyForce)
+        {
+            rb.AddForce(transform.forward * thrust);
+        }
+        thrustSlider.fillAmount = rb.velocity.magnitude / maxVelocity;
+        thrustSlider.fillAmount = Mathf.Clamp(thrustSlider.fillAmount, 0, 100);
 
         // Play Sounds
         float desiredThrustVolume = rb.velocity.magnitude * volumeFactor;
@@ -137,11 +136,11 @@ public class SpaceshipMovement : NetworkBehaviour
             GetComponent<SpaceshipGravity>().enabled = false;
             rb.AddRelativeTorque(-upDownInput * upDownForce * Time.deltaTime, 0, 0, ForceMode.Force);
         }
-        else if (GetComponent<Hull>().isGrounded && upDownInput > 0 && thrustPercent >= 10)
+        else if (GetComponent<Hull>().isGrounded && upDownInput > 0)
         {
             GetComponent<SpaceshipGravity>().enabled = false;
         }
-        else if (GetComponent<Hull>().isGrounded && upDownInput < 0 || GetComponent<Hull>().isGrounded && thrustPercent < 10)
+        else if (GetComponent<Hull>().isGrounded && upDownInput < 0)
         {
             GetComponent<SpaceshipGravity>().enabled = true;
         }

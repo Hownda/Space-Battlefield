@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class SpaceshipActions : NetworkBehaviour
 {
     private MovementControls gameActions;
-    private PlayerNetwork playerNetwork;
     public GameObject playerPrefab;
 
     private float boostDuration = 5;
@@ -85,24 +84,14 @@ public class SpaceshipActions : NetworkBehaviour
 
         // Make UI look at player
         GetComponent<Hull>().cam = player.GetComponentInChildren<Camera>();
+        Game.instance.AddPlayerToDict(player);
         Game.instance.SetHealth(player);
         Game.instance.DisableBodyPartsClientRpc();
     }
 
     private void Boost(InputAction.CallbackContext obj)
     {
-        if (IsOwner)
-        {
-            if (playerNetwork.flowerCount.Value >= 3)
-            {
-                boostTime = Time.time;
-                boostActive = true;
-                GetComponent<SpaceshipMovement>().thrust = 10;
-                thrustSliderFill.color = new Color(0, 0.9f, 1, 1);
-                thrustIcon.color = new Color(0, 0.15f, 1, 1);
-                Game.instance.RemoveObjectFromInventoryServerRpc(OwnerClientId, Item.Flower, 3);
-            }
-        }
+        Debug.Log("Boost");
     }
 
 }

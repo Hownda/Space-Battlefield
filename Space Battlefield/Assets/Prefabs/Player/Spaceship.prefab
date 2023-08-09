@@ -455,7 +455,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 923737184517985882}
-  - component: {fileID: 812195899157115372}
+  - component: {fileID: 5194366328523329709}
   m_Layer: 10
   m_Name: jet
   m_TagString: Untagged
@@ -481,8 +481,8 @@ Transform:
   - {fileID: 2087261490550714433}
   m_Father: {fileID: 3075587001138290899}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!65 &812195899157115372
-BoxCollider:
+--- !u!136 &5194366328523329709
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -499,9 +499,11 @@ BoxCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 9.194057, y: 1, z: 2.0251882}
-  m_Center: {x: -0.4102354, y: 0, z: -0.029845834}
+  serializedVersion: 2
+  m_Radius: 0.89
+  m_Height: 10.18
+  m_Direction: 0
+  m_Center: {x: 0, y: 0.15, z: 0}
 --- !u!1 &716756744045261338
 GameObject:
   m_ObjectHideFlags: 0
@@ -637,7 +639,7 @@ Rigidbody:
   m_GameObject: {fileID: 925199570817960696}
   serializedVersion: 4
   m_Mass: 10
-  m_Drag: 0
+  m_Drag: 1
   m_AngularDrag: 6
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -815,13 +817,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0b8b3acfa94b984e988c7a3c624f7a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  thrust: 20
+  thrust: 200
   thrustFactor: 20
   upDownInput: 0
+  rollTorque: 5000
+  upDownForce: 16000
   strafeForce: 10000
   thrustSlider: {fileID: 7545789151588804454}
   spaceshipCanvas: {fileID: 7540671120235623670}
-  thrustPercent: 0
   volumeFactor: 3
   shipLookTarget: {fileID: 3891090464947423572}
   thrustSound: {fileID: 8841309474270466488}
@@ -899,7 +902,7 @@ MonoBehaviour:
   colliders:
   - {fileID: 4518657456322417397}
   - {fileID: 3126739658667962254}
-  - {fileID: 812195899157115372}
+  - {fileID: 0}
   shootSound: {fileID: 0}
 --- !u!114 &6416423242754563313
 MonoBehaviour:
@@ -7884,8 +7887,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.96, y: 1, z: 3.41}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1.84, y: 0.2, z: 3.41}
+  m_Center: {x: 0.11, y: 0.15, z: 0}
 --- !u!1 &6536688189285745381
 GameObject:
   m_ObjectHideFlags: 0
@@ -8806,7 +8809,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.96, y: 1, z: 3.41}
+  m_Size: {x: 1.96, y: 0.2, z: 3.41}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7864751057201857113
 GameObject:
