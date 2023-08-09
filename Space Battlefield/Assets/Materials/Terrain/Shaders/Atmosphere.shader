@@ -1,183 +1,191 @@
-﻿Shader "Atmosphere/Atmospheric Scattering" 
+﻿﻿Shader "Hidden/Atmosphere"
 {
-    Properties
-    {
-        _LightIntensity("Light Intensity", Float) = 30
-        _LightColor("Light Color", Color) = (1,1,1)
-        _LightDirection("Light Direction", Vector) = (0,0,1)       
-        _PlanetRadius("Planet Radius", Float) = 47
-        _PlanetCenter("Planet Center", Vector) = (0, 0, 0)
-        _AtmosphereRadius("Atmosphere Radius", Float) = 50
-        _Steps ("Steps", Int) = 20
-        _LightSteps ("Light Steps", Int) = 12
-        _RayleighScattering("Rayleigh Scattering", Vector) = (0.08,0.2,0.51,0.64)
-        _MieScattering("Mie Scattering", Vector) = (0.01, 0.9, 0, 0.8)
-        _ClipThreshold ("Clip Threshold", Range(0.0,1.0)) = 0.73 
-    }
-    SubShader
-    {
-        //Blend OneMinusDstColor One
-        Blend SrcAlpha OneMinusSrcAlpha
-        Tags { "Queue" = "Transparent" "RenderType"="Transparent" }
-        LOD 100
+	Properties
+	{
+		_MainTex ("Texture", 2D) = "white" {}
+	}
+	SubShader
+	{
+		// No culling or depth
+		Cull Off ZWrite Off ZTest Always
 
-        ZWrite Off
-        Cull Off
+		Pass
+		{
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
 
-        Pass
-        {
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
+			#include "UnityCG.cginc"
+			#include "Math.cginc"
+			//
 
-            #include "UnityCG.cginc"
-            #define PI 3.14159265
+			struct appdata {
+					float4 vertex : POSITION;
+					float4 uv : TEXCOORD0;
+			};
 
-            struct appdata
-            {
-                float4 vertex : POSITION;
-                float4 normal : NORMAL;
-            };
+			struct v2f {
+					float4 pos : SV_POSITION;
+					float2 uv : TEXCOORD0;
+					float3 viewVector : TEXCOORD1;
+			};
 
-            struct v2f
-            {
-                float4 vertex : SV_POSITION;
-                float4 normal : TEXCOORD2;
-                float3 viewDir : TEXCOORD1;
-                float3 startPos : TEXCOORD3;
-                float3 wPos : TEXCOORD4;
-            };
+			v2f vert (appdata v) {
+					v2f output;
+					output.pos = UnityObjectToClipPos(v.vertex);
+					output.uv = v.uv;
+					// Camera space matches OpenGL convention where cam forward is -z. In unity forward is positive z.
+					// (https://docs.unity3d.com/ScriptReference/Camera-cameraToWorldMatrix.html)
+					float3 viewVector = mul(unity_CameraInvProjection, float4(v.uv.xy * 2 - 1, 0, -1));
+					output.viewVector = mul(unity_CameraToWorld, float4(viewVector,0));
+					return output;
+			}
 
-            float _LightIntensity;
-            float3 _LightColor;
-            float3 _LightDirection;
-            float _PlanetRadius;
-            float3 _PlanetCenter;
-            float _AtmosphereRadius;
-            float _Steps;
-            float _LightSteps;
-            float4 _RayleighScattering;
-            float4 _MieScattering;
-            float _ClipThreshold;
+			float2 squareUV(float2 uv) {
+				float width = _ScreenParams.x;
+				float height =_ScreenParams.y;
+				//float minDim = min(width, height);
+				float scale = 1000;
+				float x = uv.x * width;
+				float y = uv.y * height;
+				return float2 (x/scale, y/scale);
+			}
 
-            float sqrLength(float3 v) {
-                return (v.x * v.x + v.y * v.y + v.z * v.z);
-            }
 
-            bool SphereIntersect(float3 ro, float3 rd, out float t0, out float t1, bool isPlanet) {
-                float t = dot(_PlanetCenter - ro, rd);
-                float3 pM = ro + rd * t;
-                float height = sqrLength(pM - _PlanetCenter);
-                if (height > _AtmosphereRadius * _AtmosphereRadius) return false;
-                float x = sqrt(_AtmosphereRadius * _AtmosphereRadius - height);
-                t0 = (t - x < 0) ? 0 : t - x;
-                if (isPlanet && height < _PlanetRadius * _PlanetRadius && t > 0) {
-                    float x = sqrt(_PlanetRadius * _PlanetRadius - height);
-                    t1 = t - x;
-                } else {
-                    t1 = t + x;
-                }
-                return true;
-            }
 
-            bool LightMarch(float3 p1, float3 rd, float l, out float2 lightDepth) {
-                float ds = l / _LightSteps;
-                float time = 0;
-                lightDepth = float2(0, 0);
-                for (int i = 0; i < _LightSteps; i++)
-                {
-                    float3 p = p1 + rd * (time + ds * 0.5);
-                    float height = length(p - _PlanetCenter) - _PlanetRadius;
+			sampler2D _BlueNoise;
+			sampler2D _MainTex;
+			sampler2D _BakedOpticalDepth;
+			sampler2D _CameraDepthTexture;
+			float4 params;
 
-                    if (height < 0) return false;
+			float3 dirToSun;
 
-                    lightDepth.x += exp(-height / _RayleighScattering.w) * ds;
-                    lightDepth.y += exp(-height / _MieScattering.w) * ds;
+			float3 planetCentre;
+			float atmosphereRadius;
+			float oceanRadius;
+			float planetRadius;
 
-                    time += ds;
-                }
-                return true;
-            }
+			// Paramaters
+			int numInScatteringPoints;
+			int numOpticalDepthPoints;
+			float intensity;
+			float4 scatteringCoefficients;
+			float ditherStrength;
+			float ditherScale;
+			float densityFalloff;
 
-            v2f vert (appdata v)
-            {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.startPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-                o.wPos = o.startPos;
-                o.viewDir = normalize(o.startPos - _WorldSpaceCameraPos.xyz);
-                v.normal *= -1;
-                o.normal = v.normal;
-                _PlanetCenter = mul(unity_ObjectToWorld, float4(0, 0, 0, 1));
-                return o;
-            }
+			
+			float densityAtPoint(float3 densitySamplePoint) {
+				float heightAboveSurface = length(densitySamplePoint - planetCentre) - planetRadius;
+				float height01 = heightAboveSurface / (atmosphereRadius - planetRadius);
+				float localDensity = exp(-height01 * densityFalloff) * (1 - height01);
+				return localDensity;
+			}
+			
+			float opticalDepth(float3 rayOrigin, float3 rayDir, float rayLength) {
+				float3 densitySamplePoint = rayOrigin;
+				float stepSize = rayLength / (numOpticalDepthPoints - 1);
+				float opticalDepth = 0;
 
-            fixed4 frag(v2f i) : SV_Target
-            {
-                if (_PlanetRadius > _AtmosphereRadius) _PlanetRadius = _AtmosphereRadius - 2;
-                if (_AtmosphereRadius < 0) _AtmosphereRadius = 1;
+				for (int i = 0; i < numOpticalDepthPoints; i ++) {
+					float localDensity = densityAtPoint(densitySamplePoint);
+					opticalDepth += localDensity * stepSize;
+					densitySamplePoint += rayDir * stepSize;
+				}
+				return opticalDepth;
+			}
 
-                float3 rsRGB = float3(_RayleighScattering.xyz);
-                float msRGB = _MieScattering.x;
-                float rSH = _RayleighScattering.w;
-                float mSH = _MieScattering.w;
+			float opticalDepthBaked(float3 rayOrigin, float3 rayDir) {
+				float height = length(rayOrigin - planetCentre) - planetRadius;
+				float height01 = saturate(height / (atmosphereRadius - planetRadius));
 
-                i.viewDir = normalize(i.startPos - _WorldSpaceCameraPos.xyz);
-                i.startPos = _WorldSpaceCameraPos;
+				float uvX = 1 - (dot(normalize(rayOrigin - planetCentre), rayDir) * .5 + .5);
+				return tex2Dlod(_BakedOpticalDepth, float4(uvX, height01,0,0));
+			}
 
-                float t0,t1;
-                if (!SphereIntersect(i.startPos, i.viewDir, t0, t1, true)) discard;
+			float opticalDepthBaked2(float3 rayOrigin, float3 rayDir, float rayLength) {
+				float3 endPoint = rayOrigin + rayDir * rayLength;
+				float d = dot(rayDir, normalize(rayOrigin-planetCentre));
+				float opticalDepth = 0;
 
-                float mu = dot(i.viewDir, normalize(-_LightDirection));
-                float g = _MieScattering.y;
-                float phaseR = 3.0 / (16.0 * PI) * (1 + mu * mu);
-                float phaseM = 3.0 / (8.0 * PI) * ((1.f - g * g) * (1.f + mu * mu)) / ((2.f + g * g) * pow(1.f + g * g - 2.f * g * mu, 1.5f));
+				const float blendStrength = 1.5;
+				float w = saturate(d * blendStrength + .5);
+				
+				float d1 = opticalDepthBaked(rayOrigin, rayDir) - opticalDepthBaked(endPoint, rayDir);
+				float d2 = opticalDepthBaked(endPoint, -rayDir) - opticalDepthBaked(rayOrigin, -rayDir);
 
-                float3 sumR, sumM;
-                float2 opticalDepth;
+				opticalDepth = lerp(d2, d1, w);
+				return opticalDepth;
+			}
+			
+			float3 calculateLight(float3 rayOrigin, float3 rayDir, float rayLength, float3 originalCol, float2 uv) {
+				float blueNoise = tex2Dlod(_BlueNoise, float4(squareUV(uv) * ditherScale,0,0));
+				blueNoise = (blueNoise - 0.5) * ditherStrength;
+				
+				float3 inScatterPoint = rayOrigin;
+				float stepSize = rayLength / (numInScatteringPoints - 1);
+				float3 inScatteredLight = 0;
+				float viewRayOpticalDepth = 0;
 
-                float3 p1 = i.startPos + i.viewDir * t0;
-                float l = t1 - t0;
-                float ds = l / _Steps;
-                float time = 0;
-                for (int e = 0; e < _Steps; e++)
-                {
-                    float3 p = p1 + i.viewDir * (time + ds * 0.5);
-                    float3 lrd = normalize(-_LightDirection);
+				for (int i = 0; i < numInScatteringPoints; i ++) {
+					float sunRayLength = raySphere(planetCentre, atmosphereRadius, inScatterPoint, dirToSun).y;
+					float sunRayOpticalDepth = opticalDepthBaked(inScatterPoint + dirToSun * ditherStrength, dirToSun);
+					float localDensity = densityAtPoint(inScatterPoint);
+					viewRayOpticalDepth = opticalDepthBaked2(rayOrigin, rayDir, stepSize * i);
+					float3 transmittance = exp(-(sunRayOpticalDepth + viewRayOpticalDepth) * scatteringCoefficients);
+					
+					inScatteredLight += localDensity * transmittance;
+					inScatterPoint += rayDir * stepSize;
+				}
+				inScatteredLight *= scatteringCoefficients * intensity * stepSize / planetRadius;
+				inScatteredLight += blueNoise * 0.01;
 
-                    float lt0, lt1;
-                    SphereIntersect(p, lrd, lt0, lt1, false);
-                    float2 opticallightDepth;
-                    float3 lp1 = p + lrd * lt0;
-                    if (LightMarch(lp1, lrd, lt1 - lt0, opticallightDepth)) {
-                        float height = length(p - _PlanetCenter) - _PlanetRadius;
+				// Attenuate brightness of original col (i.e light reflected from planet surfaces)
+				// This is a hacky mess, TODO: figure out a proper way to do this
+				const float brightnessAdaptionStrength = 0.15;
+				const float reflectedLightOutScatterStrength = 3;
+				float brightnessAdaption = dot (inScatteredLight,1) * brightnessAdaptionStrength;
+				float brightnessSum = viewRayOpticalDepth * intensity * reflectedLightOutScatterStrength + brightnessAdaption;
+				float reflectedLightStrength = exp(-brightnessSum);
+				float hdrStrength = saturate(dot(originalCol,1)/3-1);
+				reflectedLightStrength = lerp(reflectedLightStrength, 1, hdrStrength);
+				float3 reflectedLight = originalCol * reflectedLightStrength;
 
-                        float hr = exp(-height / rSH) * ds;
-                        float hm = exp(-height / mSH) * ds;
+				float3 finalCol = reflectedLight + inScatteredLight;
 
-                        opticalDepth.x += hr;
-                        opticalDepth.y += hm;
+				
+				return finalCol;
+			}
 
-                        float3 tau = rsRGB * (opticalDepth.x + opticallightDepth.x) + msRGB * 1.1 * (opticalDepth.y + opticallightDepth.y);
-                        float3 attenuation = float3 (exp(-tau.x), exp(-tau.y), exp(-tau.z));
 
-                        sumR += attenuation * hr;
-                        sumM += attenuation * hm;
-                    }
+			float4 frag (v2f i) : SV_Target
+			{
+				float4 originalCol = tex2D(_MainTex, i.uv);
+				float sceneDepthNonLinear = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);
+				float sceneDepth = LinearEyeDepth(sceneDepthNonLinear) * length(i.viewVector);
+											
+				float3 rayOrigin = _WorldSpaceCameraPos;
+				float3 rayDir = normalize(i.viewVector);
+				
+				float dstToOcean = raySphere(planetCentre, oceanRadius, rayOrigin, rayDir);
+				float dstToSurface = min(sceneDepth, dstToOcean);
+				
+				float2 hitInfo = raySphere(planetCentre, atmosphereRadius, rayOrigin, rayDir);
+				float dstToAtmosphere = hitInfo.x;
+				float dstThroughAtmosphere = min(hitInfo.y, dstToSurface - dstToAtmosphere);
+				
+				if (dstThroughAtmosphere > 0) {
+					const float epsilon = 0.0001;
+					float3 pointInAtmosphere = rayOrigin + rayDir * (dstToAtmosphere + epsilon);
+					float3 light = calculateLight(pointInAtmosphere, rayDir, dstThroughAtmosphere - epsilon * 2, originalCol, i.uv);
+					return float4(light, 1);
+				}
+				return originalCol;
+			}
 
-                    time += ds;
-                }
 
-                float3 color = (sumR * rsRGB * phaseR + sumM * msRGB * phaseM) * _LightIntensity * _LightColor;
-
-                float a = pow(saturate(sqrLength(_WorldSpaceCameraPos.xyz - i.wPos) - 0.4),2);
-                float a1 = (color.x + color.y + color.z) / 3;
-                if (a1 < _ClipThreshold)
-                    a1 = lerp(0,a1, a1 / _ClipThreshold);
-
-                return fixed4(color.xyz, min(a,a1));
-            }
-            ENDCG
-        }
-    }
+			ENDCG
+		}
+	}
 }

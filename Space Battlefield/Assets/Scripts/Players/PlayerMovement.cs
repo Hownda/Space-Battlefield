@@ -24,7 +24,7 @@ public class PlayerMovement : NetworkBehaviour
     private int swimVertical;
     private float jumpStrength = 10f;
     public float groundOffset = 1.1f;
-    private bool isGrounded;
+    public bool isGrounded;
     [SerializeField] LayerMask groundMask;
     public float jumpCooldown = 0.3f;
     private float jumpTime;
