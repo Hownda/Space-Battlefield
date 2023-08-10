@@ -6,14 +6,15 @@ using UnityEngine;
 public class CustomPostProcessing : MonoBehaviour
 {
     public Material postProcessingMaterial;
-    public int atmosphereRadius = 50;
-    public GameObject planet;
+    public Vector3 waveLengths = new Vector3(700, 530, 440);
+    public float scatteringStrength = 1;
 
-    [ImageEffectOpaque]
-    private void OnRenderImage(RenderTexture source, RenderTexture destination)
+    private void OnValidate()
     {
-        //postProcessingMaterial.SetVector("planetCenter", planet.transform.position);
-        //postProcessingMaterial.SetFloat("atmosphereRadius", atmosphereRadius);
-        Graphics.Blit(source, destination, postProcessingMaterial);
+        float scatterR = Mathf.Pow(400 / waveLengths.x, 4) * scatteringStrength;
+        float scatterG = Mathf.Pow(400 / waveLengths.y, 4) * scatteringStrength;
+        float scatterB = Mathf.Pow(400 / waveLengths.z, 4) * scatteringStrength;
+        Vector3 scatteringCoefficients = new Vector3(scatterR, scatterG, scatterB);
+        postProcessingMaterial.SetVector("scatteringCoefficients", scatteringCoefficients);
     }
 }

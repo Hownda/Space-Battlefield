@@ -25,8 +25,8 @@ public class Game : NetworkBehaviour
     public Transform playerCardHolder;
 
     [Header("Spawning")]
-    private Vector3[] spawnLocations = new[] { new Vector3(350, -60, 70), new Vector3(-350, -60, -70) };
-    private Vector3[] spawnRotations = new[] { new Vector3(0, -270, 0), new Vector3(0, -90, 0) };
+    public Vector3[] spawnLocations;
+    public Vector3[] spawnRotations;
 
     private void Awake()
     {
@@ -39,7 +39,8 @@ public class Game : NetworkBehaviour
         int i = 0;
         foreach (GameObject playerRoot in GameObject.FindGameObjectsWithTag("Root"))
         {
-            GameObject spawnedPlayer = Instantiate(playerPrefab, spawnLocations[i], Quaternion.Euler(spawnRotations[i]));
+            int spawnIndex = UnityEngine.Random.Range(0, spawnLocations.Length - 1);
+            GameObject spawnedPlayer = Instantiate(playerPrefab, spawnLocations[spawnIndex], Quaternion.Euler(spawnRotations[spawnIndex]));
             spawnedPlayer.GetComponent<NetworkObject>().Spawn();
             spawnedPlayer.GetComponent<NetworkObject>().ChangeOwnership(playerRoot.GetComponent<NetworkObject>().OwnerClientId);
             playerInformationList.Add(new PlayerInformation(playerRoot.GetComponent<NetworkObject>().OwnerClientId, playerRoot, spawnedPlayer, null));

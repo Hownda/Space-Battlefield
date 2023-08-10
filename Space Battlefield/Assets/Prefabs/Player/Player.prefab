@@ -910,6 +910,7 @@ MonoBehaviour:
   handAnimator: {fileID: 2649054749892034613}
   maxForce: 15
   groundOffset: 0.3
+  isGrounded: 0
   groundMask:
     serializedVersion: 2
     m_Bits: 5376
@@ -1566,7 +1567,7 @@ RectTransform:
   m_GameObject: {fileID: 648539401746398877}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
+  m_LocalScale: {x: 0.42999998, y: 0.42999998, z: 0.42999998}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4461202051424218362}
@@ -5706,7 +5707,7 @@ RectTransform:
   m_GameObject: {fileID: 2136950303061675112}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
+  m_LocalScale: {x: 0.96999997, y: 0.96999997, z: 0.96999997}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2777643837056862631}
