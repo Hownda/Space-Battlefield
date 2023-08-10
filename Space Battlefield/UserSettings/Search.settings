@@ -12,10 +12,15 @@ scopes = {
 	"OpenInspectorPreview.310DEAF1" = "0"
 	"currentGroup.310DEAF1" = "asset"
 	"picker_window_position_offset.74AD8FDB" = "428.8;422.4;320;550.4"
-	"picker_search_text.74AD8FDB" = "default"
-	"last_search.74AD8FDB" = "default"
+	"picker_search_text.74AD8FDB" = "default "
+	"last_search.74AD8FDB" = "default "
 	"OpenInspectorPreview.74AD8FDB" = "0"
 	"currentGroup.74AD8FDB" = "all"
+	"picker_window_position_offset.7E63D72B" = "332;338.4;320;550.4"
+	"picker_search_text.7E63D72B" = "par"
+	"last_search.7E63D72B" = "par"
+	"OpenInspectorPreview.7E63D72B" = "0"
+	"currentGroup.7E63D72B" = "all"
 }
 providers = {
 	log = {

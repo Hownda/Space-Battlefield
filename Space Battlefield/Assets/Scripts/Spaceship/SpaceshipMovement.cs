@@ -5,6 +5,7 @@ using UnityEngine.InputSystem;
 using Unity.Netcode;
 using UnityEngine.UI;
 using UnityEngine.Audio;
+using UnityEngine.VFX;
 
 public class SpaceshipMovement : NetworkBehaviour
 {
@@ -33,15 +34,17 @@ public class SpaceshipMovement : NetworkBehaviour
     public AudioMixerGroup thrustGroup;
     public AudioMixerGroup otherThrustGroup;
 
+    public VisualEffect thrustEffect;
 
     private void OnEnable()
-    {
+    {                
         gameActions = KeybindManager.inputActions;
         gameActions.Spaceship.Enable();       
     }
 
     private void OnDisable()
     {
+        thrustEffect.SetFloat("Lifetime", 0);
         thrustSlider.fillAmount = 0;
         spaceshipCanvas.SetActive(false);
         GetComponentInChildren<PlayerInput>().enabled = false;
@@ -110,6 +113,7 @@ public class SpaceshipMovement : NetworkBehaviour
         }
         thrustSlider.fillAmount = rb.velocity.magnitude / maxVelocity;
         thrustSlider.fillAmount = Mathf.Clamp(thrustSlider.fillAmount, 0, 100);
+        thrustEffect.SetFloat("Lifetime", thrustSlider.fillAmount);
 
         // Play Sounds
         float desiredThrustVolume = rb.velocity.magnitude * volumeFactor;

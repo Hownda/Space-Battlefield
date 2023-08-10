@@ -16,10 +16,7 @@ public class SpaceshipActions : NetworkBehaviour
 {
     private MovementControls gameActions;
     public GameObject playerPrefab;
-
-    private float boostDuration = 5;
-    private float boostTime;
-    private bool boostActive;
+   
     public Image thrustIcon;
     public Image thrustSliderFill;
 
@@ -28,12 +25,14 @@ public class SpaceshipActions : NetworkBehaviour
     public Text[] keybindTexts;
 
     // Boost
+    [ColorUsage(true, true)]
+    public Color boostColor;
+    [ColorUsage(true, true)]
+    public Color normalColor;
     private bool warpActive = false;
-    public VisualEffect warpSpeedVFX;
-    public float desiredVolume = 0.5f;
-    public float desiredPitch = 1;
-    public float finalPitch = 2;
-    public float finalVolume = 1;
+    public float boostSpeed = 300;
+    private float boostDuration = 5;
+    private float boostTime;
     public float rate = 0.02f;
 
     private void OnEnable()
@@ -57,7 +56,7 @@ public class SpaceshipActions : NetworkBehaviour
 
     private void Start()
     {
-        warpSpeedVFX.SetFloat("WarpAmount", 0);
+        boostTime = Time.time;
         OnRebind();
     }
 
@@ -65,9 +64,11 @@ public class SpaceshipActions : NetworkBehaviour
     {
         if (IsOwner)
         {            
-            if (boostTime + boostDuration <= Time.time && boostActive)
+            if (boostTime + boostDuration <= Time.time && warpActive)
             {               
-                GetComponent<SpaceshipMovement>().thrust = 20;
+                GetComponent<SpaceshipMovement>().thrust = 200;
+                GetComponent<SpaceshipMovement>().thrustEffect.SetVector4("Color", normalColor);
+                warpActive = false;
             }
         }
     }
@@ -156,45 +157,11 @@ public class SpaceshipActions : NetworkBehaviour
 
     private void Boost()
     {
+        Debug.Log("Boost");
+        GetComponent<SpaceshipMovement>().thrust = boostSpeed;
+        GetComponent<SpaceshipMovement>().thrustEffect.SetVector4("Color", boostColor);
+        boostTime = Time.time;
         warpActive = true;
-        warpSpeedVFX.SetFloat("WarpAmount", 0);
-        StartCoroutine(ActivateParticles());
-    }
-
-    private IEnumerator ActivateParticles()
-    {
-        if (warpActive)
-        {
-            warpSpeedVFX.Play();
-            float amount = warpSpeedVFX.GetFloat("WarpAmount");
-            while (amount < 1 && warpActive == true)
-            {
-                amount += rate;
-                warpSpeedVFX.SetFloat("WarpAmount", amount);
-
-                if (desiredVolume < finalVolume || desiredPitch < finalPitch)
-                    desiredPitch += rate;
-                desiredVolume += rate / 3;
-                yield return new WaitForSeconds(0.1f);
-            }
-        }
-        else
-        {
-            float amount = warpSpeedVFX.GetFloat("WarpAmount");
-            while (amount > 0 && warpActive == false)
-            {
-                amount -= rate;
-                warpSpeedVFX.SetFloat("WarpAmount", amount);
-                yield return new WaitForSeconds(0.1f);
-
-                if (amount <= 0 + rate)
-                {
-                    amount = 0;
-                    warpSpeedVFX.SetFloat("WarpAmount", amount);
-                    warpSpeedVFX.Stop();
-                }
-            }            
-        }
     }
 
     private void ActivateMissileMode()
@@ -206,5 +173,4 @@ public class SpaceshipActions : NetworkBehaviour
     {
 
     }
-
 }
