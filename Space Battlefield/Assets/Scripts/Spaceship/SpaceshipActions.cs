@@ -57,6 +57,12 @@ public class SpaceshipActions : NetworkBehaviour
     private float boostTime;
     public float rate = 0.02f;
 
+    // Shield
+    public GameObject shield;
+    public NetworkVariable<bool> shieldActive = new(false, writePerm: NetworkVariableWritePermission.Owner);
+    private float shieldDuration = 10;
+    private float shieldTime;
+
     private void OnEnable()
     {
         if (IsOwner)
@@ -79,6 +85,7 @@ public class SpaceshipActions : NetworkBehaviour
     private void Start()
     {
         boostTime = Time.time;
+        shieldTime = Time.time;
         OnRebind();
     }
 
@@ -91,6 +98,14 @@ public class SpaceshipActions : NetworkBehaviour
                 GetComponent<SpaceshipMovement>().thrust = 200;
                 GetComponent<SpaceshipMovement>().thrustEffect.SetVector4("Color", normalColor);
                 warpActive = false;
+            }
+        }
+        if (shieldActive.Value == true)
+        {
+            if (shieldTime + shieldDuration <= Time.time)
+            {
+                shield.SetActive(false);
+                shieldActive.Value = false;
             }
         }
     }
@@ -213,7 +228,10 @@ public class SpaceshipActions : NetworkBehaviour
 
     private void ActivateShield()
     {
-
+        Debug.Log("Shield active");
+        shield.SetActive(true);
+        shieldTime = Time.time;
+        shieldActive.Value = true;
     }
 
     private void TryUnlockAbility(Type type)

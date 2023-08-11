@@ -52,8 +52,9 @@ public class SpaceshipMovement : NetworkBehaviour
     }
 
     private void Start()
-    {
+    {       
         rb = GetComponent<Rigidbody>();
+        rb.inertiaTensor = rb.inertiaTensor;
         if (IsOwner)
         {
             thrustSound.outputAudioMixerGroup = thrustGroup;           

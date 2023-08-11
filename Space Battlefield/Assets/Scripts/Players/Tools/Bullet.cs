@@ -32,7 +32,10 @@ public class Bullet : MonoBehaviour
                     {
                         if (collision.gameObject.GetComponent<NetworkObject>().OwnerClientId != parentClient)
                         {
-                            Game.instance.DealDamageToSpaceshipServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 2);
+                            if (collision.GetComponent<SpaceshipActions>().shieldActive.Value == false)
+                            {
+                                Game.instance.DealDamageToSpaceshipServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 2);
+                            }
 
                         }
                     }
