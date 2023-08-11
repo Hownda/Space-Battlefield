@@ -470,7 +470,7 @@ public partial class @MovementControls: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""a9cfb9ee-cbd8-4960-a436-c3bd6c5fdea6"",
-                    ""path"": ""<Keyboard>/e"",
+                    ""path"": ""<Keyboard>/x"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

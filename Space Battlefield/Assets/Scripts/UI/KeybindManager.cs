@@ -35,16 +35,16 @@ public class KeybindManager : MonoBehaviour
             var firstPartIndex = bindingIndex + 1;
             if (firstPartIndex < action.bindings.Count && action.bindings[firstPartIndex].isPartOfComposite)
             {
-                DoRebind(action, firstPartIndex, statusText, true);
+                DoRebind(action, firstPartIndex, statusText, true, action.bindings[firstPartIndex]);
             }
         }
         else
         {
-            DoRebind(action, bindingIndex, statusText, false);
+            DoRebind(action, bindingIndex, statusText, false, action.bindings[bindingIndex]);
         }
     }
 
-    private static void DoRebind(InputAction actionToRebind, int bindingIndex, Text statusText, bool allCompositeParts)
+    private static void DoRebind(InputAction actionToRebind, int bindingIndex, Text statusText, bool allCompositeParts, InputBinding prevBinding)
     {
         if (actionToRebind == null || bindingIndex < 0)
         {
@@ -68,12 +68,24 @@ public class KeybindManager : MonoBehaviour
             actionToRebind.Enable();
             operation.Dispose();
 
+            var newBinding = actionToRebind.bindings[0];
+
+            var bindings = actionToRebind.actionMap.bindings;
+            foreach (var binding in bindings)
+            {
+                if (binding.action == newBinding.action)
+                    continue;
+                if (binding.effectivePath == newBinding.effectivePath)
+                    actionToRebind.ChangeBinding(0).To(prevBinding);
+                    rebindCancelled?.Invoke();
+            }
+
             if (allCompositeParts)
             {
                 var nextBindingIndex = bindingIndex + 1;
                 if (nextBindingIndex < actionToRebind.bindings.Count && actionToRebind.bindings[nextBindingIndex].isPartOfComposite)
                 {
-                    DoRebind(actionToRebind, nextBindingIndex, statusText, allCompositeParts);
+                    DoRebind(actionToRebind, nextBindingIndex, statusText, allCompositeParts, actionToRebind.bindings[nextBindingIndex]);
                 }
             }
             SaveBindingOverride(actionToRebind);

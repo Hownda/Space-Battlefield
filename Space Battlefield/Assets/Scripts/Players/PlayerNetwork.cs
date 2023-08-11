@@ -55,19 +55,15 @@ public class PlayerNetwork : NetworkBehaviour
             switch (item)
             {
                 case Item.Rock:
-                    for (int i = 0; i < amount; i++)
-                    {
-                        GameObject rockAdditionUI = Instantiate(rockItem, collectionUI);
-                        Destroy(rockAdditionUI, 2f);
-                    }
+                    GameObject rockAdditionUI = Instantiate(rockItem, collectionUI);
+                    rockAdditionUI.GetComponentInChildren<Text>().text = "+" + amount.ToString();
+                    Destroy(rockAdditionUI, 2f);
                     break;
 
                 case Item.Flower:
-                    for (int i = 0; i < amount; i++)
-                    {
-                        GameObject flowerAdditionUI = Instantiate(flowerItem, collectionUI);
-                        Destroy(flowerAdditionUI, 2f);
-                    }
+                    GameObject flowerAdditionUI = Instantiate(flowerItem, collectionUI);
+                    flowerAdditionUI.GetComponentInChildren<Text>().text = "+" + amount.ToString();   
+                    Destroy(flowerAdditionUI, 2f);
                     break;
 
                 default:
@@ -84,23 +80,17 @@ public class PlayerNetwork : NetworkBehaviour
             switch (item)
             {
                 case Item.Rock:
-                    for (int i = 0; i < amount; i++)
-                    {
-                        GameObject rockAdditionUI = Instantiate(rockItem, collectionUI);
-                        rockAdditionUI.GetComponentInChildren<Text>().text = (-1).ToString();
-                        rockAdditionUI.GetComponentInChildren<Text>().color = new Color(255, 0, 0);
-                        Destroy(rockAdditionUI, 2f);
-                    }
+                    GameObject rockAdditionUI = Instantiate(rockItem, collectionUI);
+                    rockAdditionUI.GetComponentInChildren<Text>().text = (-amount).ToString();
+                    rockAdditionUI.GetComponentInChildren<Text>().color = new Color(255, 0, 0);
+                    Destroy(rockAdditionUI, 2f);
                     break;
 
                 case Item.Flower:
-                    for (int i = 0; i < amount; i++)
-                    {
-                        GameObject flowerAdditionUI = Instantiate(flowerItem, collectionUI);
-                        flowerAdditionUI.GetComponentInChildren<Text>().text = (-1).ToString();
-                        flowerAdditionUI.GetComponentInChildren<Text>().color = new Color(255, 0, 0);
-                        Destroy(flowerAdditionUI, 2f);
-                    }
+                    GameObject flowerAdditionUI = Instantiate(flowerItem, collectionUI);
+                    flowerAdditionUI.GetComponentInChildren<Text>().text = (-amount).ToString();
+                    flowerAdditionUI.GetComponentInChildren<Text>().color = new Color(255, 0, 0);
+                    Destroy(flowerAdditionUI, 2f);
                     break;
 
                 default:

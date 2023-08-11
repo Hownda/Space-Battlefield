@@ -13,7 +13,7 @@ public class Game : NetworkBehaviour
 {
     public static Game instance;
     private List<PlayerInformation> playerInformationList = new();
-    private Dictionary<ulong, PlayerInformation> playerInformationDict = new();
+    public Dictionary<ulong, PlayerInformation> playerInformationDict = new();
 
     public GameObject spaceshipPrefab;
     public GameObject playerPrefab;
