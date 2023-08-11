@@ -2562,7 +2562,6 @@ GameObject:
   - component: {fileID: 5360836977239217029}
   - component: {fileID: 2250394554879637075}
   - component: {fileID: 7064583237761673587}
-  - component: {fileID: 6248673694451846582}
   - component: {fileID: 311329325051141864}
   - component: {fileID: 5221323724521764358}
   - component: {fileID: 1527950213138604111}
@@ -2655,100 +2654,6 @@ CapsuleCollider:
   m_Height: 10.18
   m_Direction: 2
   m_Center: {x: 0, y: 0.64, z: 0}
---- !u!114 &6248673694451846582
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3803452139357024954}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
-  m_NotificationBehavior: 2
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 43caa8d9-3c4c-4506-aa65-d43e3125b563
-    m_ActionName: GroundMovement/HorizontalMovement[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 2423aee6-e926-4e0b-b020-f45852d33cc9
-    m_ActionName: GroundMovement/Jump[/Keyboard/space]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: dab3ec4a-e956-4b58-9bcc-c1f7a75030f7
-    m_ActionName: Spaceship/Thrust[/Keyboard/s,/Keyboard/w]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 818376f3-f27d-4e29-928b-9bed3f80712b
-    m_ActionName: Spaceship/Strafe[/Keyboard/a,/Keyboard/d]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 4757fbdb-d2f4-4992-8c0c-8f3e15c02dbc
-    m_ActionName: Spaceship/UpDown[/Keyboard/c,/Keyboard/space]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 0b3aa727-f40b-48b9-b6a9-38fe2e32a0b0
-    m_ActionName: Spaceship/Roll[/Mouse/forwardButton,/Mouse/backButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: a59b9449-60a9-4e2e-9fb6-c809bf735ebc
-    m_ActionName: GroundMovement/EnterExit[/Keyboard/f]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: f32371ea-c86e-4277-871c-5ebbc7d65b2e
-    m_ActionName: Spaceship/Exit[/Keyboard/f]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 187f3aa6-aa9a-4a5a-8f4a-902d7b7db7b8
-    m_ActionName: Player/Hotbar1[/Keyboard/1]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: c2352c34-6394-4619-9eab-ee20f09d3957
-    m_ActionName: Player/Hotbar2[/Keyboard/2]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: dd918624-0db1-4a20-8dfb-1a05dcaba62e
-    m_ActionName: Player/Down[/Keyboard/c]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: c666caf2-0da0-4b1c-a032-de8bbfe11cdf
-    m_ActionName: Player/Pickup[/Keyboard/e]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: ea7bc82d-b0a7-440e-9d94-5ff9942ca888
-    m_ActionName: Player/Eat[/Mouse/rightButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 49d7a4ff-49ba-424f-8dd6-12a8d2f949aa
-    m_ActionName: Spaceship/Boost[/Mouse/rightButton]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 7cdb52c3-f4e2-4adb-a81d-cde9db81b2fe
-    m_ActionName: Spaceship/Missile[/Keyboard/e]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: e3b7c757-e0ac-4995-87ce-84748998cea8
-    m_ActionName: Spaceship/Shield[/Keyboard/shift]
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: Spaceship
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!114 &311329325051141864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2945,6 +2850,8 @@ MonoBehaviour:
   boostSpeed: 300
   rate: 0.02
   shield: {fileID: 764326895083297900}
+  shieldActive:
+    m_InternalValue: 0
 --- !u!114 &4852122122062478848
 MonoBehaviour:
   m_ObjectHideFlags: 0

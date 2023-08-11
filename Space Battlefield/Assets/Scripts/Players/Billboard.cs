@@ -8,26 +8,41 @@ public class Billboard : NetworkBehaviour
     private bool allPlayersFound = false;
     private GameObject[] players;
 
+    private void Start()
+    {
+        if (IsOwner)
+        {
+            GetComponentInChildren<Text>().enabled = false;
+        }
+    }
+
     void Update()
     {
-        if (allPlayersFound == false)
+        if (IsOwner)
         {
-            if (Game.instance.GetComponent<GameEvents>().started.Value == true)
+            if (allPlayersFound == false)
             {
-                players = GameObject.FindGameObjectsWithTag("Player");
-                foreach (GameObject player in players)
+                if (Game.instance.GetComponent<GameEvents>().started.Value == true)
                 {
-                    if (player.GetComponent<NetworkObject>().OwnerClientId != OwnerClientId)
+                    players = GameObject.FindGameObjectsWithTag("Player");
+                    foreach (GameObject player in players)
                     {
-                        player.GetComponentInChildren<Billboard>().otherCamera = GetComponentInChildren<Camera>();
+                        if (player.GetComponent<NetworkObject>().OwnerClientId != OwnerClientId)
+                        {
+                            player.GetComponentInChildren<Billboard>().otherCamera = GetComponentInChildren<Camera>();
+                        }
                     }
+                    allPlayersFound = true;
                 }
-                allPlayersFound = true;
             }
         }
-        if (!IsOwner)
+        else
         {
-            transform.LookAt(otherCamera.transform);
+            if (otherCamera != null)
+            {
+                Quaternion lookRotation = Quaternion.LookRotation(otherCamera.transform.position - transform.position, transform.up);
+                transform.rotation = Quaternion.Euler(new Vector3(transform.rotation.eulerAngles.x, lookRotation.eulerAngles.y, transform.rotation.eulerAngles.z));
+            }
         }
     }    
 }

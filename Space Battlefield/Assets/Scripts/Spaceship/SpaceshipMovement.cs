@@ -9,6 +9,8 @@ using UnityEngine.VFX;
 
 public class SpaceshipMovement : NetworkBehaviour
 {
+    private SpaceshipActions spaceshipActions;
+
     // Movement Factors
     public float thrust = 5;
     public float thrustFactor = 5;
@@ -22,7 +24,6 @@ public class SpaceshipMovement : NetworkBehaviour
     private float maxAngularVelocity = 8;
 
     Rigidbody rb;
-    private MovementControls gameActions;
     public Image thrustSlider;
     public GameObject spaceshipCanvas;
 
@@ -36,23 +37,16 @@ public class SpaceshipMovement : NetworkBehaviour
 
     public VisualEffect thrustEffect;
 
-    private void OnEnable()
-    {                
-        gameActions = KeybindManager.inputActions;
-        gameActions.Spaceship.Enable();       
-    }
-
     private void OnDisable()
     {
         thrustEffect.SetFloat("Lifetime", 0);
         thrustSlider.fillAmount = 0;
         spaceshipCanvas.SetActive(false);
-        GetComponentInChildren<PlayerInput>().enabled = false;
-        gameActions.Spaceship.Disable();
     }
 
     private void Start()
-    {       
+    {
+        spaceshipActions = GetComponent<SpaceshipActions>();
         rb = GetComponent<Rigidbody>();
         rb.inertiaTensor = rb.inertiaTensor;
         if (IsOwner)
@@ -87,14 +81,14 @@ public class SpaceshipMovement : NetworkBehaviour
 
     private void Roll()
     { 
-        float rollInput = gameActions.Spaceship.Roll.ReadValue<float>();
+        float rollInput = spaceshipActions.gameActions.Spaceship.Roll.ReadValue<float>();
         rb.maxAngularVelocity = maxAngularVelocity;
         rb.AddRelativeTorque(0, 0, rollInput * rollTorque * Time.deltaTime, ForceMode.Force);        
     }
 
     private void Thrust()
     {
-        float thrustInput = gameActions.Spaceship.Thrust.ReadValue<float>();
+        float thrustInput = spaceshipActions.gameActions.Spaceship.Thrust.ReadValue<float>();
         if (thrustInput > 0)
         {
             applyForce = true;
@@ -135,7 +129,7 @@ public class SpaceshipMovement : NetworkBehaviour
 
     private void UpDown()
     {
-        upDownInput = gameActions.Spaceship.UpDown.ReadValue<float>();
+        upDownInput = spaceshipActions.gameActions.Spaceship.UpDown.ReadValue<float>();
         if (!GetComponent<Hull>().isGrounded)
         {
             GetComponent<SpaceshipGravity>().enabled = false;
@@ -153,7 +147,7 @@ public class SpaceshipMovement : NetworkBehaviour
 
     private void Strafe()
     {    
-        float strafeInput = gameActions.Spaceship.Strafe.ReadValue<float>();
+        float strafeInput = spaceshipActions.gameActions.Spaceship.Strafe.ReadValue<float>();
         rb.AddRelativeTorque(0, strafeInput * strafeForce * Time.deltaTime, 0, ForceMode.Force);
     }
 

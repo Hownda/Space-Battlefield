@@ -135,14 +135,6 @@ public class TerrainMovement : MonoBehaviour
 
         if (mainCam == null) return;
 
-        // FOV
-        fovGain = Mathf.Lerp(fovGain, 0f, fovFilter * timeStep());
-        fovGain = Mathf.Clamp(fovGain, -1f, 1f);
-
-        float mScrollDelta = Input.mouseScrollDelta.y * -1f;
-        if (Input.GetKey(KeyCode.Mouse1)) fovGain += mScrollDelta * fovChangeSpeed * timeStep();
-        mainCam.fieldOfView += fovGain;
-
     }
 
     float timeStep()

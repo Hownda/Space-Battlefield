@@ -35,7 +35,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (IsOwner)
         {
-            gameActions = KeybindManager.inputActions;
+            gameActions = GetComponent<PlayerActions>().gameActions;
             gameActions.Player.Jump.started += Jump;
 
             gameActions.Player.Jump.started += _ => swimVertical = 1;

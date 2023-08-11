@@ -29,7 +29,7 @@ public class Ability
 
 public class SpaceshipActions : NetworkBehaviour
 {
-    private MovementControls gameActions;
+    public MovementControls gameActions;
     public GameObject playerPrefab;
    
     public Image thrustIcon;
@@ -65,16 +65,14 @@ public class SpaceshipActions : NetworkBehaviour
 
     private void OnEnable()
     {
-        if (IsOwner)
-        {
-            KeybindManager.rebindComplete += OnRebind;
-            gameActions = KeybindManager.inputActions;
-            gameActions.Spaceship.Exit.started += ExitInput;
-            gameActions.Spaceship.Boost.started += UseAbility;
-            gameActions.Spaceship.Missile.started += UseAbility;
-            gameActions.Spaceship.Shield.started += UseAbility;
-            gameActions.Spaceship.Enable();
-        }
+        KeybindManager.rebindComplete += OnRebind;
+        gameActions = new MovementControls();
+        KeybindManager.inputActions = gameActions;
+        gameActions.Spaceship.Exit.started += GetComponent<SpaceshipActions>().ExitInput;
+        gameActions.Spaceship.Boost.started += GetComponent<SpaceshipActions>().UseAbility;
+        gameActions.Spaceship.Missile.started += GetComponent<SpaceshipActions>().UseAbility;
+        gameActions.Spaceship.Shield.started += GetComponent<SpaceshipActions>().UseAbility;
+        gameActions.Spaceship.Enable();
     }
 
     private void OnDisable()
@@ -136,8 +134,10 @@ public class SpaceshipActions : NetworkBehaviour
     public void Exit()
     {
         Debug.Log("Exiting...");
-        gameActions.Spaceship.Exit.started -= ExitInput;
-        gameActions.Spaceship.Boost.started -= UseAbility;
+        gameActions.Spaceship.Exit.started -= GetComponent<SpaceshipActions>().ExitInput;
+        gameActions.Spaceship.Boost.started -= GetComponent<SpaceshipActions>().UseAbility;
+        gameActions.Spaceship.Missile.started -= GetComponent<SpaceshipActions>().UseAbility;
+        gameActions.Spaceship.Shield.started -= GetComponent<SpaceshipActions>().UseAbility;
         gameActions.Spaceship.Disable();
         GetComponent<Hull>().integrityBillboard.SetActive(true);
         Camera.main.GetComponent<AudioListener>().enabled = false;
@@ -172,7 +172,7 @@ public class SpaceshipActions : NetworkBehaviour
         Game.instance.DisableBodyPartsClientRpc();
     }
 
-    private void UseAbility(InputAction.CallbackContext obj)
+    public void UseAbility(InputAction.CallbackContext obj)
     {
         if (IsOwner)
         {

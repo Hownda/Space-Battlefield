@@ -215,48 +215,12 @@
         },
         {
             "name": "Spaceship",
-            "id": "32725815-92b0-459e-8fbb-ef842f443e3f",
+            "id": "1f6bf3a5-9b2c-4142-9680-8c822f703732",
             "actions": [
                 {
-                    "name": "Thrust",
-                    "type": "PassThrough",
-                    "id": "dab3ec4a-e956-4b58-9bcc-c1f7a75030f7",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Strafe",
-                    "type": "PassThrough",
-                    "id": "818376f3-f27d-4e29-928b-9bed3f80712b",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "UpDown",
-                    "type": "PassThrough",
-                    "id": "4757fbdb-d2f4-4992-8c0c-8f3e15c02dbc",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Roll",
-                    "type": "PassThrough",
-                    "id": "0b3aa727-f40b-48b9-b6a9-38fe2e32a0b0",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Exit",
+                    "name": "Shield",
                     "type": "Button",
-                    "id": "f32371ea-c86e-4277-871c-5ebbc7d65b2e",
+                    "id": "062285c9-2b84-41f5-9e7f-d8d6d2a7e90a",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -265,7 +229,7 @@
                 {
                     "name": "Boost",
                     "type": "Button",
-                    "id": "49d7a4ff-49ba-424f-8dd6-12a8d2f949aa",
+                    "id": "61c71b1c-b4b8-4802-924b-8d78bc0e53ce",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -274,16 +238,52 @@
                 {
                     "name": "Missile",
                     "type": "Button",
-                    "id": "7cdb52c3-f4e2-4adb-a81d-cde9db81b2fe",
+                    "id": "c8a8fef2-84ef-4578-b03f-03aa9c2384a7",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Shield",
+                    "name": "Exit",
                     "type": "Button",
-                    "id": "e3b7c757-e0ac-4995-87ce-84748998cea8",
+                    "id": "dcabbc24-0201-42b4-a8e0-126ed550a8d0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Roll",
+                    "type": "PassThrough",
+                    "id": "ffa82206-77a7-416d-89fd-c01e7513d78a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "UpDown",
+                    "type": "PassThrough",
+                    "id": "310f5336-6997-40c0-99a5-507dcee33630",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Strafe",
+                    "type": "PassThrough",
+                    "id": "06bdc420-550a-41bd-96ff-4561cc8ee1f2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Thrust",
+                    "type": "PassThrough",
+                    "id": "5787ea5f-78a0-4baf-84fb-ccf239b11b7d",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -292,151 +292,19 @@
             ],
             "bindings": [
                 {
-                    "name": "ThrustInput",
-                    "id": "2bba1cb8-e764-4dc7-b04f-b4c7d0ff1a73",
-                    "path": "1DAxis",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Thrust",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "positive",
-                    "id": "9ac61c9e-432a-4201-bd4f-c71e5e096b22",
-                    "path": "<Keyboard>/w",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Thrust",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "negative",
-                    "id": "fbe69d0a-14a2-45a4-b960-b7a89c6feda9",
-                    "path": "<Keyboard>/s",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Thrust",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "StrafeInput",
-                    "id": "7bca4996-352a-4366-8132-b14cd9a0ec8c",
-                    "path": "1DAxis",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Strafe",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "positive",
-                    "id": "6030c4dd-6547-4942-8288-feaca545b421",
-                    "path": "<Keyboard>/d",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Strafe",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "negative",
-                    "id": "494556f6-f9eb-4abc-a729-259640e63091",
-                    "path": "<Keyboard>/a",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Strafe",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "UpDownInput",
-                    "id": "c6e11274-d346-4b49-91cf-52ee1e22690d",
-                    "path": "1DAxis",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "UpDown",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "positive",
-                    "id": "726905ab-7c08-4796-9a54-566f6d2c36d9",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "UpDown",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "negative",
-                    "id": "25e1eb2d-0d44-4bb5-a139-f725bf5f64f5",
-                    "path": "<Keyboard>/c",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "UpDown",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "RollInput",
-                    "id": "0fc5047d-e1fb-4bc9-852c-577b2c836136",
-                    "path": "1DAxis",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Roll",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "positive",
-                    "id": "b16a5670-1669-4667-8da2-c44216c6b5b1",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Roll",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "negative",
-                    "id": "92b7aa4b-9c15-4538-9e98-b8a2bafbdc62",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Roll",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
                     "name": "",
-                    "id": "ce46116b-fc95-4f6c-9ce2-505c315514b0",
-                    "path": "<Keyboard>/f",
+                    "id": "a2077d70-c40b-481d-b1c5-e14e228292aa",
+                    "path": "<Keyboard>/shift",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Exit",
+                    "action": "Shield",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "5993cc4c-c790-4316-8638-1f2447aeed08",
+                    "id": "55f932d6-cec9-4c10-a331-8943ae5c487b",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
@@ -447,7 +315,7 @@
                 },
                 {
                     "name": "",
-                    "id": "a9cfb9ee-cbd8-4960-a436-c3bd6c5fdea6",
+                    "id": "16a0dc4a-80a8-4a58-87d3-1167eeb9e54d",
                     "path": "<Keyboard>/x",
                     "interactions": "",
                     "processors": "",
@@ -458,14 +326,146 @@
                 },
                 {
                     "name": "",
-                    "id": "2b39a7ed-1214-46e5-b22a-53cfba29e664",
-                    "path": "<Keyboard>/shift",
+                    "id": "2b4149a2-91db-4782-a5e5-7c1f8f45d94f",
+                    "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shield",
+                    "action": "Exit",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "RollInput",
+                    "id": "d0bd66d3-ab14-47e8-bddc-520091f2be1f",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Roll",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "positive",
+                    "id": "979a69e0-19cc-479d-b129-f48a44b19dbf",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Roll",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "negative",
+                    "id": "61f7b60a-8226-4419-941e-46c5858632a2",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Roll",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "UpDownInput",
+                    "id": "6030aad1-d8b4-401d-9841-9e1fb263e718",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UpDown",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "positive",
+                    "id": "256c8c24-d47c-4d5d-95ed-660ca68516d4",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UpDown",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "negative",
+                    "id": "46325744-81b8-4f71-81ba-e71b1c271118",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UpDown",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "StrafeInput",
+                    "id": "f65fe911-640f-4728-abe0-f255d4b6c2c5",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Strafe",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "positive",
+                    "id": "71171768-0580-4508-8782-cfb144ee911d",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Strafe",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "negative",
+                    "id": "6d887955-f100-4c43-b307-03479312ff68",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Strafe",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "ThrustInput",
+                    "id": "72ab893e-e48f-49ad-9694-9cb620105597",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Thrust",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "positive",
+                    "id": "6f543fc1-793f-44cb-bdb5-b08d58c3c8e4",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Thrust",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "negative",
+                    "id": "0074d4a5-90e2-4dfe-818e-84adebd25058",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Thrust",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }

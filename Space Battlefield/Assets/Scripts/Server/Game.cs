@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.UI;
-using UnityEngine.InputSystem;
-using System;
+using System.Linq;
 
 /// <summary>
 /// The class <c>Game</c> manages game events on the server.
@@ -26,7 +25,6 @@ public class Game : NetworkBehaviour
 
     [Header("Spawning")]
     public Vector3[] spawnLocations;
-    public Vector3[] spawnRotations;
 
     private void Awake()
     {
@@ -37,10 +35,12 @@ public class Game : NetworkBehaviour
     {
         Debug.Log("Starting Game...");
         int i = 0;
+        List<Vector3> randomSpawnPositions = spawnLocations.ToList();
         foreach (GameObject playerRoot in GameObject.FindGameObjectsWithTag("Root"))
         {
-            int spawnIndex = UnityEngine.Random.Range(0, spawnLocations.Length - 1);
-            GameObject spawnedPlayer = Instantiate(playerPrefab, spawnLocations[spawnIndex], Quaternion.Euler(spawnRotations[spawnIndex]));
+            int spawnIndex = Random.Range(0, spawnLocations.Length - 1);
+            GameObject spawnedPlayer = Instantiate(playerPrefab, randomSpawnPositions[spawnIndex], Quaternion.identity);
+            randomSpawnPositions.RemoveAt(spawnIndex);
             spawnedPlayer.GetComponent<NetworkObject>().Spawn();
             spawnedPlayer.GetComponent<NetworkObject>().ChangeOwnership(playerRoot.GetComponent<NetworkObject>().OwnerClientId);
             playerInformationList.Add(new PlayerInformation(playerRoot.GetComponent<NetworkObject>().OwnerClientId, playerRoot, spawnedPlayer, null));
@@ -141,7 +141,10 @@ public class Game : NetworkBehaviour
 
     [ServerRpc(RequireOwnership = false)] public void SetTempHealthServerRpc(ulong clientId, int health)
     {
-        playerInformationDict[clientId].root.GetComponent<PlayerNetwork>().tempHealth.Value = health;
+        if (IsServer)
+        {
+            playerInformationDict[clientId].root.GetComponent<PlayerNetwork>().tempHealth.Value = health;
+        }
     }
 
     [ServerRpc(RequireOwnership = false)] public void GiveObjectToPlayerServerRpc(ulong clientId, Item item, int amount)

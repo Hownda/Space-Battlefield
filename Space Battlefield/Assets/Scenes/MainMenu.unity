@@ -10718,7 +10718,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   optionsPanel: {fileID: 7146696575951780273}
-  settingsPanel: {fileID: 6160643947005441876}
+  settingsPanel: {fileID: 7254166988810187919}
 --- !u!224 &5666549350362429368
 RectTransform:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ using Cinemachine;
 
 public class PlayerActions : NetworkBehaviour
 {
-    private MovementControls gameActions;
+    public MovementControls gameActions;
 
     public float pickUpRange = 2;
     public LayerMask interactableObjects;
@@ -16,7 +16,8 @@ public class PlayerActions : NetworkBehaviour
     {
         if (IsOwner)
         {
-            gameActions = KeybindManager.inputActions;
+            gameActions = new MovementControls();
+            KeybindManager.inputActions = gameActions;
             gameActions.Player.Enter.started += Enter;
             gameActions.Player.Pickup.started += PickUp;
             gameActions.Player.Eat.started += Eat;
@@ -37,10 +38,9 @@ public class PlayerActions : NetworkBehaviour
             foreach (GameObject spaceship in GameObject.FindGameObjectsWithTag("Spaceship"))
             {
                 if (spaceship.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
-                {                    
+                {
                     // Interaction components
                     spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
-                    spaceship.GetComponentInChildren<PlayerInput>().enabled = true;
                     spaceship.GetComponentInChildren<SpaceshipMovement>().spaceshipCanvas.SetActive(true);
                     spaceship.GetComponent<Cannons>().enabled = true;
                     spaceship.GetComponent<Hull>().integrityBillboard.SetActive(false);

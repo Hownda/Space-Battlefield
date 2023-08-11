@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Netcode;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
+using System.Collections;
 
 public class GameManager : NetworkBehaviour
 {
@@ -12,6 +13,8 @@ public class GameManager : NetworkBehaviour
     public GameObject spectatorPrefab;
     public GameObject playerRootPrefab;
     public Transform parentCanvas;
+
+    private Lobby currentLobby;
 
     private void Start()
     {
@@ -44,14 +47,34 @@ public class GameManager : NetworkBehaviour
 
     private async void CheckPlayerCount()
     {
-        Lobby lobby = await LobbyService.Instance.GetLobbyAsync(PlayerData.instance.currentLobbyId);
-        playerCount = lobby.Players.Count;
-
-        if (connectedPlayers == playerCount)
+        try
         {
-            Debug.Log("Requesting Start...");
-            allPlayersConnected = true;
-            GetComponent<Game>().StartGame();
+            currentLobby = await LobbyService.Instance.GetLobbyAsync(PlayerData.instance.currentLobbyId);
+            playerCount = currentLobby.Players.Count;
+
+
+            if (connectedPlayers == playerCount)
+            {
+                Debug.Log("Requesting Start...");
+                allPlayersConnected = true;
+                GetComponent<Game>().StartGame();
+            }
         }
+        catch (LobbyServiceException e)
+        {
+            Debug.Log(e);
+            StartCoroutine(RequestLobbyService());
+        }
+    }
+
+    private IEnumerator RequestLobbyService()
+    {
+        while (currentLobby == null)
+        {
+            yield return new WaitForSeconds(.5f);
+            CheckPlayerCount();
+            yield return new WaitForSeconds(.5f);
+        }
+
     }
 }
