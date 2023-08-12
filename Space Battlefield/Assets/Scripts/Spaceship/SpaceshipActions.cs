@@ -66,13 +66,15 @@ public class SpaceshipActions : NetworkBehaviour
     private void OnEnable()
     {
         KeybindManager.rebindComplete += OnRebind;
-        gameActions = new MovementControls();
-        KeybindManager.inputActions = gameActions;
+        gameActions = KeybindManager.newInputActions;
+        KeybindManager.LoadAllBindings(gameActions);
+        KeybindManager.newInputActions = gameActions;
         gameActions.Spaceship.Exit.started += GetComponent<SpaceshipActions>().ExitInput;
         gameActions.Spaceship.Boost.started += GetComponent<SpaceshipActions>().UseAbility;
         gameActions.Spaceship.Missile.started += GetComponent<SpaceshipActions>().UseAbility;
         gameActions.Spaceship.Shield.started += GetComponent<SpaceshipActions>().UseAbility;
         gameActions.Spaceship.Enable();
+        OnRebind();
     }
 
     private void OnDisable()
@@ -84,11 +86,10 @@ public class SpaceshipActions : NetworkBehaviour
     {
         boostTime = Time.time;
         shieldTime = Time.time;
-        OnRebind();
     }
 
     private void Update()
-    {
+    {       
         if (warpActive)
         {
             if (boostTime + boostDuration <= Time.time)
@@ -106,19 +107,22 @@ public class SpaceshipActions : NetworkBehaviour
                 shieldActive.Value = false;
             }
         }
-    }
+    }    
 
     private void OnRebind()
     {
-        foreach (KeyValuePair<Type, Ability> ability in abilityDict)
+        if (IsOwner)
         {
-            if (ability.Value.unlocked)
+            foreach (KeyValuePair<Type, Ability> ability in abilityDict)
             {
-                keybindTexts[ability.Value.index].text = inputActions[ability.Value.index].action.GetBindingDisplayString();
-            }
-            else
-            {
-                keybindTexts[ability.Value.index].text = inputActions[ability.Value.index].action.GetBindingDisplayString() + " to unlock\n" + ability.Value.rockCost + " Rock\n" + ability.Value.flowerCost + " Flower";
+                if (ability.Value.unlocked)
+                {
+                    keybindTexts[ability.Value.index].text = inputActions[ability.Value.index].action.GetBindingDisplayString();
+                }
+                else
+                {
+                    keybindTexts[ability.Value.index].text = inputActions[ability.Value.index].action.GetBindingDisplayString() + " to unlock\n" + ability.Value.rockCost + " Rock\n" + ability.Value.flowerCost + " Flower";
+                }
             }
         }
     }
@@ -127,7 +131,10 @@ public class SpaceshipActions : NetworkBehaviour
     {
         if (IsOwner)
         {
-            Exit();
+            if (GetComponent<SpaceshipGravity>().gravityOrbit != null)
+            {
+                Exit();
+            }
         }
     }
 
@@ -223,7 +230,8 @@ public class SpaceshipActions : NetworkBehaviour
 
     private void ActivateMissileMode()
     {
-
+        GetComponent<Cannons>().ammo = Ammo.Missile;
+        Debug.Log("Missile mode active");
     }
 
     private void ActivateShield()

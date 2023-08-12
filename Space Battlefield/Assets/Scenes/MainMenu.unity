@@ -3686,12 +3686,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78fd93e7b5d232e4ebafbefebd241b90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputActionReference: {fileID: -8547205681563937187, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
+  inputActionReference: {fileID: -1188833597744178659, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
   selectedBinding: 0
   displayStringOptions: 0
   inputBinding:
     m_Name: 
-    m_Id: 5993cc4c-c790-4316-8638-1f2447aeed08
+    m_Id: 55f932d6-cec9-4c10-a331-8943ae5c487b
     m_Path: <Mouse>/rightButton
     m_Interactions: 
     m_Processors: 
@@ -6090,12 +6090,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78fd93e7b5d232e4ebafbefebd241b90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputActionReference: {fileID: -7565584466085285711, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
+  inputActionReference: {fileID: 1903134436712729595, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
   selectedBinding: 0
   displayStringOptions: 0
   inputBinding:
     m_Name: RollInput
-    m_Id: 0fc5047d-e1fb-4bc9-852c-577b2c836136
+    m_Id: d0bd66d3-ab14-47e8-bddc-520091f2be1f
     m_Path: 1DAxis
     m_Interactions: 
     m_Processors: 
@@ -6150,12 +6150,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78fd93e7b5d232e4ebafbefebd241b90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputActionReference: {fileID: -9152018359633430410, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
+  inputActionReference: {fileID: -3635990199063807118, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
   selectedBinding: 0
   displayStringOptions: 0
   inputBinding:
     m_Name: UpDownInput
-    m_Id: c6e11274-d346-4b49-91cf-52ee1e22690d
+    m_Id: 6030aad1-d8b4-401d-9841-9e1fb263e718
     m_Path: 1DAxis
     m_Interactions: 
     m_Processors: 
@@ -10322,12 +10322,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78fd93e7b5d232e4ebafbefebd241b90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputActionReference: {fileID: 8975257270346847523, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
+  inputActionReference: {fileID: -2412684936137139953, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
   selectedBinding: 0
   displayStringOptions: 0
   inputBinding:
     m_Name: StrafeInput
-    m_Id: 7bca4996-352a-4366-8132-b14cd9a0ec8c
+    m_Id: f65fe911-640f-4728-abe0-f255d4b6c2c5
     m_Path: 1DAxis
     m_Interactions: 
     m_Processors: 
@@ -13404,12 +13404,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78fd93e7b5d232e4ebafbefebd241b90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputActionReference: {fileID: -2220591133016731406, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
+  inputActionReference: {fileID: -3785331200339076244, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
   selectedBinding: 0
   displayStringOptions: 0
   inputBinding:
     m_Name: ThrustInput
-    m_Id: 2bba1cb8-e764-4dc7-b04f-b4c7d0ff1a73
+    m_Id: 72ab893e-e48f-49ad-9694-9cb620105597
     m_Path: 1DAxis
     m_Interactions: 
     m_Processors: 
@@ -13476,12 +13476,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78fd93e7b5d232e4ebafbefebd241b90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputActionReference: {fileID: 7261078298915854107, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
+  inputActionReference: {fileID: -662384633068565628, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
   selectedBinding: 0
   displayStringOptions: 0
   inputBinding:
     m_Name: 
-    m_Id: ce46116b-fc95-4f6c-9ce2-505c315514b0
+    m_Id: 2b4149a2-91db-4782-a5e5-7c1f8f45d94f
     m_Path: <Keyboard>/f
     m_Interactions: 
     m_Processors: 

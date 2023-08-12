@@ -4,15 +4,22 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.UI;
 
+public enum Ammo
+{
+    Bullet, Missile
+}
+
 public class Cannons : NetworkBehaviour
 {
     private Camera spaceshipCamera;
+    public Ammo ammo;
 
     public RectTransform crosshair;
     public Vector2 screenCenter;
     public float crosshairSensitivity = 10;
     public float crosshairAreaRadius = 100;
 
+    public GameObject bulletPrefab;
     public GameObject missilePrefab;
     public GameObject cannons;
     public LayerMask layer;
@@ -62,17 +69,33 @@ public class Cannons : NetworkBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 50000, layer))
             {
-                GameObject missile = Instantiate(missilePrefab, cannons.transform.position, Quaternion.LookRotation(ray.direction));
-                missile.GetComponent<Bullet>().parentClient = OwnerClientId;
-                missile.GetComponent<Bullet>().damage = true;
-                missile.GetComponent<Bullet>().IgnoreCollisions(colliders);
-                missile.GetComponent<Rigidbody>().AddForce(missileForce * missile.transform.forward, ForceMode.Impulse);
-                Destroy(missile, 2.5f);
-                shootSound.Play();
-                
-                ShootServerRpc(ray.direction);
+                if (ammo == Ammo.Bullet)
+                {
+                    GameObject missile = Instantiate(bulletPrefab, cannons.transform.position, Quaternion.LookRotation(ray.direction));
+                    missile.GetComponent<Bullet>().parentClient = OwnerClientId;
+                    missile.GetComponent<Bullet>().damage = true;
+                    missile.GetComponent<Bullet>().IgnoreCollisions(colliders);
+                    missile.GetComponent<Rigidbody>().AddForce(missileForce * missile.transform.forward, ForceMode.Impulse);
+                    Destroy(missile, 2.5f);
+                    shootSound.Play();
+
+                    ShootServerRpc(ray.direction);
+                }
+                else
+                {                  
+                    SummonMissileServerRpc(OwnerClientId, cannons.transform.position, ray.direction);
+                    ammo = Ammo.Bullet;
+                    Debug.Log("Missile mode inactive");
+                }
             }
         }
+    }
+
+    [ServerRpc] private void SummonMissileServerRpc(ulong clientId, Vector3 position, Vector3 direction)
+    {
+        GameObject missile = Instantiate(missilePrefab, position, Quaternion.LookRotation(direction));
+        missile.GetComponent<NetworkObject>().Spawn();
+        missile.GetComponent<Missile>().SetParentClient(clientId);
     }
 
     [ServerRpc]
@@ -86,7 +109,7 @@ public class Cannons : NetworkBehaviour
     {
         if (!IsOwner)
         {
-            GameObject missile = Instantiate(missilePrefab, cannons.transform.position, Quaternion.LookRotation(shootDirection));
+            GameObject missile = Instantiate(bulletPrefab, cannons.transform.position, Quaternion.LookRotation(shootDirection));
             missile.GetComponent<Bullet>().parentClient = OwnerClientId;
             missile.GetComponent<Bullet>().IgnoreCollisions(colliders);
             missile.GetComponent<Rigidbody>().AddForce(missileForce * missile.transform.forward, ForceMode.Impulse);

@@ -51,7 +51,14 @@ public class RebindUI : MonoBehaviour
     private IEnumerator LoadOverride()
     {
         yield return new WaitForSeconds(0.2f);
-        KeybindManager.LoadBindingOverride(actionName);
+        if (KeybindManager.newInputActions != null)
+        {
+            KeybindManager.LoadBindingOverride(KeybindManager.newInputActions, actionName);
+        }
+        else
+        {
+            KeybindManager.LoadBindingOverride(KeybindManager.inputActions, actionName);
+        }
     }
 
     private void OnDisable()
@@ -90,7 +97,14 @@ public class RebindUI : MonoBehaviour
         {
             if (Application.isPlaying)
             {
-                rebindText.text = KeybindManager.GetBindingName(actionName, bindingIndex);
+                if (KeybindManager.newInputActions != null)
+                {
+                    rebindText.text = KeybindManager.GetBindingName(KeybindManager.newInputActions, actionName, bindingIndex);
+                }
+                else
+                {
+                    rebindText.text = KeybindManager.GetBindingName(KeybindManager.inputActions, actionName, bindingIndex);
+                }
             }
             else
             {

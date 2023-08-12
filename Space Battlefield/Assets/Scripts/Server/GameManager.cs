@@ -53,7 +53,7 @@ public class GameManager : NetworkBehaviour
             playerCount = currentLobby.Players.Count;
 
 
-            if (connectedPlayers == playerCount)
+            if (connectedPlayers == playerCount && currentLobby != null)
             {
                 Debug.Log("Requesting Start...");
                 allPlayersConnected = true;

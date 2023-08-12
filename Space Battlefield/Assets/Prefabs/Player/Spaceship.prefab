@@ -2801,11 +2801,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73b17aaecc77f81419dce02d81cec671, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ammo: 0
   crosshair: {fileID: 3093034591966021208}
   screenCenter: {x: 0, y: 80}
   crosshairSensitivity: 200
   crosshairAreaRadius: 40
-  missilePrefab: {fileID: 5994368593006850447, guid: 0ba436032887a704f8ef18838eab0568, type: 3}
+  bulletPrefab: {fileID: 5994368593006850447, guid: 0ba436032887a704f8ef18838eab0568, type: 3}
+  missilePrefab: {fileID: 6447401109202905136, guid: 49ec4207af32d8242b96c0b49fec6824, type: 3}
   cannons: {fileID: 4274913612250489492}
   layer:
     serializedVersion: 2
@@ -2837,9 +2839,9 @@ MonoBehaviour:
   - {fileID: 4157490139935572425}
   - {fileID: 3515871077685608951}
   inputActions:
-  - {fileID: -8547205681563937187, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
-  - {fileID: -882641072994057505, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
-  - {fileID: 8600569413512507342, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
+  - {fileID: -1188833597744178659, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
+  - {fileID: 2908300792388603913, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
+  - {fileID: 2944888229400856601, guid: bbdd672700ed5374589d8e8276cfa73a, type: 3}
   keybindTexts:
   - {fileID: 4074554102648440234}
   - {fileID: 8037435395497488854}

@@ -8,10 +8,13 @@ using System;
 public class KeybindManager : MonoBehaviour
 {
     public static MovementControls inputActions;
+    public static MovementControls newInputActions;
 
     public static event Action rebindComplete;
     public static event Action rebindCancelled;
     public static event Action<InputAction, int> rebindStarted;
+
+    public static bool configured = false;
 
     private void Awake()
     {
@@ -70,6 +73,7 @@ public class KeybindManager : MonoBehaviour
 
             var newBinding = actionToRebind.bindings[0];
 
+            /*
             var bindings = actionToRebind.actionMap.bindings;
             foreach (var binding in bindings)
             {
@@ -78,7 +82,7 @@ public class KeybindManager : MonoBehaviour
                 if (binding.effectivePath == newBinding.effectivePath)
                     actionToRebind.ChangeBinding(0).To(prevBinding);
                     rebindCancelled?.Invoke();
-            }
+            }*/
 
             if (allCompositeParts)
             {
@@ -104,13 +108,22 @@ public class KeybindManager : MonoBehaviour
         rebind.Start();
     }
 
-    public static string GetBindingName(string actionName, int bindingIndex)
+    public static string GetBindingName(MovementControls gameActions, string actionName, int bindingIndex)
     {
-        if (inputActions == null)
+        /*if (inputActions == null)
         {
             inputActions = new MovementControls();
+        }*/
+        InputAction action;
+        if (gameActions != null)
+        {
+            action = gameActions.asset.FindAction(actionName);
         }
-        InputAction action = inputActions.asset.FindAction(actionName);
+        else
+        {
+            inputActions = new MovementControls();
+            action = inputActions.asset.FindAction(actionName);
+        }
         return action.GetBindingDisplayString(bindingIndex);
     }
 
@@ -120,25 +133,47 @@ public class KeybindManager : MonoBehaviour
         {
             PlayerPrefs.SetString(action.actionMap + action.name + i, action.bindings[i].overridePath);
         }
+        if (newInputActions != null)
+        {
+            LoadAllBindings(newInputActions);
+        }
+        else
+        {
+            LoadAllBindings(inputActions);
+        }
     }
 
-    public static void LoadBindingOverride(string actionName)
+    public static void LoadBindingOverride(MovementControls gameActions, string actionName)
     {
-        if (inputActions == null)
+        /*if (inputActions == null)
         {
             inputActions = new MovementControls();
-        }
-        if (inputActions.asset.FindAction(actionName) == null)
+        }*/
+        if (gameActions.asset.FindAction(actionName) == null)
         {
             return;
         }
-        InputAction action = inputActions.asset.FindAction(actionName);
+        InputAction action = gameActions.asset.FindAction(actionName);
 
         for (int i = 0; i < action.bindings.Count; i++)
         {
             if (!string.IsNullOrEmpty(PlayerPrefs.GetString(action.actionMap + action.name + i)))
             {
                 action.ApplyBindingOverride(i, PlayerPrefs.GetString(action.actionMap + action.name + i));
+            }
+        }
+    }
+
+    public static void LoadAllBindings(MovementControls gameActions)
+    {        
+        foreach (InputAction action in gameActions)
+        {
+            for (int i = 0; i < action.bindings.Count; i++)
+            {
+                if (!string.IsNullOrEmpty(PlayerPrefs.GetString(action.actionMap + action.name + i)))
+                {
+                    action.ApplyBindingOverride(i, PlayerPrefs.GetString(action.actionMap + action.name + i));
+                }
             }
         }
     }

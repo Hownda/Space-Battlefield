@@ -28,7 +28,7 @@ public class PlayerNetwork : NetworkBehaviour
     public GameObject defeatOverlay;
     public Camera endCamera;
 
-    public NetworkVariable<int> tempHealth = new NetworkVariable<int>(writePerm: NetworkVariableWritePermission.Owner);
+    public NetworkVariable<int> tempHealth = new NetworkVariable<int>(writePerm: NetworkVariableWritePermission.Server);
 
     void Start()
     {

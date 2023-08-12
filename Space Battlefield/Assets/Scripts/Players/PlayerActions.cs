@@ -17,7 +17,8 @@ public class PlayerActions : NetworkBehaviour
         if (IsOwner)
         {
             gameActions = new MovementControls();
-            KeybindManager.inputActions = gameActions;
+            KeybindManager.LoadAllBindings(gameActions);
+            KeybindManager.newInputActions = gameActions;
             gameActions.Player.Enter.started += Enter;
             gameActions.Player.Pickup.started += PickUp;
             gameActions.Player.Eat.started += Eat;

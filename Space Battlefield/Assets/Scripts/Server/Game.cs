@@ -141,10 +141,7 @@ public class Game : NetworkBehaviour
 
     [ServerRpc(RequireOwnership = false)] public void SetTempHealthServerRpc(ulong clientId, int health)
     {
-        if (IsServer)
-        {
-            playerInformationDict[clientId].root.GetComponent<PlayerNetwork>().tempHealth.Value = health;
-        }
+        playerInformationDict[clientId].root.GetComponent<PlayerNetwork>().tempHealth.Value = health;
     }
 
     [ServerRpc(RequireOwnership = false)] public void GiveObjectToPlayerServerRpc(ulong clientId, Item item, int amount)
