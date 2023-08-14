@@ -33,7 +33,7 @@ public class GameManager : NetworkBehaviour
                 GameObject playerRoot = Instantiate(playerRootPrefab);
                 playerRoot.GetComponent<NetworkObject>().Spawn();
                 playerRoot.GetComponent<NetworkObject>().ChangeOwnership(clientId);
-                CheckPlayerCount();
+                StartCoroutine(RequestLobbyService());
             }
             else
             {
@@ -45,36 +45,25 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    private async void CheckPlayerCount()
-    {
-        try
-        {
-            currentLobby = await LobbyService.Instance.GetLobbyAsync(PlayerData.instance.currentLobbyId);
-            playerCount = currentLobby.Players.Count;
-
-
-            if (connectedPlayers == playerCount && currentLobby != null)
-            {
-                Debug.Log("Requesting Start...");
-                allPlayersConnected = true;
-                GetComponent<Game>().StartGame();
-            }
-        }
-        catch (LobbyServiceException e)
-        {
-            Debug.Log(e);
-            StartCoroutine(RequestLobbyService());
-        }
-    }
-
     private IEnumerator RequestLobbyService()
     {
         while (currentLobby == null)
-        {
-            yield return new WaitForSeconds(.5f);
-            CheckPlayerCount();
+        {           
+            GetLobby();
             yield return new WaitForSeconds(.5f);
         }
+        if (connectedPlayers == playerCount)
+        {
+            Debug.Log("Requesting Start...");
+            allPlayersConnected = true;
+            GetComponent<Game>().StartGame();
+        }
 
+    }
+
+    private async void GetLobby()
+    {
+        currentLobby = await LobbyService.Instance.GetLobbyAsync(PlayerData.instance.currentLobbyId);
+        playerCount = currentLobby.Players.Count;
     }
 }

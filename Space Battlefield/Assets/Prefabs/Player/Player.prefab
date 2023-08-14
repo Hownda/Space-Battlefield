@@ -689,6 +689,7 @@ GameObject:
   - component: {fileID: 1940263684528067630}
   - component: {fileID: 239220834751948050}
   - component: {fileID: 6775545461393739424}
+  - component: {fileID: 6662829587805985285}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -948,6 +949,20 @@ MonoBehaviour:
   bodyObjects:
   - {fileID: 560810058664486863}
   - {fileID: 2262188477916327182}
+--- !u!114 &6662829587805985285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 365617291663512369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b4425e8af199744f8af000013c16a21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  usernameDisplay: {fileID: 4764926694417669318}
+  otherCamera: {fileID: 0}
 --- !u!1 &382816576899589723
 GameObject:
   m_ObjectHideFlags: 0
@@ -4567,7 +4582,6 @@ GameObject:
   - component: {fileID: 4481111246689680552}
   - component: {fileID: 8612028733156339588}
   - component: {fileID: 1204644358244692170}
-  - component: {fileID: 7783302836823289554}
   m_Layer: 0
   m_Name: Billboard
   m_TagString: Untagged
@@ -4635,19 +4649,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &7783302836823289554
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1729529332850905632}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b4425e8af199744f8af000013c16a21, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  otherCamera: {fileID: 0}
 --- !u!1 &1735898361195492733
 GameObject:
   m_ObjectHideFlags: 0

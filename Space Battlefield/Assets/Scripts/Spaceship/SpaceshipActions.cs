@@ -176,7 +176,6 @@ public class SpaceshipActions : NetworkBehaviour
         GetComponent<Hull>().cam = player.GetComponentInChildren<Camera>();
         Game.instance.AddPlayerToDict(player);
         Game.instance.SetHealth(player);
-        Game.instance.DisableBodyPartsClientRpc();
     }
 
     public void UseAbility(InputAction.CallbackContext obj)

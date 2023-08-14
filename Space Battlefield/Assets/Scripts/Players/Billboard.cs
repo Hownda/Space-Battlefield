@@ -4,7 +4,8 @@ using UnityEngine.UI;
 
 public class Billboard : NetworkBehaviour
 {
-    [HideInInspector] public Camera otherCamera;
+    public GameObject usernameDisplay;
+    public Camera otherCamera;
     private bool allPlayersFound = false;
     private GameObject[] players;
 
@@ -12,8 +13,9 @@ public class Billboard : NetworkBehaviour
     {
         if (IsOwner)
         {
-            GetComponentInChildren<Text>().enabled = false;
+            usernameDisplay.SetActive(false);
         }
+        allPlayersFound = false;
     }
 
     void Update()
@@ -29,7 +31,7 @@ public class Billboard : NetworkBehaviour
                     {
                         if (player.GetComponent<NetworkObject>().OwnerClientId != OwnerClientId)
                         {
-                            player.GetComponentInChildren<Billboard>().otherCamera = GetComponentInChildren<Camera>();
+                            player.GetComponent<Billboard>().otherCamera = GetComponentInChildren<Camera>();
                         }
                     }
                     allPlayersFound = true;
@@ -38,11 +40,33 @@ public class Billboard : NetworkBehaviour
         }
         else
         {
-            if (otherCamera != null)
+            if (otherCamera == null)
+            {                
+                GameObject localPlayer = null;
+                foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
+                {
+                    if (player.GetComponent<NetworkObject>().OwnerClientId == NetworkManager.LocalClientId)
+                    {
+                        localPlayer = player;
+                        otherCamera = player.GetComponentInChildren<Camera>();
+                    }
+                }
+                if (localPlayer == null)
+                {
+                    foreach (GameObject spaceship in GameObject.FindGameObjectsWithTag("Spaceship"))
+                    {
+                        if (spaceship.GetComponent<NetworkObject>().OwnerClientId == NetworkManager.LocalClientId)
+                        {
+                            otherCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
+                        }
+                    }
+                }
+                
+            }
+            else
             {
-                Quaternion lookRotation = Quaternion.LookRotation(otherCamera.transform.position - transform.position, transform.up);
-                transform.rotation = Quaternion.Euler(new Vector3(transform.rotation.eulerAngles.x, lookRotation.eulerAngles.y, transform.rotation.eulerAngles.z));
+                usernameDisplay.transform.parent.LookAt(otherCamera.transform, otherCamera.transform.up);
             }
         }
-    }    
+    }
 }

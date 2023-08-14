@@ -55,8 +55,6 @@ public class Game : NetworkBehaviour
     {
         yield return new WaitForSeconds(2f);
 
-        // Disable body parts marked as self
-        DisableBodyPartsClientRpc();
         SpawnPlayerCardsClientRpc();
         SpawnSpaceships();
         GetComponent<GameEvents>().StartCountdownClientRpc();
@@ -81,15 +79,6 @@ public class Game : NetworkBehaviour
             spaceship.GetComponent<NetworkObject>().Spawn();
             spaceship.GetComponent<NetworkObject>().ChangeOwnership(playerInformationList[i].clientId);
             playerInformationList[i].spaceship = spaceship;
-        }
-    }
-
-    [ClientRpc] public void DisableBodyPartsClientRpc()
-    {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject player in players)
-        {
-            player.GetComponentInChildren<CameraScript>().DisableBodyParts();
         }
     }
 

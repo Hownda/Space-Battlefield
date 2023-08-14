@@ -43,8 +43,15 @@ public class CameraScript : NetworkBehaviour
                 playerBody.Rotate(Vector3.up * mouseX);
             }
             else
-            {
+            {                
                 Cursor.lockState = CursorLockMode.None;
+            }
+        }
+        else
+        {
+            if (transform.parent.gameObject.layer != 14)
+            {
+                DisableBodyParts();
             }
         }
     }
