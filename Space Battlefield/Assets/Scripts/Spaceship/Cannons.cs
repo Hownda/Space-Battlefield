@@ -24,11 +24,15 @@ public class Cannons : NetworkBehaviour
     public GameObject cannons;
     public LayerMask layer;
     public float missileForce = 100f;
-    private float fireRate = 0.4f;
+    private float fireRate = 0.2f;
     private float lastShot;
 
     public Collider[] colliders;
     public AudioSource shootSound;
+
+    public GameObject trackingRectangle;
+    public float trackingFactor = 0.5f;
+    public float trackingStrength;
 
     private void Start()
     {
@@ -45,6 +49,10 @@ public class Cannons : NetworkBehaviour
             {
                 Shoot();
             }
+            /*if (ammo == Ammo.Missile)
+            {
+                trackingRectangle.transform.localScale += new Vector3(Time.deltaTime * trackingFactor, Time.deltaTime * trackingFactor, Time.deltaTime * trackingFactor);
+            }*/
         }
     }
 
@@ -85,6 +93,7 @@ public class Cannons : NetworkBehaviour
                 {                  
                     SummonMissileServerRpc(OwnerClientId, cannons.transform.position, ray.direction);
                     ammo = Ammo.Bullet;
+                    trackingRectangle.SetActive(false);
                     Debug.Log("Missile mode inactive");
                 }
             }
@@ -96,6 +105,12 @@ public class Cannons : NetworkBehaviour
         GameObject missile = Instantiate(missilePrefab, position, Quaternion.LookRotation(direction));
         missile.GetComponent<NetworkObject>().Spawn();
         missile.GetComponent<Missile>().SetParentClient(clientId);
+
+        Collider[] colliders = GetComponentsInChildren<Collider>();
+        foreach (Collider collider in colliders)
+        {
+            Physics.IgnoreCollision(collider, missile.GetComponent<Collider>());
+        }
     }
 
     [ServerRpc]
@@ -115,5 +130,16 @@ public class Cannons : NetworkBehaviour
             missile.GetComponent<Rigidbody>().AddForce(missileForce * missile.transform.forward, ForceMode.Impulse);
             Destroy(missile, 2.5f);
         }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        /*if (other.CompareTag("Spaceship"))
+        {
+            float scale = trackingRectangle.transform.localScale.x;
+            scale += Time.deltaTime * trackingFactor * 2;
+            scale = Mathf.Clamp(scale, 0.5f, 1);
+            trackingRectangle.transform.localScale -= new Vector3(Time.deltaTime * trackingFactor * 2, Time.deltaTime * trackingFactor * 2, Time.deltaTime * trackingFactor * 2);
+        }*/
     }
 }

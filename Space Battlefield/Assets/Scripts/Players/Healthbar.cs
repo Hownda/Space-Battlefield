@@ -9,8 +9,6 @@ public class Healthbar : NetworkBehaviour
     public NetworkVariable<int> health = new NetworkVariable<int>(100, writePerm:NetworkVariableWritePermission.Server);
     public Slider healthSlider;
 
-    public Image damageIndicator;
-
     private void Start()
     {
         if (IsOwner)
@@ -27,37 +25,11 @@ public class Healthbar : NetworkBehaviour
     public void Update()
     {
         healthSlider.value = health.Value;
-
-        if (damageIndicator.color.a > 0)
-        {
-            Color color = damageIndicator.color;
-            color.a -= 0.05f;
-            damageIndicator.color = color;
-        }
     }
 
     public void TakeDamage(int damage)
     {
-        health.Value -= damage;
-        if (health.Value - damage <= 0)
-        {
-            Die();
-        }       
-    }
-
-    [ClientRpc] public void DisplayDamageIndicatorClientRpc()
-    {
-        if (IsOwner)
-        {
-            Color color = damageIndicator.color;
-            color.a = 0.5f;
-            damageIndicator.color = color;
-        }
-    }
-
-    private void Die()
-    {
-        Game.instance.TriggerVictoryServerRpc(OwnerClientId);     
+        health.Value -= damage;    
     }
 
     public void Heal(int amount)

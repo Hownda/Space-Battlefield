@@ -14,6 +14,8 @@ public class Missile : NetworkBehaviour
     [SerializeField] private float deviationSpeed = 2;
     [SerializeField] private float deviationAmount = 50;
 
+    public GameObject impactParticles;
+
     private Vector3 standardPrediction;
     private Vector3 deviatedPrediction;
 
@@ -92,6 +94,16 @@ public class Missile : NetworkBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Target hit");
+        if (IsServer)
+        {
+            if (collision.gameObject.CompareTag("Spaceship"))
+            {
+                Game.instance.DealDamageToSpaceshipServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 30);
+                GameObject impactEffect = Instantiate(impactParticles, transform.position, Quaternion.Euler(Vector3.zero));
+                impactEffect.GetComponentInChildren<ParticleSystem>().Play();
+                Destroy(impactEffect, 0.5f);
+                Destroy(gameObject);
+            }
+        }
     }
 }

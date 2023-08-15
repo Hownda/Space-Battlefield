@@ -36,12 +36,6 @@ public class SpaceshipActions : NetworkBehaviour
     public Image thrustSliderFill;
 
     public Image[] abilityLocks;
-    private Dictionary<Type, Ability> abilityDict = new Dictionary<Type, Ability>() 
-    { 
-        { Type.Boost, new Ability(Type.Boost, false, 10, 30, 0) }, 
-        { Type.Missile, new Ability(Type.Missile, false, 30, 10, 1) }, 
-        { Type.Shield, new Ability(Type.Shield, false, 20, 20, 2) } 
-    };
     public InputActionReference[] inputActions;
     public Text[] keybindTexts;
     public Text errorText;
@@ -86,6 +80,14 @@ public class SpaceshipActions : NetworkBehaviour
     {
         boostTime = Time.time;
         shieldTime = Time.time;
+        
+        foreach (KeyValuePair<Type, Ability> ability in Game.instance.abilityDict)
+        {
+            if (ability.Value.unlocked == true)
+            {
+                abilityLocks[ability.Value.index].gameObject.SetActive(false);
+            }
+        }
     }
 
     private void Update()
@@ -113,7 +115,7 @@ public class SpaceshipActions : NetworkBehaviour
     {
         if (IsOwner)
         {
-            foreach (KeyValuePair<Type, Ability> ability in abilityDict)
+            foreach (KeyValuePair<Type, Ability> ability in Game.instance.abilityDict)
             {
                 if (ability.Value.unlocked)
                 {
@@ -184,7 +186,7 @@ public class SpaceshipActions : NetworkBehaviour
         {
             if (obj.action.name == SysEnum.GetName(typeof(Type), Type.Boost))
             {
-                if (abilityDict[Type.Boost].unlocked != false)
+                if (Game.instance.abilityDict[Type.Boost].unlocked != false)
                 {
                     Boost();
                 }
@@ -195,7 +197,7 @@ public class SpaceshipActions : NetworkBehaviour
             }
             if (obj.action.name == SysEnum.GetName(typeof(Type), Type.Missile))
             {
-                if (abilityDict[Type.Missile].unlocked != false)
+                if (Game.instance.abilityDict[Type.Missile].unlocked != false)
                 {
                     ActivateMissileMode();
                 }
@@ -206,7 +208,7 @@ public class SpaceshipActions : NetworkBehaviour
             }
             if (obj.action.name == SysEnum.GetName(typeof(Type), Type.Shield))
             {
-                if (abilityDict[Type.Shield].unlocked != false)
+                if (Game.instance.abilityDict[Type.Shield].unlocked != false)
                 {
                     ActivateShield();
                 }
@@ -230,6 +232,7 @@ public class SpaceshipActions : NetworkBehaviour
     private void ActivateMissileMode()
     {
         GetComponent<Cannons>().ammo = Ammo.Missile;
+        GetComponent<Cannons>().trackingRectangle.SetActive(true);
         Debug.Log("Missile mode active");
     }
 
@@ -243,7 +246,7 @@ public class SpaceshipActions : NetworkBehaviour
 
     private void TryUnlockAbility(Type type)
     {
-        CheckInventoryServerRpc(OwnerClientId, abilityDict[type].rockCost, abilityDict[type].flowerCost, type);
+        CheckInventoryServerRpc(OwnerClientId, Game.instance.abilityDict[type].rockCost, Game.instance.abilityDict[type].flowerCost, type);
     }
 
     [ServerRpc] private void CheckInventoryServerRpc(ulong clientId, int rockCost, int flowerCost, Type type)
@@ -280,9 +283,9 @@ public class SpaceshipActions : NetworkBehaviour
     {
         if (IsOwner)
         {
-            abilityDict[type].unlocked = true;
-            abilityLocks[abilityDict[type].index].gameObject.SetActive(false);
-
+            Game.instance.abilityDict[type].unlocked = true;
+            abilityLocks[Game.instance.abilityDict[type].index].GetComponent<Animator>().SetTrigger("Unlock");
+            OnRebind();
         }
     }
 }

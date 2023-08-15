@@ -21,7 +21,6 @@ public class Hull : NetworkBehaviour
     public AudioMixer audioMixer;
     public AudioMixerGroup audioMixerGroup;
     public AudioMixerGroup otherAudioMixerGroup;
-    public GameObject explosionPrefab;
     public bool colliding;
     public float damageFactor = 1;
     public ParticleSystem contactParticles;
@@ -87,11 +86,6 @@ public class Hull : NetworkBehaviour
         {
             integrityBillboard.transform.LookAt(cam.transform);            
         }
-
-        if (integrity.Value <= 0)
-        {
-            SelfDestruct();
-        }
     }
 
     public void TakeDamage(float damage)
@@ -112,33 +106,6 @@ public class Hull : NetworkBehaviour
         
     }
 
-    private void SelfDestruct()
-    {
-        GameObject explosion = Instantiate(explosionPrefab, transform.position, Quaternion.Euler(Vector3.zero));
-        explosion.GetComponentInChildren<ParticleSystem>().Play();
-        Destroy(explosion, 2f);
-
-        if (PlayerSpawned() == false)
-        {
-            GetComponent<SpaceshipActions>().Exit();
-        }
-        Game.instance.RemoveSpaceshipServerRpc(OwnerClientId);
-    }
-
-    private bool PlayerSpawned()
-    {
-        bool playerSpawned = false;
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject player in players)
-        {
-            if (player.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
-            {
-                playerSpawned = true;
-            }    
-        }
-        return playerSpawned;
-    }
-
     private void OnCollisionEnter(Collision collision)
     {
         if (IsOwner)
@@ -146,17 +113,23 @@ public class Hull : NetworkBehaviour
             // Check if player is landing
             if (!isGrounded)
             {
-                float relativeVelocity = collision.relativeVelocity.magnitude;
-
-                float volume = relativeVelocity * 0.1f;
-
-                crashSound.pitch = Random.Range(0.95f, 1.05f);
-                audioMixer.SetFloat("CrashVolume", volume);
-
-                if (!crashSound.isPlaying)
+                if (!collision.gameObject.GetComponent<Bullet>() && !collision.gameObject.GetComponent<Missile>())
                 {
-                    crashSound.Play();
-                    PlayCrashSoundEffectServerRpc(crashSound.pitch, volume);
+                    float relativeVelocity = collision.relativeVelocity.magnitude;
+
+                    float volume = relativeVelocity * 0.1f;
+
+                    crashSound.pitch = Random.Range(0.95f, 1.05f);
+                    audioMixer.SetFloat("CrashVolume", volume);
+
+                    int damage = (int)(relativeVelocity * damageFactor);
+                    Game.instance.DealDamageToSpaceshipServerRpc(OwnerClientId, damage);
+
+                    if (!crashSound.isPlaying)
+                    {
+                        crashSound.Play();
+                        PlayCrashSoundEffectServerRpc(crashSound.pitch, volume);
+                    }
                 }
             }
         }

@@ -27,6 +27,17 @@ public class PlayerActions : NetworkBehaviour
         }
     }
 
+    public override void OnDestroy()
+    {
+        if (IsOwner)
+        {
+            gameActions.Player.Enter.started -= Enter;
+            gameActions.Player.Pickup.started -= PickUp;
+            gameActions.Player.Eat.started -= Eat;
+            gameActions.Player.Disable();
+        }
+    }
+
     private void Update()
     {
         //keybindText.text = "Heal: " + KeybindManager.inputActions.Player.Eat.GetBindingDisplayString();
@@ -52,12 +63,7 @@ public class PlayerActions : NetworkBehaviour
                     camera.LookAt = spaceship.GetComponent<SpaceshipMovement>().shipLookTarget.transform;
                     camera.Follow = spaceship.GetComponent<SpaceshipMovement>().shipLookTarget.transform;
                     camera.GetComponent<AudioListener>().enabled = true;
-                    camera.GetComponent<Camera>().enabled = true;
-
-                    gameActions.Player.Enter.started -= Enter;
-                    gameActions.Player.Pickup.started -= PickUp;
-                    gameActions.Player.Eat.started -= Eat;
-                    gameActions.Player.Disable();
+                    camera.GetComponent<Camera>().enabled = true;                    
 
                     Game.instance.SetTempHealthServerRpc(OwnerClientId, GetComponent<Healthbar>().health.Value);
                     DespawnPlayerServerRpc();

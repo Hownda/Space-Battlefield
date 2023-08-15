@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.UI;
 using System.Linq;
+using DG.Tweening;
 
 /// <summary>
 /// The class <c>Game</c> manages game events on the server.
@@ -25,6 +26,20 @@ public class Game : NetworkBehaviour
 
     [Header("Spawning")]
     public Vector3[] spawnLocations;
+
+    // Spaceship Abilites
+    public Dictionary<Type, Ability> abilityDict = new Dictionary<Type, Ability>()
+    {
+        { Type.Boost, new Ability(Type.Boost, false, 10, 30, 0) },
+        { Type.Missile, new Ability(Type.Missile, false, 30, 10, 1) },
+        { Type.Shield, new Ability(Type.Shield, false, 20, 20, 2) }
+    };
+
+    public Image damageIndicator;
+
+    public GameObject explosionEffect;
+    public GameObject respawnPanel;
+    public Text respawnDisplay;
 
     private void Awake()
     {
@@ -91,13 +106,58 @@ public class Game : NetworkBehaviour
     {
         GameObject player = playerInformationDict[clientId].player;
         player.GetComponent<Healthbar>().TakeDamage(damage);
-        player.GetComponent<Healthbar>().DisplayDamageIndicatorClientRpc();
+        DisplayDamageClientRpc(clientId);
+
+        if (player.GetComponent<Healthbar>().health.Value <= 0)
+        {
+            GameObject explosion = Instantiate(explosionEffect, playerInformationDict[clientId].spaceship.transform.position, Quaternion.Euler(Vector3.zero));
+            explosion.GetComponentInChildren<ParticleSystem>().Play();
+            Destroy(explosion, 2f);
+
+            playerInformationDict[clientId].spaceship.GetComponent<NetworkObject>().Despawn();
+            player.GetComponent<NetworkObject>().Despawn();
+            PreparePlayerRespawnClientRpc(clientId);
+        }
+    }
+
+    [ClientRpc] private void DisplayDamageClientRpc(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId == clientId)
+        {
+            StartCoroutine(DamageDisplay());
+        }
+    }
+
+    private IEnumerator DamageDisplay()
+    {
+        damageIndicator.gameObject.SetActive(true);
+        damageIndicator.DOFade(0.3f, 0.2f);
+        yield return new WaitForSeconds(0.2f);
+        damageIndicator.DOFade(0, 0.2f);
+        damageIndicator.gameObject.SetActive(false);
     }
 
     [ServerRpc(RequireOwnership = false)] public void DealDamageToSpaceshipServerRpc(ulong clientId, float damage)
     {
         GameObject spaceship = playerInformationDict[clientId].spaceship;
         spaceship.GetComponent<Hull>().TakeDamage(damage);
+
+        if (spaceship.GetComponent<Hull>().integrity.Value <= 0)
+        {
+            GameObject explosion = Instantiate(explosionEffect, spaceship.transform.position, Quaternion.Euler(Vector3.zero));
+            explosion.GetComponentInChildren<ParticleSystem>().Play();
+            Destroy(explosion, 2f);
+
+            spaceship.GetComponent<NetworkObject>().Despawn();
+            if (playerInformationDict[clientId].player == null)
+            {                
+                PreparePlayerRespawnClientRpc(clientId);
+            }
+            else
+            {
+                PrepareSpaceshipRespawnClientRpc(clientId);
+            }
+        }
     }
 
     [ServerRpc(RequireOwnership = false)] public void HealDamageOnPlayerServerRpc(ulong clientId, int amount)
@@ -167,6 +227,115 @@ public class Game : NetworkBehaviour
                 break;
         }
         playerInformationDict[clientId].root.GetComponent<PlayerNetwork>().RemoveObjectFromInventoryClientRpc(item, amount, clientId);
+    }
+
+    [ClientRpc] private void PreparePlayerRespawnClientRpc(ulong clientId)
+    {
+        if (IsServer)
+        {
+            StartCoroutine(ServerRespawnBreak(clientId));           
+        }
+        if (NetworkManager.Singleton.LocalClientId == clientId)
+        {
+            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = true;
+            StartCoroutine(RespawnBreak());
+        }
+    }
+
+    private IEnumerator ServerRespawnBreak(ulong clientId)
+    {
+        int respawnTime = 10;
+        while (respawnTime > 0)
+        {
+            yield return new WaitForSeconds(1);
+            respawnTime--;
+        }
+        yield return new WaitForSeconds(.5f);
+        RespawnPlayer(clientId);
+    }
+
+    private IEnumerator RespawnBreak()
+    {
+        respawnPanel.SetActive(true);
+        int respawnTime = 10;
+        while (respawnTime > 0)
+        {
+            respawnDisplay.text = "Respawning in " + respawnTime.ToString();
+            yield return new WaitForSeconds(1);
+            respawnTime--;
+        }
+        respawnDisplay.text = "Respawning in 0";
+        yield return new WaitForSeconds(.5f);
+        respawnPanel.SetActive(false);
+    }
+
+    private void RespawnPlayer(ulong clientId)
+    {
+        // Spawn Player
+        List<Vector3> randomSpawnPositions = spawnLocations.ToList();
+        int spawnIndex = Random.Range(0, spawnLocations.Length - 1);
+
+        GameObject spawnedPlayer = Instantiate(playerPrefab, randomSpawnPositions[spawnIndex], Quaternion.identity);
+        spawnedPlayer.GetComponent<NetworkObject>().Spawn();
+        spawnedPlayer.GetComponent<NetworkObject>().ChangeOwnership(clientId);
+
+        playerInformationDict[clientId].player = spawnedPlayer;
+
+        // Spawn Spaceship
+        GameObject spaceship = Instantiate(spaceshipPrefab, new Vector3(playerInformationDict[clientId].player.transform.position.x + spaceshipSpawnOffset, playerInformationDict[clientId].player.transform.position.y, playerInformationDict[clientId].player.transform.position.z + spaceshipSpawnOffset), Quaternion.Euler(Vector3.zero));
+        spaceship.GetComponent<NetworkObject>().Spawn();
+        spaceship.GetComponent<NetworkObject>().ChangeOwnership(clientId);
+        playerInformationDict[clientId].spaceship = spaceship;
+    }
+
+    [ClientRpc] private void PrepareSpaceshipRespawnClientRpc(ulong clientId)
+    {
+        if (IsServer)
+        {
+            StartCoroutine(ServerSpaceshipRespawnBreak(clientId));            
+        }
+        if (NetworkManager.Singleton.LocalClientId == clientId)
+        {
+            StartCoroutine(SpaceshipRespawnBreak());
+        }
+    }
+
+    private IEnumerator ServerSpaceshipRespawnBreak(ulong clientId)
+    {
+        int respawnTime = 10;
+        while (respawnTime > 0 && playerInformationDict[clientId].player != null)
+        {
+            yield return new WaitForSeconds(1);
+            respawnTime--;
+        }
+        yield return new WaitForSeconds(.5f);
+        if (playerInformationDict[clientId].player != null)
+        {
+            RespawnSpaceship(clientId);
+        }
+    }
+
+    private IEnumerator SpaceshipRespawnBreak()
+    {
+        respawnPanel.SetActive(true);
+        int respawnTime = 10;
+        while (respawnTime > 0)
+        {
+            respawnDisplay.text = "Spaceship respawning in " + respawnTime.ToString();
+            yield return new WaitForSeconds(1);
+            respawnTime--;
+        }
+        respawnDisplay.text = "Spaceship respawning in 0";
+        yield return new WaitForSeconds(.5f);
+        respawnPanel.SetActive(false);
+    }
+
+    private void RespawnSpaceship(ulong clientId)
+    {
+        GameObject spaceship = Instantiate(spaceshipPrefab, playerInformationDict[clientId].player.transform.up * spaceshipSpawnOffset + playerInformationDict[clientId].player.transform.right * spaceshipSpawnOffset, Quaternion.identity);
+        spaceship.GetComponent<NetworkObject>().Spawn();
+        spaceship.GetComponent<NetworkObject>().ChangeOwnership(clientId);
+        playerInformationDict[clientId].spaceship = spaceship;
     }
 
     public void SetHealth(GameObject player)
