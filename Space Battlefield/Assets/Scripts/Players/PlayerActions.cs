@@ -52,21 +52,25 @@ public class PlayerActions : NetworkBehaviour
             {
                 if (spaceship.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
                 {
-                    // Interaction components
-                    spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
-                    spaceship.GetComponentInChildren<SpaceshipMovement>().spaceshipCanvas.SetActive(true);
-                    spaceship.GetComponent<Cannons>().enabled = true;
-                    spaceship.GetComponent<Hull>().integrityBillboard.SetActive(false);
-                    spaceship.GetComponent<SpaceshipActions>().enabled = true;
+                    if (Vector3.Distance(transform.position, spaceship.transform.position ) <= 10)
+                    {
+                        // Interaction components
+                        spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
+                        spaceship.GetComponentInChildren<SpaceshipMovement>().spaceshipCanvas.SetActive(true);
+                        spaceship.GetComponent<Cannons>().enabled = true;
+                        spaceship.GetComponent<Hull>().integrityBillboard.SetActive(false);
+                        spaceship.GetComponent<SpaceshipActions>().enabled = true;
+                        spaceship.GetComponent<CompassObject>().enabled = true;
 
-                    CinemachineVirtualCamera camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CinemachineVirtualCamera>();
-                    camera.LookAt = spaceship.GetComponent<SpaceshipMovement>().shipLookTarget.transform;
-                    camera.Follow = spaceship.GetComponent<SpaceshipMovement>().shipLookTarget.transform;
-                    camera.GetComponent<AudioListener>().enabled = true;
-                    camera.GetComponent<Camera>().enabled = true;                    
+                        CinemachineVirtualCamera camera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CinemachineVirtualCamera>();
+                        camera.LookAt = spaceship.GetComponent<SpaceshipMovement>().shipLookTarget.transform;
+                        camera.Follow = spaceship.GetComponent<SpaceshipMovement>().shipLookTarget.transform;
+                        camera.GetComponent<AudioListener>().enabled = true;
+                        camera.GetComponent<Camera>().enabled = true;
 
-                    Game.instance.SetTempHealthServerRpc(OwnerClientId, GetComponent<Healthbar>().health.Value);
-                    DespawnPlayerServerRpc();
+                        Game.instance.SetTempHealthServerRpc(OwnerClientId, GetComponent<Healthbar>().health.Value);
+                        DespawnPlayerServerRpc();
+                    }
                 }
             }
         }

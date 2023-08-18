@@ -167,7 +167,7 @@ public class AlienDogMovement : MonoBehaviour
         Debug.Log("Attack");
         if (Vector3.Distance(transform.position, player.transform.position) <= attackRange)
         {
-            Game.instance.DealDamageToPlayerServerRpc(player.GetComponent<NetworkObject>().OwnerClientId, 15);
+            Game.instance.DealDamageToPlayerServerRpc(player.GetComponent<NetworkObject>().OwnerClientId, 15, 999);
             punchSound.Play();
         }
     }

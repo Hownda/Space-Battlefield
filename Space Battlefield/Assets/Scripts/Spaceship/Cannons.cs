@@ -63,7 +63,7 @@ public class Cannons : NetworkBehaviour
 
         Vector2 moveVector = new Vector2(mouseX * Time.deltaTime * crosshairSensitivity, mouseY * Time.deltaTime * crosshairSensitivity);
         crosshair.anchoredPosition = crosshair.anchoredPosition + moveVector;
-        crosshair.anchoredPosition = Vector2.ClampMagnitude(crosshair.anchoredPosition - screenCenter, crosshairAreaRadius) + screenCenter;
+        crosshair.anchoredPosition = Vector2.ClampMagnitude(crosshair.anchoredPosition /*- screenCenter*/, crosshairAreaRadius) /*+ screenCenter*/;
     }
 
     private void Shoot()

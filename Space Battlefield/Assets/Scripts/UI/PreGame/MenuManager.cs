@@ -67,6 +67,20 @@ public class MenuManager : MonoBehaviour
         }
     }
 
+    public void OnClickDemo()
+    {
+        if (PlayerData.instance.username != null)
+        {
+            PlayerData.instance.isDemo = true;
+            SceneManager.LoadScene("Game");
+        }
+        else
+        {
+            errorText.gameObject.SetActive(true);
+            errorText.text = "You haven't configured a username yet!";
+        }
+    }
+
     public void OnClickSettings()
     {
         settingsPanel.SetActive(true);

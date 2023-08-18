@@ -43,6 +43,7 @@ public class Hull : NetworkBehaviour
        {
             crashSound.outputAudioMixerGroup = otherAudioMixerGroup;
             integritySlider.gameObject.SetActive(false);
+            GetComponent<SpaceshipActions>().enabled = true;
        }
     }
 
@@ -123,7 +124,7 @@ public class Hull : NetworkBehaviour
                     audioMixer.SetFloat("CrashVolume", volume);
 
                     int damage = (int)(relativeVelocity * damageFactor);
-                    Game.instance.DealDamageToSpaceshipServerRpc(OwnerClientId, damage);
+                    Game.instance.DealDamageToSpaceshipServerRpc(OwnerClientId, damage, 999);
 
                     if (!crashSound.isPlaying)
                     {
@@ -158,7 +159,7 @@ public class Hull : NetworkBehaviour
         particles.Play();
         Destroy(particles.gameObject, 1f);
 
-        Game.instance.DealDamageToSpaceshipServerRpc(OwnerClientId, damageFactor);
+        Game.instance.DealDamageToSpaceshipServerRpc(OwnerClientId, damageFactor, 999);
 
         
     }
@@ -203,7 +204,7 @@ public class Hull : NetworkBehaviour
             || transform.position.z < -800 || transform.position.z > 800
             || transform.position.x < -750 || transform.position.x > 750)
         {
-            Game.instance.DealDamageToSpaceshipServerRpc(OwnerClientId, 0.025f);
+            Game.instance.DealDamageToSpaceshipServerRpc(OwnerClientId, 0.025f, 999);
             warning.SetActive(true);
         }
         else

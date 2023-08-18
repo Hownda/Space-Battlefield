@@ -12,6 +12,7 @@ public class PlayerData : MonoBehaviour
     public static PlayerData instance;
 
     // Networking
+    public bool isDemo = false;
     public bool isHost = false;
     public string username;
     private bool inGame = false;
@@ -55,17 +56,29 @@ public class PlayerData : MonoBehaviour
 
     private void ManageRelay()
     {
-        if (SceneManager.GetActiveScene().name == "Game" && inGame == false)
+        if (isDemo)
         {
-            if (isHost && allocation != null)
+            if (SceneManager.GetActiveScene().name == "Game" && inGame == false)
             {
-                CreateRelay();
+                NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData("127.0.0.1", 7777);
+                NetworkManager.Singleton.StartHost();
+                inGame = true;
             }
-            if (isHost == false)
+        }
+        else
+        {
+            if (SceneManager.GetActiveScene().name == "Game" && inGame == false)
             {
-                JoinRelay();
+                if (isHost && allocation != null)
+                {
+                    CreateRelay();
+                }
+                if (isHost == false)
+                {
+                    JoinRelay();
+                }
+                inGame = true;
             }
-            inGame = true;
         }
     }
 

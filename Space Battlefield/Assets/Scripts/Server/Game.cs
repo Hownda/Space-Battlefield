@@ -14,6 +14,7 @@ public class Game : NetworkBehaviour
     public static Game instance;
     private List<PlayerInformation> playerInformationList = new();
     public Dictionary<ulong, PlayerInformation> playerInformationDict = new();
+    private Dictionary<ulong, GameObject> playerCards = new();
 
     public GameObject spaceshipPrefab;
     public GameObject playerPrefab;
@@ -23,6 +24,7 @@ public class Game : NetworkBehaviour
 
     public GameObject playerCardPrefab;
     public Transform playerCardHolder;
+    public GameObject scoreAdditionPrefab;
 
     [Header("Spawning")]
     public Vector3[] spawnLocations;
@@ -80,9 +82,11 @@ public class Game : NetworkBehaviour
         foreach (GameObject playerRoot in GameObject.FindGameObjectsWithTag("Root"))
         {
             GameObject playerCard = Instantiate(playerCardPrefab, playerCardHolder);
+            playerCard.GetComponent<PlayerCard>().clientId = playerRoot.GetComponent<NetworkObject>().OwnerClientId;
             Text[] texts = playerCard.GetComponentsInChildren<Text>();
             texts[0].text = playerRoot.GetComponent<PlayerNetwork>().username.Value.ToString();
             texts[1].text = playerRoot.GetComponent<PlayerNetwork>().score.Value.ToString();
+            playerCards.Add(playerRoot.GetComponent<NetworkObject>().OwnerClientId, playerCard);
         }
     }
 
@@ -102,7 +106,7 @@ public class Game : NetworkBehaviour
         playerInformationDict[player.GetComponent<NetworkObject>().OwnerClientId].player = player;
     }
 
-    [ServerRpc(RequireOwnership = false)] public void DealDamageToPlayerServerRpc(ulong clientId, int damage)
+    [ServerRpc(RequireOwnership = false)] public void DealDamageToPlayerServerRpc(ulong clientId, int damage, ulong attackingClient)
     {
         GameObject player = playerInformationDict[clientId].player;
         player.GetComponent<Healthbar>().TakeDamage(damage);
@@ -117,6 +121,13 @@ public class Game : NetworkBehaviour
             playerInformationDict[clientId].spaceship.GetComponent<NetworkObject>().Despawn();
             player.GetComponent<NetworkObject>().Despawn();
             PreparePlayerRespawnClientRpc(clientId);
+
+            UpdateScoreClientRpc(clientId, -25);
+
+            if (attackingClient != 999)
+            {
+                UpdateScoreClientRpc(attackingClient, 50);
+            }
         }
     }
 
@@ -137,7 +148,7 @@ public class Game : NetworkBehaviour
         damageIndicator.gameObject.SetActive(false);
     }
 
-    [ServerRpc(RequireOwnership = false)] public void DealDamageToSpaceshipServerRpc(ulong clientId, float damage)
+    [ServerRpc(RequireOwnership = false)] public void DealDamageToSpaceshipServerRpc(ulong clientId, float damage, ulong attackingClient)
     {
         GameObject spaceship = playerInformationDict[clientId].spaceship;
         spaceship.GetComponent<Hull>().TakeDamage(damage);
@@ -152,10 +163,22 @@ public class Game : NetworkBehaviour
             if (playerInformationDict[clientId].player == null)
             {                
                 PreparePlayerRespawnClientRpc(clientId);
+                UpdateScoreClientRpc(clientId, -25);
+
+                if (attackingClient != 999)
+                { 
+                    UpdateScoreClientRpc(attackingClient, 50);
+                }
             }
             else
             {
                 PrepareSpaceshipRespawnClientRpc(clientId);
+                UpdateScoreClientRpc(clientId, -25);
+                if (attackingClient != 999)
+
+                {
+                    UpdateScoreClientRpc(attackingClient, 25);
+                }
             }
         }
     }
@@ -176,6 +199,32 @@ public class Game : NetworkBehaviour
     {
         GameObject spaceship = playerInformationDict[clientId].spaceship;
         spaceship.GetComponent<NetworkObject>().Despawn();                
+    }
+
+    [ClientRpc] private void UpdateScoreClientRpc(ulong clientId, int score)
+    {
+        StartCoroutine(ScoreDespawnDelay(clientId, score));       
+    }
+
+    private IEnumerator ScoreDespawnDelay(ulong clientId, int score)
+    {
+        Debug.Log(score);
+        GameObject scoreAdditionUI = Instantiate(scoreAdditionPrefab, playerCards[clientId].GetComponentInChildren<HorizontalLayoutGroup>().transform);
+        if (score >= 0) 
+        {
+            scoreAdditionUI.GetComponent<Text>().text = "+" + score.ToString();
+        }
+        else
+        {
+            scoreAdditionUI.GetComponent<Text>().text = score.ToString();
+        }
+        scoreAdditionUI.GetComponent<Text>().DOFade(0, 1);
+        yield return new WaitForSeconds(1);
+        if (IsServer)
+        {
+            playerInformationDict[clientId].root.GetComponent<PlayerNetwork>().score.Value += score;
+        }
+        Destroy(scoreAdditionUI);
     }
 
     [ServerRpc(RequireOwnership = false)] public void TriggerVictoryServerRpc(ulong loserClientId)

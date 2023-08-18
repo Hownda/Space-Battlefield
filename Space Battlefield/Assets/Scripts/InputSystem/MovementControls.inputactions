@@ -51,15 +51,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "SwimDown",
-                    "type": "Button",
-                    "id": "dd918624-0db1-4a20-8dfb-1a05dcaba62e",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Pickup",
                     "type": "Button",
                     "id": "c666caf2-0da0-4b1c-a032-de8bbfe11cdf",
@@ -175,17 +166,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "Hotbar1",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "cbdc95a7-04f1-49b0-83e6-44154199e4cd",
-                    "path": "<Keyboard>/c",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "SwimDown",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

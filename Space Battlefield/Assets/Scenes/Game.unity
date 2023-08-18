@@ -457,7 +457,7 @@ MonoBehaviour:
   m_AngularDampingMode: 0
   m_PitchDamping: 1
   m_YawDamping: 1
-  m_RollDamping: 1
+  m_RollDamping: 2
   m_AngularDamping: 0
 --- !u!114 &173153928
 MonoBehaviour:
@@ -1815,7 +1815,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2353,6 +2353,7 @@ MonoBehaviour:
   spaceshipSpawnOffset: 10
   playerCardPrefab: {fileID: 1801844404334284281, guid: 471469ed854dc1048a4ea34599e1ac48, type: 3}
   playerCardHolder: {fileID: 243735929}
+  scoreAdditionPrefab: {fileID: 6030932187416947131, guid: f866903651b86de49b704fbfc991be05, type: 3}
   spawnLocations:
   - {x: 4.8486547, y: -22, z: 354.38}
   - {x: -367, y: -58, z: -67}
@@ -2494,7 +2495,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 5abfb0a229c98b3499cffa6c59c2ffb4, type: 3}
     m_FontSize: 152
     m_FontStyle: 0
     m_BestFit: 0
@@ -3130,7 +3131,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_Font: {fileID: 12800000, guid: 5abfb0a229c98b3499cffa6c59c2ffb4, type: 3}
     m_FontSize: 152
     m_FontStyle: 0
     m_BestFit: 0

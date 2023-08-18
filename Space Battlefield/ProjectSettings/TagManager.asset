@@ -12,6 +12,7 @@ TagManager:
   - Weapon
   - Hammer
   - Obstacle
+  - Enemy
   layers:
   - Default
   - TransparentFX

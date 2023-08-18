@@ -930,7 +930,6 @@ MonoBehaviour:
   health:
     m_InternalValue: 100
   healthSlider: {fileID: 2920241329788445278}
-  damageIndicator: {fileID: 0}
 --- !u!114 &6775545461393739424
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1677,7 +1676,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 21887
+    m_Bits: 22399
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0

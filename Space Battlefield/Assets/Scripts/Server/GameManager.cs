@@ -25,22 +25,32 @@ public class GameManager : NetworkBehaviour
     private void OnClientConnectedCallback(ulong clientId)
     {
         if (IsOwner)
-        {           
-            if (allPlayersConnected == false)
+        {
+            if (!PlayerData.instance.isDemo)
             {
-                Debug.Log("Spawning in player");
-                connectedPlayers++;
-                GameObject playerRoot = Instantiate(playerRootPrefab);
-                playerRoot.GetComponent<NetworkObject>().Spawn();
-                playerRoot.GetComponent<NetworkObject>().ChangeOwnership(clientId);
-                StartCoroutine(RequestLobbyService());
+                if (allPlayersConnected == false)
+                {
+                    Debug.Log("Spawning in player");
+                    connectedPlayers++;
+                    GameObject playerRoot = Instantiate(playerRootPrefab);
+                    playerRoot.GetComponent<NetworkObject>().Spawn();
+                    playerRoot.GetComponent<NetworkObject>().ChangeOwnership(clientId);
+                    StartCoroutine(RequestLobbyService());
+                }
+                else
+                {
+                    Debug.Log("Client with client id: " + clientId.ToString() + " is now spectating");
+                    GameObject spectator = Instantiate(spectatorPrefab);
+                    spectator.GetComponent<NetworkObject>().Spawn();
+                    spectator.GetComponent<NetworkObject>().ChangeOwnership(clientId);
+                }
             }
             else
             {
-                Debug.Log("Client with client id: " + clientId.ToString() + " is now spectating");
-                GameObject spectator = Instantiate(spectatorPrefab);
-                spectator.GetComponent<NetworkObject>().Spawn();
-                spectator.GetComponent<NetworkObject>().ChangeOwnership(clientId);
+                GameObject playerRoot = Instantiate(playerRootPrefab);
+                playerRoot.GetComponent<NetworkObject>().Spawn();
+                playerRoot.GetComponent<NetworkObject>().ChangeOwnership(clientId);
+                GetComponent<Game>().StartGame();
             }
         }
     }

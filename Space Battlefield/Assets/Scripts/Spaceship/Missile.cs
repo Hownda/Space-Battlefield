@@ -98,7 +98,7 @@ public class Missile : NetworkBehaviour
         {
             if (collision.gameObject.CompareTag("Spaceship"))
             {
-                Game.instance.DealDamageToSpaceshipServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 30);
+                Game.instance.DealDamageToSpaceshipServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 30, parentClient);
                 GameObject impactEffect = Instantiate(impactParticles, transform.position, Quaternion.Euler(Vector3.zero));
                 impactEffect.GetComponentInChildren<ParticleSystem>().Play();
                 Destroy(impactEffect, 0.5f);

@@ -59,54 +59,77 @@ public class SpaceshipActions : NetworkBehaviour
 
     private void OnEnable()
     {
-        KeybindManager.rebindComplete += OnRebind;
-        gameActions = KeybindManager.newInputActions;
-        KeybindManager.LoadAllBindings(gameActions);
-        KeybindManager.newInputActions = gameActions;
-        gameActions.Spaceship.Exit.started += GetComponent<SpaceshipActions>().ExitInput;
-        gameActions.Spaceship.Boost.started += GetComponent<SpaceshipActions>().UseAbility;
-        gameActions.Spaceship.Missile.started += GetComponent<SpaceshipActions>().UseAbility;
-        gameActions.Spaceship.Shield.started += GetComponent<SpaceshipActions>().UseAbility;
-        gameActions.Spaceship.Enable();
-        OnRebind();
+        if (IsOwner)
+        {
+            KeybindManager.rebindComplete += OnRebind;
+            gameActions = KeybindManager.newInputActions;
+            KeybindManager.LoadAllBindings(gameActions);
+            KeybindManager.newInputActions = gameActions;
+            gameActions.Spaceship.Exit.started += GetComponent<SpaceshipActions>().ExitInput;
+            gameActions.Spaceship.Boost.started += GetComponent<SpaceshipActions>().UseAbility;
+            gameActions.Spaceship.Missile.started += GetComponent<SpaceshipActions>().UseAbility;
+            gameActions.Spaceship.Shield.started += GetComponent<SpaceshipActions>().UseAbility;
+            gameActions.Spaceship.Enable();
+            OnRebind();
+        }
     }
 
     private void OnDisable()
     {
-        KeybindManager.rebindComplete -= OnRebind;
+        if (IsOwner)
+        {
+            KeybindManager.rebindComplete -= OnRebind;
+        }
     }
 
     private void Start()
     {
-        boostTime = Time.time;
-        shieldTime = Time.time;
-        
-        foreach (KeyValuePair<Type, Ability> ability in Game.instance.abilityDict)
+        if (IsOwner)
         {
-            if (ability.Value.unlocked == true)
+            boostTime = Time.time;
+            shieldTime = Time.time;
+
+            foreach (KeyValuePair<Type, Ability> ability in Game.instance.abilityDict)
             {
-                abilityLocks[ability.Value.index].gameObject.SetActive(false);
+                if (ability.Value.unlocked == true)
+                {
+                    abilityLocks[ability.Value.index].gameObject.SetActive(false);
+                }
             }
         }
     }
 
     private void Update()
-    {       
-        if (warpActive)
+    {
+        if (IsOwner)
         {
-            if (boostTime + boostDuration <= Time.time)
+            if (warpActive)
             {
-                GetComponent<SpaceshipMovement>().thrust = 200;
-                GetComponent<SpaceshipMovement>().thrustEffect.SetVector4("Color", normalColor);
-                warpActive = false;
+                if (boostTime + boostDuration <= Time.time)
+                {
+                    GetComponent<SpaceshipMovement>().thrust = 200;
+                    GetComponent<SpaceshipMovement>().thrustEffect.SetVector4("Color", normalColor);
+                    warpActive = false;
+                }
+            }
+            if (shieldActive.Value == true)
+            {
+                if (shieldTime + shieldDuration <= Time.time)
+                {
+                    shield.SetActive(false);
+                    shieldActive.Value = false;
+                }
             }
         }
-        if (shieldActive.Value == true)
+        else
         {
-            if (shieldTime + shieldDuration <= Time.time)
+            if (shieldActive.Value == true)
+            {
+                shield.SetActive(true);
+            }
+            else
             {
                 shield.SetActive(false);
-                shieldActive.Value = false;
             }
         }
     }    
@@ -151,7 +174,8 @@ public class SpaceshipActions : NetworkBehaviour
         GetComponent<Hull>().integrityBillboard.SetActive(true);
         Camera.main.GetComponent<AudioListener>().enabled = false;
         Camera.main.enabled = false;       
-        GetComponentInChildren<SpaceshipMovement>().enabled = false;        
+        GetComponent<SpaceshipMovement>().enabled = false;
+        GetComponent<CompassObject>().enabled = false;
         GetComponent<Cannons>().enabled = false;
         SpawnPlayerServerRpc();
         this.enabled = false;
@@ -242,6 +266,7 @@ public class SpaceshipActions : NetworkBehaviour
         shield.SetActive(true);
         shieldTime = Time.time;
         shieldActive.Value = true;
+        ActivateShieldServerRpc();
     }
 
     private void TryUnlockAbility(Type type)
@@ -286,6 +311,20 @@ public class SpaceshipActions : NetworkBehaviour
             Game.instance.abilityDict[type].unlocked = true;
             abilityLocks[Game.instance.abilityDict[type].index].GetComponent<Animator>().SetTrigger("Unlock");
             OnRebind();
+        }
+    }
+
+    [ServerRpc] private void ActivateShieldServerRpc()
+    {
+        ActivateShieldClientRpc();
+    }
+
+    [ClientRpc] private void ActivateShieldClientRpc()
+    {
+        if (!IsOwner)
+        {
+            shield.SetActive(true);
+            shieldTime = Time.time;
         }
     }
 }

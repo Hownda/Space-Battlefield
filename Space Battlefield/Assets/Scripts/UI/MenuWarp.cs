@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.VFX;
-using DG.Tweening;
 
 public class MenuWarp : MonoBehaviour
 {
@@ -23,9 +22,6 @@ public class MenuWarp : MonoBehaviour
     public float finalVolume = 1;
 
     public float interpolationTime = 10;
-
-    public Text[] menuText;
-    public Image[] menuImages;
 
     // Start is called before the first frame update
     void Start()
@@ -62,14 +58,6 @@ public class MenuWarp : MonoBehaviour
                 desiredPitch += rate;
                 desiredVolume += rate / 3;                
                 yield return new WaitForSeconds(0.1f);
-            }
-            foreach (Text text in menuText)
-            {
-                text.DOFade(1, 2);
-            }
-            foreach (Image image in menuImages)
-            {
-                image.DOFade(1, 2);
             }
         }
         else

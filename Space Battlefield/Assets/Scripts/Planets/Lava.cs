@@ -9,7 +9,7 @@ public class Lava : MonoBehaviour
     {
         if (collision.gameObject.GetComponent<Healthbar>())
         {
-            Game.instance.DealDamageToPlayerServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 1);
+            Game.instance.DealDamageToPlayerServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 1, 999);
         }
     }
 }
