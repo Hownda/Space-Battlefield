@@ -171,7 +171,6 @@ public class SpaceshipActions : NetworkBehaviour
         gameActions.Spaceship.Missile.started -= GetComponent<SpaceshipActions>().UseAbility;
         gameActions.Spaceship.Shield.started -= GetComponent<SpaceshipActions>().UseAbility;
         gameActions.Spaceship.Disable();
-        GetComponent<Hull>().integrityBillboard.SetActive(true);
         Camera.main.GetComponent<AudioListener>().enabled = false;
         Camera.main.enabled = false;       
         GetComponent<SpaceshipMovement>().enabled = false;
@@ -257,6 +256,7 @@ public class SpaceshipActions : NetworkBehaviour
     {
         GetComponent<Cannons>().ammo = Ammo.Missile;
         GetComponent<Cannons>().trackingRectangle.SetActive(true);
+        GetComponent<Cannons>().crosshair.GetComponent<Image>().enabled = false;
         Debug.Log("Missile mode active");
     }
 

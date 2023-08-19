@@ -15,9 +15,9 @@ public class GravityOrbit : MonoBehaviour
             other.GetComponentInParent<SpaceshipGravity>().gravityOrbit = this.GetComponent<GravityOrbit>();
         }
 
-        if (other.GetComponent<AlienDogMovement>())
+        if (other.GetComponent<AlienDog>())
         {
-            other.GetComponent<AlienDogMovement>().gravityOrbit = this.GetComponent<GravityOrbit>();
+            other.GetComponent<AlienDog>().gravityOrbit = this.GetComponent<GravityOrbit>();
         }
     }
 
@@ -31,9 +31,9 @@ public class GravityOrbit : MonoBehaviour
         {
             other.GetComponentInParent<SpaceshipGravity>().gravityOrbit = null;
         }
-        if (other.GetComponent<AlienDogMovement>())
+        if (other.GetComponent<AlienDog>())
         {
-            other.GetComponent<AlienDogMovement>().gravityOrbit = null;
+            other.GetComponent<AlienDog>().gravityOrbit = null;
         }
     }
 }

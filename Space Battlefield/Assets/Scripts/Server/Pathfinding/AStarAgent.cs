@@ -29,7 +29,6 @@ public class AStarAgent : MonoBehaviour
     private void Awake()
     {
         AssignPriority();
-
     }
 
     private void Start()

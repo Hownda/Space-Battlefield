@@ -23,6 +23,7 @@ public class Cannons : NetworkBehaviour
     public GameObject missilePrefab;
     public GameObject cannons;
     public LayerMask layer;
+    public LayerMask trackLayer;
     public float missileForce = 100f;
     private float fireRate = 0.2f;
     private float lastShot;
@@ -31,13 +32,19 @@ public class Cannons : NetworkBehaviour
     public AudioSource shootSound;
 
     public GameObject trackingRectangle;
-    public float trackingFactor = 0.5f;
+    public AudioSource beepSound;
+    private bool targetLocked = false;
+    private ulong target;
     public float trackingStrength;
+    private float beepingTime;
+    private float beepingRate;
+    private float minBeepingRate = 2f;
 
     private void Start()
     {
         lastShot = Time.time;
         spaceshipCamera = Camera.main;
+        beepingTime = Time.time;
     }
 
     void Update()
@@ -49,10 +56,10 @@ public class Cannons : NetworkBehaviour
             {
                 Shoot();
             }
-            /*if (ammo == Ammo.Missile)
+            if (ammo == Ammo.Missile)
             {
-                trackingRectangle.transform.localScale += new Vector3(Time.deltaTime * trackingFactor, Time.deltaTime * trackingFactor, Time.deltaTime * trackingFactor);
-            }*/
+                Track();
+            }
         }
     }
 
@@ -91,20 +98,61 @@ public class Cannons : NetworkBehaviour
                 }
                 else
                 {                  
-                    SummonMissileServerRpc(OwnerClientId, cannons.transform.position, ray.direction);
+                    SummonMissileServerRpc(OwnerClientId, targetLocked, target, cannons.transform.position, ray.direction, trackingRectangle.transform.localScale.x);
                     ammo = Ammo.Bullet;
                     trackingRectangle.SetActive(false);
+                    crosshair.GetComponent<Image>().enabled = true;
                     Debug.Log("Missile mode inactive");
                 }
             }
         }
     }
 
-    [ServerRpc] private void SummonMissileServerRpc(ulong clientId, Vector3 position, Vector3 direction)
+    private void Track()
+    {
+        Ray ray = spaceshipCamera.ScreenPointToRay(crosshair.transform.position);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, 50000, trackLayer))
+        {
+            Vector2 screenPosition = spaceshipCamera.WorldToScreenPoint(hit.transform.position);
+            trackingRectangle.transform.position = screenPosition;
+            trackingRectangle.transform.localScale -= new Vector3(Time.deltaTime, Time.deltaTime, Time.deltaTime) * 0.5f;
+            beepingRate = 0.25f;
+            targetLocked = true;
+            target = hit.transform.GetComponent<NetworkObject>().NetworkObjectId;
+        }
+        else
+        {
+            trackingRectangle.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+            trackingRectangle.transform.localScale += new Vector3(Time.deltaTime, Time.deltaTime, Time.deltaTime);
+            beepingRate = minBeepingRate;
+            targetLocked = false;
+        }
+        float localScale = trackingRectangle.transform.localScale.x;
+        localScale = Mathf.Clamp(localScale, 0.5f, 1);
+        trackingRectangle.transform.localScale = new Vector3(localScale, localScale, localScale);
+
+        if (beepingTime + beepingRate < Time.time)
+        {
+            beepingTime = Time.time;
+            beepSound.Play();
+        }
+    }
+
+    [ServerRpc] private void SummonMissileServerRpc(ulong clientId, bool locked, ulong target, Vector3 position, Vector3 direction, float trackingStrength)
     {
         GameObject missile = Instantiate(missilePrefab, position, Quaternion.LookRotation(direction));
         missile.GetComponent<NetworkObject>().Spawn();
-        missile.GetComponent<Missile>().SetParentClient(clientId);
+        missile.GetComponent<Missile>().parentClient = clientId;
+        if (locked)
+        {
+            missile.GetComponent<Missile>().target = NetworkManager.Singleton.SpawnManager.SpawnedObjects[target].gameObject;
+            missile.GetComponent<Missile>().rotationSpeed *=trackingStrength;
+        }
+        else
+        {
+            missile.GetComponent<Missile>().target = null;
+        }
 
         Collider[] colliders = GetComponentsInChildren<Collider>();
         foreach (Collider collider in colliders)
@@ -130,16 +178,5 @@ public class Cannons : NetworkBehaviour
             missile.GetComponent<Rigidbody>().AddForce(missileForce * missile.transform.forward, ForceMode.Impulse);
             Destroy(missile, 2.5f);
         }
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        /*if (other.CompareTag("Spaceship"))
-        {
-            float scale = trackingRectangle.transform.localScale.x;
-            scale += Time.deltaTime * trackingFactor * 2;
-            scale = Mathf.Clamp(scale, 0.5f, 1);
-            trackingRectangle.transform.localScale -= new Vector3(Time.deltaTime * trackingFactor * 2, Time.deltaTime * trackingFactor * 2, Time.deltaTime * trackingFactor * 2);
-        }*/
     }
 }

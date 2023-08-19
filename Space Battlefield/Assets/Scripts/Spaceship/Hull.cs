@@ -12,9 +12,6 @@ public class Hull : NetworkBehaviour
     public NetworkVariable<float> integrity = new NetworkVariable<float>(100, writePerm: NetworkVariableWritePermission.Server);
     public Image integritySlider;
     public Text integrityText;
-    public GameObject integrityBillboard;
-    public Slider integrityBillboardSlider;
-    public Text integrityBillboardText;
 
     // Collisions
     public AudioSource crashSound;
@@ -35,8 +32,6 @@ public class Hull : NetworkBehaviour
        if (IsOwner)
        {
             crashSound.outputAudioMixerGroup = audioMixerGroup;
-
-            integrityBillboard.SetActive(true);
             IgnoreCollisions();
        }
        else
@@ -79,14 +74,7 @@ public class Hull : NetworkBehaviour
     void Update()
     {       
         integritySlider.fillAmount = integrity.Value / 100;
-        integrityBillboardSlider.value = integrity.Value;
         integrityText.text = integrity.Value.ToString() + "%";
-        integrityBillboardText.text = integrity.Value.ToString() + "%";
-
-        if (cam != null)
-        {
-            integrityBillboard.transform.LookAt(cam.transform);            
-        }
     }
 
     public void TakeDamage(float damage)

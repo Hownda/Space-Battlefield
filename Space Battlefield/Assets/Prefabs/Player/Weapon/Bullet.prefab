@@ -74,7 +74,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94d4ff93417e7454ab0512b12aa315e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  impactParticles: {fileID: 3400911551365250781, guid: b1cdaa3862ca9064b80e020cd600aa85, type: 3}
+  impactParticles: {fileID: 2943695662238452942, guid: c1a0a5a51359cb446a12201eb78265f9, type: 3}
   parentClient: 0
   damage: 0
 --- !u!135 &-5136749220475799913

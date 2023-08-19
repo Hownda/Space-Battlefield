@@ -3,33 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
-public class AlienDogMovement : MonoBehaviour
+public class AlienDog : NetworkBehaviour
 {
-    private enum State
+    public NetworkVariable<int> health = new(100);
+
+    public enum State
     {
         Aggressive, Passive, Attacking
     }
 
-    private State state;
-
+    public State state;
     public GameObject player;
-    public float speed = 20;
-    public float slowSpeed = 10;
-    public float fastSpeed = 20;
-    private Animator animator;
+    public Animator animator;
 
     private Rigidbody rb;
     public GravityOrbit gravityOrbit;
-
-    private Vector3 spawnPoint;
     public float gravity = -5f;
     public float rotationCorrection = 5;
-
     public bool isGrounded = false;
     public float groundOffset = 0.5f;
     public float jumpStrength = 10;
     public LayerMask groundMask;
     public LayerMask playerMask;
+
+    public float speed = 20;
+    public float slowSpeed = 5;
+    public float fastSpeed = 20;
 
     // Patrol
     private float targetZRotation;
@@ -40,42 +39,45 @@ public class AlienDogMovement : MonoBehaviour
     private float changeBehaviourTime;
 
     // Attack
+    private float alertTime;
+    private float alertDuration = 3;
     public float alertRange = 15;
-    private float attackTime;
-    private float attackCooldown = 2f;
-    private float attackRange = 5;
 
     // Sound
     public float normalStepInterval = 1;
     public float fastStepInterval = 0.5f;
     private float stepTime;
     public AudioSource stepSound;
-    public AudioSource punchSound;
 
     private void Start()
     {
-        spawnPoint = transform.position;
-        rb = GetComponent<Rigidbody>();
-        animator = GetComponent<Animator>();
+        if (IsServer)
+        {
+            rb = GetComponent<Rigidbody>();
+            animator = GetComponent<Animator>();
 
-        changeBehaviourTime = Time.time;
-        attackTime = Time.time;
-        stepTime = Time.time;
+            changeBehaviourTime = Time.time;
+            stepTime = Time.time;
+            alertTime = Time.time;
+        }
     }
 
     private void FixedUpdate()
     {
-        if (gravityOrbit)
+        if (IsServer) 
         {
-            DetectPlayer();
-            HandleMovement();
-            HandleSound();
+            if (gravityOrbit)
+            {
+                DetectPlayer();
+                HandleMovement();
+                HandleSound();
 
-            Vector3 gravityUp = GetGravityUp();
+                Vector3 gravityUp = GetGravityUp();
 
-            rb.AddForce(gravityUp * gravity);
-            Quaternion targetRotation = Quaternion.FromToRotation(transform.up, gravityUp) * transform.rotation;
-            transform.rotation = targetRotation;
+                rb.AddForce(gravityUp * gravity);
+                Quaternion targetRotation = Quaternion.FromToRotation(transform.up, gravityUp) * transform.rotation;
+                transform.rotation = targetRotation;
+            }
         }
     }
 
@@ -85,10 +87,14 @@ public class AlienDogMovement : MonoBehaviour
         {
             Collider[] colliders = Physics.OverlapSphere(transform.position, alertRange, playerMask);
             player = colliders[0].gameObject;
+            alertTime = Time.time;
         }
         else
         {
-            player = null;
+            if (alertTime + alertDuration < Time.time)
+            {
+                player = null;
+            }
         }
 
     }
@@ -130,7 +136,7 @@ public class AlienDogMovement : MonoBehaviour
         animator.SetBool("Run", false);
         animator.SetBool("Walk", true);
     }
-    
+
 
     private void Attack()
     {
@@ -142,34 +148,7 @@ public class AlienDogMovement : MonoBehaviour
         animator.SetBool("Walk", false);
         animator.SetBool("Run", true);
 
-       
-        if (Vector3.Distance(transform.position, player.transform.position) <= attackRange)
-        {
-            state = State.Attacking;
-            speed = slowSpeed;
-            if (attackTime + attackCooldown < Time.time)
-            {
-                animator.SetTrigger("Attack");
-                attackTime = Time.time;
-                StartCoroutine(DamageDelay());
-            }
-        }
-        else
-        {
-            state = State.Aggressive;
-            speed = fastSpeed;
-        }
-    }
 
-    private IEnumerator DamageDelay()
-    {
-        yield return new WaitForSeconds(.5f);
-        Debug.Log("Attack");
-        if (Vector3.Distance(transform.position, player.transform.position) <= attackRange)
-        {
-            Game.instance.DealDamageToPlayerServerRpc(player.GetComponent<NetworkObject>().OwnerClientId, 15, 999);
-            punchSound.Play();
-        }
     }
 
     private void HandleSound()

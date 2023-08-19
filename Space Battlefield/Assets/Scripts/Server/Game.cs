@@ -349,6 +349,21 @@ public class Game : NetworkBehaviour
         }
     }
 
+    [ServerRpc(RequireOwnership = false)] public void DealDamageToEnemyServerRpc(ulong objectId, int damage, ulong attackingClient)
+    {
+        GameObject enemy = NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].gameObject;
+        if (enemy.GetComponent<AlienDog>()) 
+        {
+            enemy.GetComponent<AlienDog>().health.Value -= damage;
+            if (enemy.GetComponent<AlienDog>().health.Value <= 0)
+            {
+                enemy.GetComponent<NetworkObject>().Despawn();
+                UpdateScoreClientRpc(attackingClient, 50);
+            }
+        }
+        
+    }
+
     private IEnumerator ServerSpaceshipRespawnBreak(ulong clientId)
     {
         int respawnTime = 10;

@@ -2144,6 +2144,8 @@ GameObject:
   - component: {fileID: -7468638084927392932}
   - component: {fileID: 4041736535750129175}
   - component: {fileID: 7658172068405858968}
+  - component: {fileID: 3581109909962157864}
+  - component: {fileID: -894433580337215570}
   m_Layer: 0
   m_Name: AlienDog
   m_TagString: Enemy
@@ -2227,10 +2229,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b036681af11111c4fb7a9bf5f822ad56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  health:
+    m_InternalValue: 100
+  state: 0
   player: {fileID: 0}
-  speed: 20
-  slowSpeed: 5
-  fastSpeed: 20
+  animator: {fileID: 0}
   gravityOrbit: {fileID: 0}
   gravity: -5
   rotationCorrection: 5
@@ -2243,12 +2246,14 @@ MonoBehaviour:
   playerMask:
     serializedVersion: 2
     m_Bits: 16512
+  speed: 20
+  slowSpeed: 5
+  fastSpeed: 20
   rotationForce: 20
   alertRange: 15
   normalStepInterval: 0.8
   fastStepInterval: 0.5
   stepSound: {fileID: 4217092391618906702}
-  punchSound: {fileID: -7468638084927392932}
 --- !u!136 &1170458706838820855
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -2535,6 +2540,33 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &3581109909962157864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2651823704697002647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96c595d3304832c4994a33ec58de3b5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  punchSound: {fileID: -7468638084927392932}
+  projectilePrefab: {fileID: 6447401109202905136, guid: d4d79eee25428564d88133d86c5c4591, type: 3}
+  firingAngle: 45
+--- !u!114 &-894433580337215570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2651823704697002647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6c0be61502bb534f922ebb746851216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2695105702765154873
 GameObject:
   m_ObjectHideFlags: 0

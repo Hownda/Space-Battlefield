@@ -14,7 +14,7 @@ public class XRay : NetworkBehaviour
             Transform[] childObjects = GetComponentsInChildren<Transform>();
             foreach (Transform childObject in childObjects)
             {
-                childObject.gameObject.layer = 0;
+                childObject.gameObject.layer = 6;
             }
        }
     }

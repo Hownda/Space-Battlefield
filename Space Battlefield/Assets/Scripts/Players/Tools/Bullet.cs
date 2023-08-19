@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.VFX;
 
 public class Bullet : MonoBehaviour
 {
@@ -40,6 +41,14 @@ public class Bullet : MonoBehaviour
                         }
                     }
                 }
+                if (collision.gameObject.CompareTag("Enemy"))
+                {
+                    if (damage == true)
+                    {
+                        Game.instance.DealDamageToEnemyServerRpc(collision.GetComponent<NetworkObject>().NetworkObjectId, 2, parentClient);
+                    }
+                }
+                
             }
         }
     }
@@ -47,7 +56,7 @@ public class Bullet : MonoBehaviour
     private void Impact()
     {
         GameObject impactEffect = Instantiate(impactParticles, transform.position, Quaternion.Euler(Vector3.zero));
-        impactEffect.GetComponent<ParticleSystem>().Play();
+        impactEffect.GetComponent<VisualEffect>().Play();
         Destroy(impactEffect, 0.5f);
         Destroy(gameObject);
     }

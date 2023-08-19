@@ -57,7 +57,6 @@ public class CompassObject : NetworkBehaviour
         }
         players.Clear();
         arrows.Clear();
-        GameObject localPlayer = null;
         players = GameObject.FindGameObjectsWithTag("Spaceship").ToList();
         foreach (GameObject player in players)
         {

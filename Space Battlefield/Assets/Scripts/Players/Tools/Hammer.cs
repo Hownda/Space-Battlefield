@@ -95,24 +95,7 @@ public class Hammer : NetworkBehaviour
                 MineServerRpc(ObjectDictionary.instance.GetIdOfObject(hit.transform.gameObject));
                 Game.instance.GiveObjectToPlayerServerRpc(OwnerClientId, Item.Rock, 1);
                 audioManager.Play("stone-mining");
-            }
-
-            //Repairing
-            if (hit.transform.GetComponent<Hull>())
-            {
-                if (hit.transform.GetComponent<NetworkObject>().OwnerClientId == OwnerClientId)
-                {
-                    audioManager.Play("stone-mining");
-                    if (playerNetwork.rockCount.Value >= 5)
-                    {
-                        if (hit.transform.GetComponent<Hull>().integrity.Value < 100)
-                        {
-                            Game.instance.RepairDamageOnSpaceshipServerRpc(OwnerClientId, repairPower);
-                            Game.instance.RemoveObjectFromInventoryServerRpc(OwnerClientId, Item.Rock, 5);
-                        }
-                    }                   
-                }
-            }          
+            }               
         }       
     }
 

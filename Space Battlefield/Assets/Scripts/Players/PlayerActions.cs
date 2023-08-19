@@ -58,7 +58,6 @@ public class PlayerActions : NetworkBehaviour
                         spaceship.GetComponentInChildren<SpaceshipMovement>().enabled = true;
                         spaceship.GetComponentInChildren<SpaceshipMovement>().spaceshipCanvas.SetActive(true);
                         spaceship.GetComponent<Cannons>().enabled = true;
-                        spaceship.GetComponent<Hull>().integrityBillboard.SetActive(false);
                         spaceship.GetComponent<SpaceshipActions>().enabled = true;
                         spaceship.GetComponent<CompassObject>().enabled = true;
 
