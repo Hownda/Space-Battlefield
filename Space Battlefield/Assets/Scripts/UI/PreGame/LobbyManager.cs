@@ -30,6 +30,7 @@ public class LobbyManager : MonoBehaviour
     private Lobby currentLobby;
     private Lobby hostedLobby;
     private float refreshTimer;
+    private float heartbeatTimer = 0;
 
     public GameObject errorWindow;
     public GameObject startButton;
@@ -43,6 +44,7 @@ public class LobbyManager : MonoBehaviour
     {
         Refresh();
         RefreshPlayers();
+        Heartbeat();
 
         if (hostedLobby != null)
         {
@@ -144,6 +146,19 @@ public class LobbyManager : MonoBehaviour
         catch (LobbyServiceException e)
         {
             Debug.Log(e);
+        }
+    }
+
+    private async void Heartbeat()
+    {
+        if (hostedLobby != null)
+        {
+            heartbeatTimer -= Time.deltaTime;
+            if (heartbeatTimer <= 0)
+            {
+                heartbeatTimer = 15;
+                await LobbyService.Instance.SendHeartbeatPingAsync(hostedLobby.Id);
+            }
         }
     }
 

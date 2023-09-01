@@ -15,12 +15,12 @@ public class PlayerMovement : NetworkBehaviour
     public Animator animator;
     public Animator handAnimator;
 
-    private float speed = 20f;
+    public float speed = 40f;
     public float maxForce = 1;
 
     // Jump Values
     private bool jump;
-    private float jumpStrength = 10f;
+    public float jumpStrength = 10f;
     public float groundOffset = 1.1f;
     public bool isGrounded;
     [SerializeField] LayerMask groundMask;
@@ -57,10 +57,8 @@ public class PlayerMovement : NetworkBehaviour
         Animate(horizontalInput);
 
         // Move with input
-        Vector3 horizontalVelocity = speed * (transform.right * horizontalInput.x + transform.forward * horizontalInput.y);
-        Vector3 currentVelocity = rb.velocity;
-        Vector3 velocityChange = horizontalVelocity - currentVelocity;
-        rb.AddForce(velocityChange);
+        Vector3 horizontalVelocity = (transform.right * horizontalInput.x + transform.forward * horizontalInput.y).normalized;
+        rb.AddForce(horizontalVelocity * speed);
 
         //Jump with Input
         isGrounded = Physics.Raycast(transform.position, -transform.up, groundOffset, groundMask);

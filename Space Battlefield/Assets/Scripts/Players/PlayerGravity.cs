@@ -8,21 +8,27 @@ public class PlayerGravity : NetworkBehaviour
 {
     private Rigidbody rb;
     public GravityOrbit gravityOrbit;
+    private PlayerMovement playerMovement;
 
-    private float gravity = -20f;
+    public float gravity = -20f;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        playerMovement = GetComponent<PlayerMovement>();
+
     }
 
     private void FixedUpdate()
     {
         if (gravityOrbit && IsOwner)
         {
-            Vector3 gravityUp = GetGravityUp();                                         
-                
-            rb.AddForce(gravityUp * gravity);
+            Vector3 gravityUp = GetGravityUp();
+
+            if (!playerMovement.isGrounded)
+            {
+                rb.AddForce(gravityUp * gravity);
+            }
             Quaternion targetRotation = Quaternion.FromToRotation(transform.up, gravityUp) * transform.rotation;
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10);
         }

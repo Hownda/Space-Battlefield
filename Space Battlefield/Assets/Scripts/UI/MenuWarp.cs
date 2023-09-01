@@ -35,6 +35,7 @@ public class MenuWarp : MonoBehaviour
 
     private void FixedUpdate()
     {
+        Cursor.lockState = CursorLockMode.None;
         spaceshipRb.AddForce(spaceshipRb.transform.forward * speed * Time.fixedDeltaTime, ForceMode.Acceleration);
         spaceshipRb.maxLinearVelocity = 10;
 

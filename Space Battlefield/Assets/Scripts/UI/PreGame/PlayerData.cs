@@ -33,6 +33,7 @@ public class PlayerData : MonoBehaviour
     {
         instance = this;
         DontDestroyOnLoad(gameObject);
+        SceneManager.sceneUnloaded += OnSceneChanged;
 
         if (PlayerPrefs.HasKey("Username"))
         {
@@ -164,5 +165,17 @@ public class PlayerData : MonoBehaviour
     public void OnClickClose()
     {
         crashPanel.SetActive(false);
+    }
+
+    private void OnSceneChanged(Scene unloadedScene)
+    {
+        if (unloadedScene.name == "Game")
+        {
+            if (NetworkManager.Singleton != null)
+            {
+                Destroy(NetworkManager.Singleton.gameObject);
+            }
+            Destroy(gameObject);
+        }
     }
 }
