@@ -45,7 +45,7 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (IsOwner)
         {
-            rb.maxLinearVelocity = maxForce;
+            //rb.maxLinearVelocity = maxForce;
             Vector2 horizontalInput = gameActions.Player.Movement.ReadValue<Vector2>();
             GroundMovement(horizontalInput);           
         }

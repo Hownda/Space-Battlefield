@@ -60,7 +60,7 @@ public class Weapon : NetworkBehaviour
             {
                 lastShot = Time.time;
                 GameObject bullet = Instantiate(bulletPrefab, fpsCamera.transform.position, Quaternion.Euler(Vector3.zero));
-                bullet.GetComponent<Bullet>().parentClient = OwnerClientId;
+                bullet.GetComponent<Bullet>().parentClientId = NetworkObjectId;
                 bullet.GetComponent<Bullet>().damage = true;
                 bullet.GetComponent<Bullet>().IgnoreCollisions(colliders);
                 bullet.transform.rotation = Quaternion.LookRotation(fpsCamera.transform.forward);
@@ -85,7 +85,7 @@ public class Weapon : NetworkBehaviour
         if (!IsOwner)
         {
             GameObject bullet = Instantiate(bulletPrefab, fpsCamera.transform.position, Quaternion.Euler(Vector3.zero));
-            bullet.GetComponent<Bullet>().parentClient = OwnerClientId;
+            bullet.GetComponent<Bullet>().parentClientId = NetworkObjectId;
             bullet.GetComponent<Bullet>().IgnoreCollisions(colliders);
             bullet.transform.rotation = Quaternion.LookRotation(shootDirection);
             bullet.GetComponent<Rigidbody>().AddForce(bulletForce * bullet.transform.forward, ForceMode.Impulse);

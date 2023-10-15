@@ -25,30 +25,41 @@ public class Missile : NetworkBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        if (NetworkManager.Singleton.LocalClientId != parentClient)
+        {
+            gameObject.tag = "Missile";
+        }
+        if (IsServer)
+        {
+            StartCoroutine(DespawnDelay());
+        }
     }
 
     private void FixedUpdate()
     {
-        rb.velocity = transform.forward * speed;
-        if (target != null)
-        {               
-            // Movement prediction
-            float leadTimePercentage = Mathf.InverseLerp(minDistancePredict, maxDistancePredict, Vector3.Distance(transform.position, target.transform.position));
-            float predictionTime = Mathf.Lerp(0, maxPredictionTime, leadTimePercentage);
-            standardPrediction = target.GetComponent<Rigidbody>().position + target.GetComponent<Rigidbody>().velocity * predictionTime;
+        if (IsServer)
+        {
+            rb.velocity = transform.forward * speed;
+            if (target != null)
+            {
+                // Movement prediction
+                float leadTimePercentage = Mathf.InverseLerp(minDistancePredict, maxDistancePredict, Vector3.Distance(transform.position, target.transform.position));
+                float predictionTime = Mathf.Lerp(0, maxPredictionTime, leadTimePercentage);
+                standardPrediction = target.GetComponent<Rigidbody>().position + target.GetComponent<Rigidbody>().velocity * predictionTime;
 
-            // Deviation
-            Vector3 deviation = new Vector3(Mathf.Cos(Time.time * deviationSpeed), 0, 0);
-            Vector3 predictionOffset = transform.TransformDirection(deviation) * deviationAmount * leadTimePercentage;
+                // Deviation
+                Vector3 deviation = new Vector3(Mathf.Cos(Time.time * deviationSpeed), 0, 0);
+                Vector3 predictionOffset = transform.TransformDirection(deviation) * deviationAmount * leadTimePercentage;
 
-            deviatedPrediction = standardPrediction + predictionOffset;
+                deviatedPrediction = standardPrediction + predictionOffset;
 
-            // Rotate towards target
-            Vector3 direction = deviatedPrediction - transform.position;
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime));
+                // Rotate towards target
+                Vector3 direction = deviatedPrediction - transform.position;
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime));
+            }
         }
-}
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -57,19 +68,30 @@ public class Missile : NetworkBehaviour
             if (collision.gameObject.CompareTag("Spaceship"))
             {
                 Game.instance.DealDamageToSpaceshipServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 30, parentClient);
-                GameObject impactEffect = Instantiate(impactParticles, transform.position, Quaternion.Euler(Vector3.zero));
-                impactEffect.GetComponentInChildren<ParticleSystem>().Play();
-                Destroy(impactEffect, 0.5f);
-                Destroy(gameObject);
+                ExplodeClientRpc();
             }
             if (collision.gameObject.CompareTag("Player"))
             {
                 Game.instance.DealDamageToPlayerServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 30, parentClient);
-                GameObject impactEffect = Instantiate(impactParticles, transform.position, Quaternion.Euler(Vector3.zero));
-                impactEffect.GetComponentInChildren<ParticleSystem>().Play();
-                Destroy(impactEffect, 0.5f);
-                Destroy(gameObject);
+                ExplodeClientRpc();
             }
         }
+    }
+
+    [ClientRpc] private void ExplodeClientRpc()
+    {
+        GameObject impactEffect = Instantiate(impactParticles, transform.position, Quaternion.Euler(Vector3.zero));
+        impactEffect.GetComponentInChildren<ParticleSystem>().Play();
+        Destroy(impactEffect, 0.5f);
+        if (IsServer)
+        {
+            GetComponent<NetworkObject>().Despawn();
+        }
+    }
+
+    private IEnumerator DespawnDelay()
+    {
+        yield return new WaitForSeconds(10);
+        ExplodeClientRpc();
     }
 }

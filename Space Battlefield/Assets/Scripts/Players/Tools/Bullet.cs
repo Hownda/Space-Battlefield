@@ -5,7 +5,7 @@ using UnityEngine.VFX;
 public class Bullet : MonoBehaviour
 {
     public GameObject impactParticles;
-    public ulong parentClient;
+    public ulong parentClientId;
     public bool damage = false;
     private float explosionRadius = 2;
 
@@ -21,9 +21,9 @@ public class Bullet : MonoBehaviour
                 {
                     if (damage == true)
                     {
-                        if (collision.gameObject.GetComponent<NetworkObject>().OwnerClientId != parentClient)
+                        if (collision.gameObject.GetComponent<NetworkObject>().OwnerClientId != parentClientId)
                         {
-                            Game.instance.DealDamageToPlayerServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 13, parentClient);                            
+                            Game.instance.DealDamageToPlayerServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 13, parentClientId);                            
                         }
                     }
                 }
@@ -31,11 +31,11 @@ public class Bullet : MonoBehaviour
                 {
                     if (damage == true)
                     {
-                        if (collision.gameObject.GetComponent<NetworkObject>().OwnerClientId != parentClient)
+                        if (collision.gameObject.GetComponent<NetworkObject>().OwnerClientId != parentClientId)
                         {
                             if (collision.GetComponent<SpaceshipActions>().shieldActive.Value == false)
                             {
-                                Game.instance.DealDamageToSpaceshipServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 2, parentClient);
+                                Game.instance.DealDamageToSpaceshipServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 4, parentClientId);
                             }
 
                         }
@@ -45,7 +45,7 @@ public class Bullet : MonoBehaviour
                 {
                     if (damage == true)
                     {
-                        Game.instance.DealDamageToEnemyServerRpc(collision.GetComponent<NetworkObject>().NetworkObjectId, 2, parentClient);
+                        Game.instance.DealDamageToEnemyServerRpc(collision.GetComponent<NetworkObject>().NetworkObjectId, 2, parentClientId);
                     }
                 }
                 

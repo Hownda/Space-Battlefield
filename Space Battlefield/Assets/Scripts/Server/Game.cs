@@ -32,9 +32,9 @@ public class Game : NetworkBehaviour
     // Spaceship Abilites
     public Dictionary<Type, Ability> abilityDict = new Dictionary<Type, Ability>()
     {
-        { Type.Boost, new Ability(Type.Boost, false, 10, 30, 0) },
-        { Type.Missile, new Ability(Type.Missile, false, 30, 10, 1) },
-        { Type.Shield, new Ability(Type.Shield, false, 20, 20, 2) }
+        { Type.Boost, new Ability(Type.Boost, false, 10, 30, 0, 0, 10, 3) },
+        { Type.Missile, new Ability(Type.Missile, false, 30, 10, 1, 0, 15, 1000) },
+        { Type.Shield, new Ability(Type.Shield, false, 20, 20, 2, 0, 25, 10) }
     };
 
     public Image damageIndicator;
@@ -112,6 +112,17 @@ public class Game : NetworkBehaviour
         player.GetComponent<Healthbar>().TakeDamage(damage);
         DisplayDamageClientRpc(clientId);
 
+        ulong attackingClientId = 0;
+
+        if (attackingClient != 999)
+        {
+            attackingClientId = NetworkManager.Singleton.SpawnManager.SpawnedObjects[attackingClient].OwnerClientId;
+        }
+        else
+        {
+            attackingClientId = attackingClient;
+        }
+
         if (player.GetComponent<Healthbar>().health.Value <= 0)
         {
             GameObject explosion = Instantiate(explosionEffect, playerInformationDict[clientId].spaceship.transform.position, Quaternion.Euler(Vector3.zero));
@@ -124,9 +135,9 @@ public class Game : NetworkBehaviour
 
             UpdateScoreClientRpc(clientId, -25);
 
-            if (attackingClient != 999)
+            if (attackingClientId != 999)
             {
-                UpdateScoreClientRpc(attackingClient, 50);
+                UpdateScoreClientRpc(attackingClientId, 50);
             }
         }
     }
@@ -160,24 +171,28 @@ public class Game : NetworkBehaviour
             Destroy(explosion, 2f);
 
             spaceship.GetComponent<NetworkObject>().Despawn();
+
+            ulong attackingClientId = NetworkManager.Singleton.SpawnManager.SpawnedObjects[attackingClient].OwnerClientId;
+
             if (playerInformationDict[clientId].player == null)
             {                
                 PreparePlayerRespawnClientRpc(clientId);
                 UpdateScoreClientRpc(clientId, -25);
 
-                if (attackingClient != 999)
+                
+                if (attackingClientId != 999)
                 { 
-                    UpdateScoreClientRpc(attackingClient, 50);
+                    UpdateScoreClientRpc(attackingClientId, 50);
                 }
             }
             else
             {
                 PrepareSpaceshipRespawnClientRpc(clientId);
                 UpdateScoreClientRpc(clientId, -25);
-                if (attackingClient != 999)
+                if (attackingClientId != 999)
 
                 {
-                    UpdateScoreClientRpc(attackingClient, 25);
+                    UpdateScoreClientRpc(attackingClientId, 25);
                 }
             }
         }
@@ -202,7 +217,7 @@ public class Game : NetworkBehaviour
     }
 
     [ClientRpc] private void UpdateScoreClientRpc(ulong clientId, int score)
-    {
+    {        
         StartCoroutine(ScoreDespawnDelay(clientId, score));       
     }
 
@@ -352,13 +367,16 @@ public class Game : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)] public void DealDamageToEnemyServerRpc(ulong objectId, int damage, ulong attackingClient)
     {
         GameObject enemy = NetworkManager.Singleton.SpawnManager.SpawnedObjects[objectId].gameObject;
+        ulong attackingClientId = NetworkManager.Singleton.SpawnManager.SpawnedObjects[attackingClient].OwnerClientId;
+
         if (enemy.GetComponent<AlienDog>()) 
         {
             enemy.GetComponent<AlienDog>().health.Value -= damage;
+            enemy.GetComponent<AlienDog>().SetPlayer(NetworkManager.Singleton.SpawnManager.SpawnedObjects[attackingClient].gameObject);
             if (enemy.GetComponent<AlienDog>().health.Value <= 0)
             {
                 enemy.GetComponent<NetworkObject>().Despawn();
-                UpdateScoreClientRpc(attackingClient, 50);
+                UpdateScoreClientRpc(attackingClientId, 50);
             }
         }
         

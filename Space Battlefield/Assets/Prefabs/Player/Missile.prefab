@@ -100,15 +100,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c69634c0fc66e414f86a6826b42ffff4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
+  speed: 35
   rotationSpeed: 50
-  maxPredictionTime: 5
+  maxPredictionTime: 2
   minDistancePredict: 5
   maxDistancePredict: 100
   deviationSpeed: 2
-  deviationAmount: 50
+  deviationAmount: 20
   impactParticles: {fileID: 210699861207379961, guid: 7b6e61ec2759237488f2a17b097eafbb, type: 3}
   parentClient: 0
+  target: {fileID: 0}
 --- !u!54 &2759489584340562992
 Rigidbody:
   m_ObjectHideFlags: 0

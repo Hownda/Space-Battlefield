@@ -24,7 +24,7 @@ public class Cannons : NetworkBehaviour
     public GameObject cannons;
     public LayerMask layer;
     public LayerMask trackLayer;
-    public float missileForce = 100f;
+    public float missileForce = 120f;
     private float fireRate = 0.2f;
     private float lastShot;
 
@@ -87,11 +87,11 @@ public class Cannons : NetworkBehaviour
                 if (ammo == Ammo.Bullet)
                 {
                     GameObject missile = Instantiate(bulletPrefab, cannons.transform.position, Quaternion.LookRotation(ray.direction));
-                    missile.GetComponent<Bullet>().parentClient = OwnerClientId;
+                    missile.GetComponent<Bullet>().parentClientId = NetworkObjectId;
                     missile.GetComponent<Bullet>().damage = true;
                     missile.GetComponent<Bullet>().IgnoreCollisions(colliders);
                     missile.GetComponent<Rigidbody>().AddForce(missileForce * missile.transform.forward, ForceMode.Impulse);
-                    Destroy(missile, 2.5f);
+                    Destroy(missile, 4f);
                     shootSound.Play();
 
                     ShootServerRpc(ray.direction);
@@ -102,6 +102,7 @@ public class Cannons : NetworkBehaviour
                     ammo = Ammo.Bullet;
                     trackingRectangle.SetActive(false);
                     crosshair.GetComponent<Image>().enabled = true;
+                    Game.instance.abilityDict[Type.Missile].timeStamp = Time.time;
                     Debug.Log("Missile mode inactive");
                 }
             }
@@ -173,10 +174,10 @@ public class Cannons : NetworkBehaviour
         if (!IsOwner)
         {
             GameObject missile = Instantiate(bulletPrefab, cannons.transform.position, Quaternion.LookRotation(shootDirection));
-            missile.GetComponent<Bullet>().parentClient = OwnerClientId;
+            missile.GetComponent<Bullet>().parentClientId = NetworkObjectId;
             missile.GetComponent<Bullet>().IgnoreCollisions(colliders);
             missile.GetComponent<Rigidbody>().AddForce(missileForce * missile.transform.forward, ForceMode.Impulse);
-            Destroy(missile, 2.5f);
+            Destroy(missile, 4f);
         }
     }
 }

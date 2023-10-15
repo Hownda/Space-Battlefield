@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class RoomItem : MonoBehaviour
 {
     public Text roomName;
+    public Text playerCountText;
     LobbyManager lobbyManager;
     public string roomId;
 
@@ -22,6 +21,11 @@ public class RoomItem : MonoBehaviour
     public void SetRoomId(string newRoomId)
     {
         roomId = newRoomId;
+    }
+
+    public void SetPlayerCount(int count, int maxCount)
+    {
+        playerCountText.text = count.ToString() + "/" + maxCount.ToString();
     }
 
     public void OnClickItem()

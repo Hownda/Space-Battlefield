@@ -2245,7 +2245,7 @@ MonoBehaviour:
     m_Bits: 5376
   playerMask:
     serializedVersion: 2
-    m_Bits: 16512
+    m_Bits: 17600
   speed: 20
   slowSpeed: 5
   fastSpeed: 20

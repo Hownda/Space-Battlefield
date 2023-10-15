@@ -52,24 +52,17 @@ public class SettingsManager : MonoBehaviour
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
     }
 
-    public void SetScreenMode()
+public void SetScreenMode()
     {
         if (Screen.fullScreen == true)
         {
+            PlayerPrefs.SetInt("Fullscreen", 0);
             Screen.fullScreen = false;
-        }  
-        else
-        {
-            Screen.fullScreen = true;
         }
-
-        if (Screen.fullScreen == true)
+        else
         {
             PlayerPrefs.SetInt("Fullscreen", 1);
-        }
-        else
-        {
-            PlayerPrefs.SetInt("Fullscreen", 0);
+            Screen.fullScreen = true;
         }
     }
 

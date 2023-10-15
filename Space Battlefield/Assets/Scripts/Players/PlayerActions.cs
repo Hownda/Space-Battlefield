@@ -8,6 +8,7 @@ using Cinemachine;
 public class PlayerActions : NetworkBehaviour
 {
     public MovementControls gameActions;
+    private ToolSwitching toolbar;
 
     public float pickUpRange = 2;
     public LayerMask interactableObjects;
@@ -17,12 +18,15 @@ public class PlayerActions : NetworkBehaviour
     {
         if (IsOwner)
         {
+            toolbar = GetComponent<ToolSwitching>();
+
             gameActions = new MovementControls();
             KeybindManager.LoadAllBindings(gameActions);
             KeybindManager.newInputActions = gameActions;
             gameActions.Player.Enter.started += Enter;
             gameActions.Player.Pickup.started += PickUp;
-            gameActions.Player.Eat.started += Eat;
+            gameActions.Player.Hotbar1.started += toolbar.SetSlotActive;
+            gameActions.Player.Hotbar2.started += toolbar.SetSlotActive;
             gameActions.Player.Enable();
         }
     }
@@ -33,7 +37,8 @@ public class PlayerActions : NetworkBehaviour
         {
             gameActions.Player.Enter.started -= Enter;
             gameActions.Player.Pickup.started -= PickUp;
-            gameActions.Player.Eat.started -= Eat;
+            gameActions.Player.Hotbar1.started -= toolbar.SetSlotActive;
+            gameActions.Player.Hotbar2.started -= toolbar.SetSlotActive;
             gameActions.Player.Disable();
         }
     }
@@ -93,11 +98,6 @@ public class PlayerActions : NetworkBehaviour
                 }
             }
         }
-    }
-
-    private void Eat(InputAction.CallbackContext obj)
-    {
-        Debug.Log("Eat");
     }
 
     [ServerRpc]

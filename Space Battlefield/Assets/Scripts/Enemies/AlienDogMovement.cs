@@ -5,7 +5,7 @@ using Unity.Netcode;
 
 public class AlienDog : NetworkBehaviour
 {
-    public NetworkVariable<int> health = new(100);
+    public NetworkVariable<int> health = new(300);
 
     public enum State
     {
@@ -48,14 +48,14 @@ public class AlienDog : NetworkBehaviour
     public float fastStepInterval = 0.5f;
     private float stepTime;
     public AudioSource stepSound;
+    public AudioSource punchSound;
 
     private void Start()
     {
+        animator = GetComponent<Animator>();
         if (IsServer)
         {
             rb = GetComponent<Rigidbody>();
-            animator = GetComponent<Animator>();
-
             changeBehaviourTime = Time.time;
             stepTime = Time.time;
             alertTime = Time.time;
@@ -70,7 +70,7 @@ public class AlienDog : NetworkBehaviour
             {
                 DetectPlayer();
                 HandleMovement();
-                HandleSound();
+                
 
                 Vector3 gravityUp = GetGravityUp();
 
@@ -79,6 +79,7 @@ public class AlienDog : NetworkBehaviour
                 transform.rotation = targetRotation;
             }
         }
+        HandleSound();
     }
 
     private void DetectPlayer()
@@ -99,12 +100,22 @@ public class AlienDog : NetworkBehaviour
 
     }
 
+    public void SetPlayer(GameObject player)
+    {
+        this.player = player;
+        alertTime = Time.time;
+    }
+
     private void HandleMovement()
     {
         if (player == null)
         {
             Patrol();
-            state = State.Passive;
+            if (state != State.Passive)
+            {
+                state = State.Passive;
+                ChangeStateClientRpc(state);
+            }         
         }
         else
         {
@@ -135,6 +146,7 @@ public class AlienDog : NetworkBehaviour
         rb.AddForce(velocityChange / 2);
         animator.SetBool("Run", false);
         animator.SetBool("Walk", true);
+        PlayAnimationClientRpc("Walk");
     }
 
 
@@ -147,6 +159,7 @@ public class AlienDog : NetworkBehaviour
         rb.AddForce(velocityChange);
         animator.SetBool("Walk", false);
         animator.SetBool("Run", true);
+        PlayAnimationClientRpc("Run");
 
 
     }
@@ -183,5 +196,39 @@ public class AlienDog : NetworkBehaviour
     public GravityOrbit GetGravityOrbit()
     {
         return gravityOrbit;
+    }
+
+    [ClientRpc] public void ChangeStateClientRpc(State state)
+    {
+        if (!IsServer)
+        {
+            this.state = state;
+        }
+    }
+
+    [ClientRpc] public void PlayAnimationClientRpc(string animation)
+    {
+        if (animation == "Walk")
+        {
+            animator.SetBool("Walk", true);
+            animator.SetBool("Run", false);
+        }
+        else if (animation == "Run")
+        {
+            animator.SetBool("Walk", false);
+            animator.SetBool("Run", true);
+        }
+        else
+        {
+            animator.SetTrigger("Attack");
+        }
+    }
+
+    [ClientRpc] public void PlayAttackClientRpc()
+    {
+        if (!IsServer)
+        {
+            punchSound.Play();
+        }
     }
 }

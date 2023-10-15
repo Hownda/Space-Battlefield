@@ -10,6 +10,7 @@ public class MenuManager : MonoBehaviour
     public InputField usernameInput;
     public Button submitButton;
     public Text errorText;
+    public GameObject creditsPanel;
 
     private void Start()
     {
@@ -84,6 +85,11 @@ public class MenuManager : MonoBehaviour
     public void OnClickSettings()
     {
         settingsPanel.SetActive(true);
+    }
+
+    public void OnClickCredits()
+    {
+        creditsPanel.SetActive(true);
     }
 
     public void OnClickQuit()

@@ -18,8 +18,7 @@ public class PlayerData : MonoBehaviour
     private bool inGame = false;
     public Allocation allocation;
     public string key;
-    public string currentLobbyId;
-    public int playerCount;
+    public Lobby currentLobby;
 
     // Settings
     public GameObject settingsCanvas;
@@ -70,11 +69,11 @@ public class PlayerData : MonoBehaviour
         {
             if (SceneManager.GetActiveScene().name == "Game" && inGame == false)
             {
-                if (isHost && allocation != null)
+                if (allocation != null)
                 {
                     CreateRelay();
                 }
-                if (isHost == false)
+                else
                 {
                     JoinRelay();
                 }

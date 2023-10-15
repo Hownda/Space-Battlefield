@@ -7,25 +7,8 @@ using UnityEngine.UI;
 
 public class ToolSwitching : NetworkBehaviour
 {
-    private MovementControls gameActions;
-
     public GameObject[] fpsObjects;
     public GameObject[] bodyObjects;
-
-    private void Awake()
-    {
-        gameActions = KeybindManager.inputActions;
-        gameActions.Player.Hotbar1.started += SetSlotActive;
-        gameActions.Player.Hotbar2.started += SetSlotActive;
-        gameActions.Player.Enable();
-    }
-
-    public override void OnDestroy()
-    {
-        gameActions.Player.Hotbar1.started -= SetSlotActive;
-        gameActions.Player.Hotbar2.started -= SetSlotActive;
-        gameActions.Player.Disable();
-    }
 
     private void Start()
     {

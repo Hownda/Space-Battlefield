@@ -25,7 +25,13 @@ public class Hull : NetworkBehaviour
 
     public bool isGrounded;
     public LayerMask ground;
-    public float distanceFromGround;   
+    public float distanceFromGround;
+
+    // Missile Indicator
+    private float beepingTime;
+    private float beepingRate;
+    private float minBeepingRate = 2f;
+    public AudioSource beepSound;
 
     void Start()
     {
@@ -72,9 +78,13 @@ public class Hull : NetworkBehaviour
     }
 
     void Update()
-    {       
-        integritySlider.fillAmount = integrity.Value / 100;
-        integrityText.text = integrity.Value.ToString() + "%";
+    {
+        if (IsOwner)
+        {
+            integritySlider.fillAmount = integrity.Value / 100;
+            integrityText.text = integrity.Value.ToString() + "%";
+            DetectIncomingMissiles();
+        }            
     }
 
     public void TakeDamage(float damage)
@@ -198,6 +208,22 @@ public class Hull : NetworkBehaviour
         else
         {
             warning.SetActive(false);
+        }
+    }
+
+    private void DetectIncomingMissiles()
+    {
+        GameObject missile = GameObject.FindGameObjectWithTag("Missile");
+
+        if (missile != null)
+        {
+            beepingRate = 0.1f + Vector3.Distance(transform.position, missile.transform.position) / 100;
+
+            if (beepingTime + beepingRate < Time.time)
+            {
+                beepingTime = Time.time;
+                beepSound.Play();
+            }
         }
     }
 

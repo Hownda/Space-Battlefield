@@ -13,6 +13,7 @@ TagManager:
   - Hammer
   - Obstacle
   - Enemy
+  - Missile
   layers:
   - Default
   - TransparentFX

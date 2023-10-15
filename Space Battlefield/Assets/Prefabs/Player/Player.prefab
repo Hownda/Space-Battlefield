@@ -897,7 +897,7 @@ MonoBehaviour:
   handAnimator: {fileID: 2649054749892034613}
   speed: 40
   maxForce: 15
-  jumpStrength: 30
+  jumpStrength: 15
   groundOffset: 0.3
   isGrounded: 0
   groundMask:
@@ -917,7 +917,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravityOrbit: {fileID: 0}
-  gravity: -40
+  gravity: -30
 --- !u!114 &239220834751948050
 MonoBehaviour:
   m_ObjectHideFlags: 0
