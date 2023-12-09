@@ -8,11 +8,20 @@ public class Bullet : MonoBehaviour
     public ulong parentClientId;
     public bool damage = false;
     private float explosionRadius = 2;
+    public bool spaceship = false;
 
     private void OnCollisionEnter(Collision other)
     {
         Impact();
-        Collider[] collisions = Physics.OverlapSphere(transform.position, explosionRadius);
+        Collider[] collisions = null;
+        if (spaceship == true)
+        {
+            collisions = Physics.OverlapSphere(transform.position, explosionRadius * 2 + 1);
+        }
+        else
+        {
+            collisions = Physics.OverlapSphere(transform.position, explosionRadius * 2 + 1);
+        }
         if (collisions.Length > 0)
         {
             foreach (Collider collision in collisions)

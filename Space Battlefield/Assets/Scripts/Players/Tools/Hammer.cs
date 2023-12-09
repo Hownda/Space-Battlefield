@@ -93,7 +93,7 @@ public class Hammer : NetworkBehaviour
             {
                 hit.transform.GetComponent<Rock>().Mine(miningPower);
                 MineServerRpc(ObjectDictionary.instance.GetIdOfObject(hit.transform.gameObject));
-                Game.instance.GiveObjectToPlayerServerRpc(OwnerClientId, Item.Rock, 1);
+                Game.instance.GiveObjectToPlayerServerRpc(OwnerClientId, Item.Rock, 2);
                 audioManager.Play("stone-mining");
             }               
         }       

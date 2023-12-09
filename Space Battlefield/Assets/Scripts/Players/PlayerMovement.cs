@@ -56,9 +56,15 @@ public class PlayerMovement : NetworkBehaviour
         // Animate input
         Animate(horizontalInput);
 
+        float speedMultiplier = 1;
+
         // Move with input
+        if (Input.GetKey(KeyCode.R))
+        {
+            speedMultiplier = 1.5f;
+        }
         Vector3 horizontalVelocity = (transform.right * horizontalInput.x + transform.forward * horizontalInput.y).normalized;
-        rb.AddForce(horizontalVelocity * speed);
+        rb.AddForce(horizontalVelocity * speed * speedMultiplier);
 
         //Jump with Input
         isGrounded = Physics.Raycast(transform.position, -transform.up, groundOffset, groundMask);

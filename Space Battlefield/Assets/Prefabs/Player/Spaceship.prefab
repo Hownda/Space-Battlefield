@@ -3239,7 +3239,7 @@ MonoBehaviour:
   errorText: {fileID: 242000902367205172}
   boostColor: {r: 766.9456, g: 0, b: 881.04706, a: 0}
   normalColor: {r: 0, g: 175.2869, b: 881.0471, a: 0}
-  boostSpeed: 300
+  boostSpeed: 600
   rate: 0.02
   boostActive: 0
   shield: {fileID: 764326895083297900}

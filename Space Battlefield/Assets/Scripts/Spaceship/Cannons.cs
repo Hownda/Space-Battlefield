@@ -98,7 +98,7 @@ public class Cannons : NetworkBehaviour
                 }
                 else
                 {                  
-                    SummonMissileServerRpc(OwnerClientId, targetLocked, target, cannons.transform.position, ray.direction, trackingRectangle.transform.localScale.x);
+                    SummonMissileServerRpc(NetworkObjectId, targetLocked, target, cannons.transform.position, ray.direction, trackingRectangle.transform.localScale.x);
                     ammo = Ammo.Bullet;
                     trackingRectangle.SetActive(false);
                     crosshair.GetComponent<Image>().enabled = true;
@@ -175,6 +175,7 @@ public class Cannons : NetworkBehaviour
         {
             GameObject missile = Instantiate(bulletPrefab, cannons.transform.position, Quaternion.LookRotation(shootDirection));
             missile.GetComponent<Bullet>().parentClientId = NetworkObjectId;
+            missile.GetComponent<Bullet>().spaceship = true;
             missile.GetComponent<Bullet>().IgnoreCollisions(colliders);
             missile.GetComponent<Rigidbody>().AddForce(missileForce * missile.transform.forward, ForceMode.Impulse);
             Destroy(missile, 4f);

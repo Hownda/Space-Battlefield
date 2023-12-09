@@ -96,8 +96,22 @@ public class Game : NetworkBehaviour
         {
             GameObject spaceship = Instantiate(spaceshipPrefab, new Vector3(playerInformationList[i].player.transform.position.x + spaceshipSpawnOffset, playerInformationList[i].player.transform.position.y, playerInformationList[i].player.transform.position.z + spaceshipSpawnOffset), Quaternion.Euler(Vector3.zero));
             spaceship.GetComponent<NetworkObject>().Spawn();
+            StartCoroutine(SpaceshipSpawnCorretion(spaceship, playerInformationList[i].player));
+
             spaceship.GetComponent<NetworkObject>().ChangeOwnership(playerInformationList[i].clientId);
             playerInformationList[i].spaceship = spaceship;
+        }
+    }
+
+    private IEnumerator SpaceshipSpawnCorretion(GameObject spaceship, GameObject player)
+    {
+        int i = 5;
+        while (i > 0)
+        {
+            yield return new WaitForSeconds(0.05f);
+            spaceship.transform.position = player.transform.position + player.transform.up * spaceshipSpawnOffset + player.transform.right * spaceshipSpawnOffset;
+            Debug.Log("Corrected Position");
+            i--;
         }
     }
 
@@ -346,10 +360,7 @@ public class Game : NetworkBehaviour
         playerInformationDict[clientId].player = spawnedPlayer;
 
         // Spawn Spaceship
-        GameObject spaceship = Instantiate(spaceshipPrefab, new Vector3(playerInformationDict[clientId].player.transform.position.x + spaceshipSpawnOffset, playerInformationDict[clientId].player.transform.position.y, playerInformationDict[clientId].player.transform.position.z + spaceshipSpawnOffset), Quaternion.Euler(Vector3.zero));
-        spaceship.GetComponent<NetworkObject>().Spawn();
-        spaceship.GetComponent<NetworkObject>().ChangeOwnership(clientId);
-        playerInformationDict[clientId].spaceship = spaceship;
+        StartCoroutine(ServerSpaceshipRespawnBreak(clientId, 2));        
     }
 
     [ClientRpc] private void PrepareSpaceshipRespawnClientRpc(ulong clientId)
@@ -382,9 +393,9 @@ public class Game : NetworkBehaviour
         
     }
 
-    private IEnumerator ServerSpaceshipRespawnBreak(ulong clientId)
+    private IEnumerator ServerSpaceshipRespawnBreak(ulong clientId, int time = 10)
     {
-        int respawnTime = 10;
+        int respawnTime = time;
         while (respawnTime > 0 && playerInformationDict[clientId].player != null)
         {
             yield return new WaitForSeconds(1);
@@ -414,8 +425,10 @@ public class Game : NetworkBehaviour
 
     private void RespawnSpaceship(ulong clientId)
     {
-        GameObject spaceship = Instantiate(spaceshipPrefab, playerInformationDict[clientId].player.transform.up * spaceshipSpawnOffset + playerInformationDict[clientId].player.transform.right * spaceshipSpawnOffset, Quaternion.identity);
-        spaceship.GetComponent<NetworkObject>().Spawn();
+        GameObject spaceship = Instantiate(spaceshipPrefab, playerInformationDict[clientId].player.transform.position + playerInformationDict[clientId].player.transform.up * spaceshipSpawnOffset + playerInformationDict[clientId].player.transform.right * spaceshipSpawnOffset, Quaternion.identity);
+        spaceship.GetComponent<NetworkObject>().Spawn();        
+        StartCoroutine(SpaceshipSpawnCorretion(spaceship, playerInformationDict[clientId].player));
+
         spaceship.GetComponent<NetworkObject>().ChangeOwnership(clientId);
         playerInformationDict[clientId].spaceship = spaceship;
     }

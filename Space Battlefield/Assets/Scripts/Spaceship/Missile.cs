@@ -67,8 +67,14 @@ public class Missile : NetworkBehaviour
         {
             if (collision.gameObject.CompareTag("Spaceship"))
             {
-                Game.instance.DealDamageToSpaceshipServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 30, parentClient);
-                ExplodeClientRpc();
+                if (collision.gameObject.GetComponent<NetworkObject>().NetworkObjectId != parentClient)
+                {
+                    if (collision.gameObject.GetComponent<SpaceshipActions>().shieldActive.Value == false)
+                    {
+                        Game.instance.DealDamageToSpaceshipServerRpc(collision.gameObject.GetComponent<NetworkObject>().OwnerClientId, 30, parentClient);
+                        ExplodeClientRpc();
+                    }
+                }
             }
             if (collision.gameObject.CompareTag("Player"))
             {
